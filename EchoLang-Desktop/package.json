@@ -1,0 +1,104 @@
+{
+  "name": "echolang-desktop",
+  "productName": "EchoLang",
+  "version": "0.3.0",
+  "private": true,
+  "author": "Mu-scorpio",
+  "description": "EchoLang desktop application",
+  "type": "module",
+  "main": "main.mjs",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "check": "node --check main.mjs",
+    "dist": "electron-builder --win nsis portable",
+    "dist:dir": "electron-builder --win --dir"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.echolang.desktop",
+    "productName": "EchoLang",
+    "asar": true,
+    "files": [
+      "main.mjs",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../server.mjs",
+        "to": "echolang-source/server.mjs"
+      },
+      {
+        "from": "../index.html",
+        "to": "echolang-source/index.html"
+      },
+      {
+        "from": "../favicon.ico",
+        "to": "echolang-source/favicon.ico"
+      },
+      {
+        "from": "../app",
+        "to": "echolang-source/app"
+      },
+      {
+        "from": "../assets",
+        "to": "echolang-source/assets"
+      },
+      {
+        "from": "../node_modules",
+        "to": "echolang-source/node_modules"
+      },
+      {
+        "from": "../package.json",
+        "to": "echolang-source/package.json"
+      },
+      {
+        "from": "../config.example.json",
+        "to": "echolang-source/config.example.json"
+      },
+      {
+        "from": "../.env.example",
+        "to": "echolang-source/.env.example"
+      }
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "artifactName": "EchoLang-${version}-setup.${ext}",
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "../assets/ui/echolang-brand.png",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "EchoLang"
+    },
+    "portable": {
+      "artifactName": "EchoLang-${version}-portable.exe"
+    }
+  }
+}

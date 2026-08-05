@@ -1,0 +1,19 @@
+{
+  "name": "echolang",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1",
+    "mammoth": "^1.10.0",
+    "pdf-parse": "^1.1.1",
+    "pdfjs-dist": "^4.10.38"
+  }
+}

@@ -1,0 +1,2336 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f4f7fb" />
+  <link rel="icon" href="/favicon.ico?v=20260805-v3" type="image/x-icon" sizes="64x64" />
+  <link rel="icon" href="/assets/ui/echolang-favicon.png?v=20260805-v3" type="image/png" sizes="64x64" />
+  <title>EchoLang / Paragraph Translation Desk</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f3f6fa;
+      --bg-wash: #eaf0f6;
+      --surface: #ffffff;
+      --surface-subtle: #f8fafc;
+      --surface-active: #eef4ff;
+      --ink: #172033;
+      --ink-strong: #0e172a;
+      --ink-soft: #68748a;
+      --ink-faint: #a0aabb;
+      --line: #e3e9f1;
+      --line-strong: #d5deea;
+      --blue: #2d6df6;
+      --blue-dark: #1b56d6;
+      --blue-soft: #dce8ff;
+      --mint: #16af7b;
+      --mint-soft: #dff7ee;
+      --amber: #c47d22;
+      --amber-soft: #fff1dc;
+      --rose: #d65865;
+      --rose-soft: #ffe7eb;
+      --shadow-card: 0 16px 34px rgba(45, 67, 99, .055), 0 2px 7px rgba(45, 67, 99, .035);
+      --shadow-float: 0 22px 50px rgba(31, 54, 92, .14), 0 3px 12px rgba(31, 54, 92, .08);
+      --radius-xl: 20px;
+      --radius-lg: 15px;
+      --radius-md: 11px;
+      --radius-sm: 8px;
+      --ease: cubic-bezier(.22, .75, .23, 1);
+    }
+
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #111724;
+      --bg-wash: #161f30;
+      --surface: #182131;
+      --surface-subtle: #1d293a;
+      --surface-active: #1e3156;
+      --ink: #e9eef7;
+      --ink-strong: #ffffff;
+      --ink-soft: #9ba8bc;
+      --ink-faint: #66758e;
+      --line: #2a3649;
+      --line-strong: #3a4860;
+      --blue: #72a1ff;
+      --blue-dark: #8bb3ff;
+      --blue-soft: #253b66;
+      --mint: #47d29f;
+      --mint-soft: #183f38;
+      --amber: #f0b35d;
+      --amber-soft: #483720;
+      --rose: #ff8993;
+      --rose-soft: #4b2831;
+      --shadow-card: 0 16px 34px rgba(0, 0, 0, .16), 0 2px 7px rgba(0, 0, 0, .08);
+      --shadow-float: 0 24px 55px rgba(0, 0, 0, .35), 0 4px 15px rgba(0, 0, 0, .18);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 20% 0%, var(--bg-wash) 0, var(--bg) 34rem);
+      color: var(--ink);
+      font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 14px;
+      text-wrap: pretty;
+      transition: background .25s var(--ease), color .25s var(--ease);
+    }
+
+    button, input, textarea, select { font: inherit; color: inherit; }
+    button { border: 0; cursor: pointer; }
+    button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid color-mix(in srgb, var(--blue) 28%, transparent); outline-offset: 2px; }
+    ::selection { background: var(--blue-soft); color: var(--ink-strong); }
+
+    .app-shell { min-height: 100vh; display: grid; grid-template-columns: 78px 1fr; }
+    .rail {
+      position: sticky; top: 0; height: 100vh; z-index: 10;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 18px 11px 16px;
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      border-right: 1px solid var(--line);
+      backdrop-filter: blur(20px);
+    }
+    .brand-mark {
+      width: 46px; height: 46px; display: grid; place-items: center;
+      border: 0; border-radius: 14px;
+      background: transparent; user-select: none;
+    }
+    .brand-mark img { width: 50px; height: 50px; display: block; object-fit: contain; }
+    .rail-nav { display: grid; gap: 10px; margin-top: 42px; width: 100%; }
+    .nav-button {
+      min-height: 57px; padding: 9px 3px 8px; display: grid; place-items: center; gap: 4px;
+      border-radius: 12px; background: transparent; color: var(--ink-faint); transition: .2s var(--ease);
+    }
+    .nav-button:hover { background: var(--surface-subtle); color: var(--ink-soft); }
+    .nav-button.is-active { background: var(--surface-active); color: var(--blue); }
+    .nav-label { font-size: 11px; line-height: 1; }
+    .nav-glyph { width: 21px; height: 21px; display: grid; place-items: center; font-size: 20px; line-height: 1; font-weight: 500; }
+    .nav-glyph img { width: 21px; height: 21px; display: block; object-fit: contain; }
+    [data-theme="dark"] .nav-glyph img { filter: invert(1) brightness(1.7); }
+    .rail-bottom { margin-top: auto; display: grid; gap: 9px; width: 100%; }
+    .theme-button { min-height: 42px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 11px; background: var(--surface-subtle); color: var(--ink-soft); transition: .2s var(--ease); }
+    .theme-emoji { display: block; font-size: 18px; line-height: 1; opacity: .82; transition: transform .25s var(--ease), opacity .2s var(--ease); }
+    .theme-button:hover .theme-emoji { opacity: 1; transform: rotate(-12deg) scale(1.08); }
+    .theme-button:hover { color: var(--blue); border-color: var(--blue-soft); transform: translateY(-1px); }
+
+    .app-main { min-width: 0; padding: 20px 22px 24px; }
+    .topbar { min-height: 50px; display: flex; align-items: center; justify-content: space-between; gap: 18px; margin: 0 auto 18px; max-width: 1680px; }
+    .breadcrumb { display: flex; align-items: center; gap: 10px; min-width: 0; color: var(--ink-soft); }
+    .breadcrumb strong { color: var(--ink-strong); font-size: 15px; }
+    .breadcrumb-divider { color: var(--ink-faint); }
+    .service-status { margin-left: 10px; color: var(--ink-faint); font-size: 11px; white-space: nowrap; }
+    .service-status.is-ready { color: var(--mint); }
+    .icon-button, .button {
+      min-height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 0 13px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+      background: var(--surface); color: var(--ink-soft); transition: .2s var(--ease);
+    }
+    .button:hover, .icon-button:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-1px); }
+    .button:disabled, .icon-button:disabled { opacity: .48; cursor: not-allowed; transform: none; }
+    .button.primary { border-color: var(--blue); background: var(--blue); color: #fff; box-shadow: 0 6px 14px color-mix(in srgb, var(--blue) 24%, transparent); }
+    .button.primary:hover { background: var(--blue-dark); color: #fff; }
+    .button.quiet { background: transparent; border-color: transparent; }
+    .button.small { min-height: 32px; padding: 0 10px; font-size: 12px; }
+    .hidden-file { display: none; }
+
+    .page { max-width: 1680px; margin: 0 auto; display: none; animation: page-in .35s var(--ease) both; }
+    .page.is-active { display: block; }
+    @keyframes page-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+    .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); min-width: 0; }
+
+    /* Reader */
+    .reader-grid { display: grid; grid-template-columns: 315px minmax(0, 1fr); gap: 18px; min-height: calc(100vh - 112px); }
+    .history-panel { display: flex; flex-direction: column; overflow: hidden; }
+    .panel-heading { padding: 24px 22px 18px; border-bottom: 1px solid var(--line); }
+    .panel-heading h1, .panel-heading h2 { margin: 0; color: var(--ink-strong); font-size: 19px; letter-spacing: -.03em; }
+    .panel-heading p { margin: 7px 0 0; color: var(--ink-soft); font-size: 12px; }
+    .history-heading-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .history-import-button { flex: 0 0 auto; }
+    .search-box { position: relative; margin: 17px 16px 10px; }
+    .search-box input { width: 100%; height: 40px; padding: 0 35px 0 13px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--surface-subtle); color: var(--ink); }
+    .search-box .search-icon { position: absolute; width: 16px; height: 16px; right: 12px; top: 12px; object-fit: contain; opacity: .7; }
+    .history-list { padding: 0 10px; overflow: auto; }
+    .history-item { position: relative; display: grid; grid-template-columns: 36px minmax(0, 1fr) 14px; align-items: center; gap: 11px; padding: 14px 10px; border-radius: 11px; border-bottom: 1px solid var(--line); cursor: grab; transition: background .2s var(--ease), opacity .2s var(--ease), transform .2s var(--ease); }
+    .history-item:active { cursor: grabbing; }
+    .history-item:hover { background: var(--surface-subtle); }
+    .history-item.is-active { background: var(--surface-active); border-bottom-color: transparent; }
+    .history-item.is-active::before { content: ""; position: absolute; left: 0; top: 9px; bottom: 9px; width: 3px; border-radius: 4px; background: var(--blue); }
+    .history-item.is-dragging { opacity: .38; transform: scale(.985); }
+    .history-item.is-drop-target { box-shadow: inset 0 2px 0 var(--blue); }
+    .file-badge { width: 28px; height: 34px; position: relative; display: grid; place-items: center; border-radius: 5px; background: var(--blue); color: #fff; font-size: 10px; font-weight: 800; letter-spacing: -.04em; }
+    .file-badge::after { content: ""; position: absolute; right: 0; top: 0; border-style: solid; border-width: 0 8px 8px 0; border-color: transparent rgba(255,255,255,.55) transparent transparent; }
+    .file-badge.pdf { background: #e24450; }
+    .file-badge.ppt { background: #ec7d2c; }
+    .file-badge.xls { background: #1fa36a; }
+    .history-name { display: block; overflow: hidden; color: var(--ink-strong); font-weight: 600; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+    .history-meta { display: flex; gap: 13px; margin-top: 6px; color: var(--ink-faint); font-size: 11px; }
+    .history-check { color: var(--mint); font-size: 17px; }
+    .history-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding: 14px 16px 17px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 12px; }
+    .history-footer strong { color: var(--ink-strong); font-weight: 700; }
+    .pager { display: flex; align-items: center; gap: 12px; }
+    .pager button { width: 30px; height: 30px; border-radius: 8px; background: var(--surface-subtle); color: var(--ink-soft); }
+    .pager button:disabled { opacity: .4; cursor: default; }
+
+    .reader-panel { position: relative; display: flex; flex-direction: column; overflow: hidden; }
+    .reader-header { padding: 17px 24px 14px; border-bottom: 1px solid var(--line); }
+    .reader-header-top { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .document-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .document-title h2 { margin: 0; overflow: hidden; color: var(--ink-strong); font-size: 15px; text-overflow: ellipsis; white-space: nowrap; }
+    .document-title .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 4px var(--mint-soft); }
+    .reader-tools { display: flex; align-items: center; gap: 7px; }
+    .reader-tools .icon-button { width: 34px; padding: 0; min-height: 34px; }
+    .reader-tools .icon-button img { width: 18px; height: 18px; display: block; object-fit: contain; opacity: .76; transition: opacity .2s var(--ease), transform .2s var(--ease); }
+    .reader-tools .icon-button:hover img { opacity: 1; transform: translateY(-1px); }
+    [data-theme="dark"] .reader-tools .icon-button img, [data-theme="dark"] .source-file-button img { filter: invert(1) brightness(1.65); }
+    .source-file-button { width: 26px; height: 26px; display: inline-grid; place-items: center; padding: 0; border: 1px solid transparent; border-radius: 7px; background: transparent; color: var(--ink-faint); transition: .2s var(--ease); }
+    .source-file-button:hover:not(:disabled) { border-color: var(--line-strong); background: var(--surface-subtle); color: var(--blue); }
+    .source-file-button:disabled { opacity: .38; cursor: not-allowed; }
+    .source-file-button img { width: 16px; height: 16px; display: block; }
+    .language-bar { display: flex; align-items: center; gap: 10px; margin-top: 19px; }
+    .language-select { height: 35px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-subtle); }
+    .reader-model-control { display: flex; align-items: center; gap: 6px; color: var(--ink-faint); font-size: 11px; }
+    .reader-model-select { width: min(245px, 22vw); height: 35px; min-width: 130px; padding: 0 28px 0 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-subtle); color: var(--ink-strong); overflow: hidden; text-overflow: ellipsis; }
+    .reader-model-select:disabled { opacity: .6; cursor: not-allowed; }
+    .reader-start-button { flex: 0 0 auto; white-space: nowrap; }
+    .language-arrow { color: var(--ink-faint); font-size: 17px; }
+    .mode-switch { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: min(224px, 100%); gap: 0; margin-left: auto; padding: 3px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-subtle); }
+    .mode-switch-thumb { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc((100% - 6px) / 3); border-radius: 6px; background: var(--surface); box-shadow: 0 1px 5px rgba(50, 68, 94, .10); pointer-events: none; transition: transform .32s var(--ease); }
+    body[data-mode="parallel"] .mode-switch-thumb { transform: translateX(100%); }
+    body[data-mode="translation"] .mode-switch-thumb { transform: translateX(200%); }
+    .mode-switch button { position: relative; z-index: 1; min-height: 29px; padding: 0 10px; border-radius: 6px; background: transparent; color: var(--ink-soft); font-size: 12px; white-space: nowrap; transition: color .24s var(--ease); }
+    .mode-switch button.is-active { background: transparent; color: var(--ink-strong); box-shadow: none; }
+    .reader-scroll { flex: 1; min-height: 0; overflow: auto; padding: 23px clamp(24px, 6vw, 92px) 110px; }
+    .session-title { display: flex; align-items: center; gap: 8px; color: var(--ink-strong); font-size: 12px; font-weight: 700; }
+    .session-title .mini-pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); animation: pulse 1.65s infinite; }
+    @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--mint) 25%, transparent); } 50% { box-shadow: 0 0 0 6px transparent; } }
+    .session-desc { margin-top: 5px; color: var(--ink-soft); font-size: 11px; }
+    .session-metrics { display: flex; align-items: center; gap: 15px; color: var(--ink-soft); font-size: 11px; white-space: nowrap; }
+    .session-metrics b { color: var(--ink-strong); font-size: 12px; }
+    .reader-status-line { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 15px; margin-top: 12px; padding-top: 11px; border-top: 1px solid var(--line); }
+    .reader-status-line .session-desc { min-width: 0; margin-top: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .reader-status-line[hidden] { display: none; }
+    .paragraph-list { max-width: 1120px; margin: 0 auto; }
+    .paragraph-block { position: relative; max-width: 850px; padding: 0 14px 28px; margin: 0 auto 22px; border-bottom: 1px solid var(--line); }
+    .paragraph-block:last-child { border-bottom: 0; }
+    .paragraph-number { position: absolute; left: -22px; top: 4px; color: var(--ink-faint); font-size: 10px; font-variant-numeric: tabular-nums; }
+    .source-text, .translation-text { margin: 0; font-family: Georgia, "Noto Serif SC", "Songti SC", serif; font-size: clamp(16px, 1.18vw, 18px); line-height: 1.68; letter-spacing: -.008em; }
+    .source-text { color: var(--ink-strong); }
+    .translation-text { margin-top: 12px; color: var(--ink-soft); font-family: "Noto Sans SC", "PingFang SC", sans-serif; font-size: 15px; line-height: 1.85; }
+    .translation-text:empty { display: none; }
+    .translation-text.is-processing { color: var(--blue); }
+    .translation-text.is-queued { color: var(--ink-faint); font-style: italic; }
+    .translation-text .stream-caret { display: inline-block; width: 2px; height: 1em; vertical-align: -.15em; margin-left: 4px; background: var(--blue); animation: blink .85s infinite; }
+    @keyframes blink { 50% { opacity: .15; } }
+    .paragraph-block.is-queued .source-text { color: var(--ink-soft); }
+    .document-table-block { margin: 0 auto 30px; padding: 0 0 26px; border-bottom: 1px solid var(--line); }
+    .document-table-block:last-child { border-bottom: 0; }
+    .table-block-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 10px; color: var(--ink-soft); font-size: 11px; }
+    .table-block-title { display: flex; align-items: center; gap: 8px; color: var(--ink-strong); font-size: 13px; font-weight: 700; }
+    .table-block-title::before { content: ""; width: 7px; height: 7px; border-radius: 2px; background: var(--blue); box-shadow: 0 0 0 4px var(--blue-soft); }
+    .table-block-page { padding: 4px 8px; border: 1px solid var(--line); border-radius: 999px; white-space: nowrap; }
+    .table-scroll { max-width: 100%; overflow: auto; border: 1px solid var(--line-strong); border-radius: 13px; background: var(--surface); box-shadow: 0 5px 18px rgba(31, 54, 92, .035); }
+    .pdf-table { width: max-content; min-width: 100%; border-collapse: separate; border-spacing: 0; table-layout: auto; color: var(--ink); }
+    .pdf-table th, .pdf-table td { min-width: 118px; max-width: 300px; padding: 12px 14px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .pdf-table th:last-child, .pdf-table td:last-child { border-right: 0; }
+    .pdf-table tr:last-child td { border-bottom: 0; }
+    .pdf-table th { position: sticky; top: 0; z-index: 1; min-width: 130px; background: var(--surface-subtle); color: var(--ink-strong); font-size: 11px; font-weight: 700; letter-spacing: .01em; }
+    .pdf-table td { font-size: 12px; line-height: 1.65; }
+    .pdf-table td:nth-child(3), .pdf-table td:nth-child(4), .pdf-table td:nth-child(5) { min-width: 105px; white-space: nowrap; }
+    .pdf-table td:nth-child(6), .pdf-table th:nth-child(6) { min-width: 260px; max-width: 420px; }
+    .pdf-table-cell { display: grid; gap: 7px; min-height: 20px; }
+    .pdf-cell-source, .pdf-cell-translation { white-space: pre-wrap; overflow-wrap: anywhere; }
+    .pdf-cell-source { color: var(--ink-strong); }
+    .pdf-cell-translation { color: var(--ink-soft); font-family: "Noto Sans SC", "PingFang SC", sans-serif; }
+    .pdf-cell-translation:empty { display: none; }
+    .pdf-cell-translation.is-processing { color: var(--blue); }
+    .pdf-cell-translation .stream-caret { display: inline-block; width: 2px; height: 1em; vertical-align: -.15em; margin-left: 4px; background: var(--blue); animation: blink .85s infinite; }
+    body[data-mode="source"] .translation-text, body[data-mode="source"] .pdf-cell-translation { display: none; }
+    body[data-mode="translation"] .source-text, body[data-mode="translation"] .pdf-cell-source { display: none; }
+    body[data-mode="translation"] .translation-text:empty, body[data-mode="translation"] .pdf-cell-translation:empty { display: block; min-height: 1.5em; }
+    .document-warning { margin: 0 auto 18px; padding: 10px 12px; border: 1px solid var(--amber); border-radius: 10px; background: var(--amber-soft); color: var(--ink-soft); font-size: 11px; line-height: 1.6; }
+    .progress-card { position: absolute; right: 22px; bottom: 24px; width: 226px; padding: 14px; border: 1px solid var(--line); border-radius: 15px; background: color-mix(in srgb, var(--surface) 94%, transparent); box-shadow: var(--shadow-float); backdrop-filter: blur(18px); }
+    .progress-top { display: flex; align-items: center; gap: 11px; }
+    .progress-ring { width: 43px; height: 43px; position: relative; display: grid; place-items: center; border-radius: 50%; background: conic-gradient(var(--blue) var(--progress, 34%), var(--blue-soft) 0); }
+    .progress-ring::after { content: ""; width: 32px; height: 32px; position: absolute; border-radius: 50%; background: var(--surface); }
+    .progress-ring span { position: relative; z-index: 1; color: var(--ink-strong); font-size: 10px; font-weight: 700; }
+    .progress-copy strong { display: block; color: var(--ink-strong); font-size: 12px; }
+    .progress-copy span { display: block; margin-top: 5px; color: var(--ink-soft); font-size: 11px; }
+    .progress-bar { height: 4px; overflow: hidden; margin-top: 12px; border-radius: 4px; background: var(--line); }
+    .progress-bar span { display: block; width: 34%; height: 100%; border-radius: inherit; background: var(--blue); transition: width .3s var(--ease); }
+    .progress-card.is-complete .progress-ring { background: conic-gradient(var(--mint) 100%, var(--mint-soft) 0); }
+    .progress-card.is-complete .progress-bar span { background: var(--mint); }
+    .empty-state { display: none; padding: 45px 20px; color: var(--ink-soft); text-align: center; }
+    .history-list.is-empty + .empty-state { display: block; }
+    .history-context-menu { position: fixed; z-index: 90; min-width: 170px; padding: 6px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface); box-shadow: var(--shadow-float); }
+    .history-context-menu[hidden] { display: none; }
+    .history-context-menu button { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 32px; padding: 0 10px; border-radius: 7px; background: transparent; color: var(--ink-soft); text-align: left; font-size: 12px; }
+    .history-context-menu button:hover { background: var(--surface-active); color: var(--blue); }
+    .history-context-menu button.is-danger:hover { background: var(--rose-soft); color: var(--rose); }
+    .history-context-menu .menu-divider { height: 1px; margin: 5px 3px; background: var(--line); }
+
+    /* Config */
+    .config-grid { display: grid; grid-template-columns: 300px minmax(420px, 1fr) minmax(350px, .82fr); min-height: calc(100vh - 112px); overflow: hidden; }
+    .config-panel { border-radius: var(--radius-xl); overflow: hidden; }
+    .config-panel + .config-panel { border-left: 1px solid var(--line); border-radius: 0; box-shadow: none; }
+    .config-grid > .config-panel:first-child { border-radius: var(--radius-xl) 0 0 var(--radius-xl); }
+    .config-grid > .config-panel:last-child { border-radius: 0 var(--radius-xl) var(--radius-xl) 0; }
+    .config-left { background: var(--surface); }
+    .config-center, .config-right { background: var(--surface); }
+    .config-heading { padding: 20px 22px 15px; border-bottom: 1px solid var(--line); }
+    .config-heading-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .config-heading-actions { display: flex; align-items: center; gap: 5px; }
+    .config-heading-actions button { flex: 0 0 auto; white-space: nowrap; }
+    .config-heading h1 { margin: 0; color: var(--ink-strong); font-size: 18px; letter-spacing: -.03em; white-space: nowrap; }
+    .add-provider-button { flex: 0 0 auto; color: var(--blue); }
+    .config-search { margin: 18px 22px 12px; }
+    .provider-list { padding: 0 12px; }
+    .provider-item { display: grid; grid-template-columns: 40px minmax(0, 1fr) 12px; align-items: center; gap: 10px; min-height: 60px; padding: 9px 10px; border-radius: 12px; cursor: grab; transition: background .2s var(--ease), box-shadow .2s var(--ease), opacity .2s var(--ease); }
+    .provider-item:hover { background: var(--surface-subtle); }
+    .provider-item.is-active { background: var(--surface-active); box-shadow: inset 2px 0 0 var(--blue); }
+    .provider-item:active { transform: scale(.992); }
+    .provider-item.is-dragging { opacity: .45; cursor: grabbing; }
+    .provider-item.is-drop-target { box-shadow: inset 0 -2px 0 var(--blue); }
+    @keyframes provider-drop-nudge { from { transform: translateY(0); } to { transform: translateY(3px); } }
+    @media (prefers-reduced-motion: no-preference) { .provider-item.is-drop-target { animation: provider-drop-nudge .42s var(--ease) infinite alternate; } }
+    .provider-item::after { content: "⋮⋮"; color: var(--ink-faint); font-size: 12px; letter-spacing: -3px; opacity: .7; }
+    .provider-logo { width: 36px; height: 36px; display: grid; place-items: center; margin: 0; border: 1px solid var(--line-strong); border-radius: 50%; background: var(--surface-subtle); color: var(--ink-strong); font-size: 10px; font-weight: 800; }
+    .provider-logo.deep { background: #306ef3; color: #fff; border-color: #306ef3; }
+    .provider-logo.open { background: #172033; color: #fff; border-color: #172033; font-size: 16px; }
+    .provider-item > .provider-logo { align-self: center; margin: 0; }
+    .provider-item > span:last-child { display: block; min-width: 0; margin: 0; }
+    .provider-item strong { display: block; overflow: hidden; color: var(--ink-strong); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+    .provider-item > span:last-child > span { display: block; overflow: hidden; margin-top: 3px; color: var(--ink-faint); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .config-titlebar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 24px 25px 18px; border-bottom: 1px solid var(--line); }
+    .config-titlebar h2 { margin: 0; color: var(--ink-strong); font-size: 17px; }
+    .config-titlebar p { margin: 5px 0 0; color: var(--ink-soft); font-size: 11px; }
+    .toggle { position: relative; width: 47px; height: 28px; flex: 0 0 auto; padding: 0; border-radius: 20px; background: var(--line-strong); transition: .2s; }
+    .toggle::after { content: ""; position: absolute; width: 22px; height: 22px; top: 3px; left: 3px; border-radius: 50%; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,.15); transition: .2s var(--ease); }
+    .toggle.is-on { background: var(--mint); }
+    .toggle.is-on::after { left: 22px; }
+    .config-section { padding: 24px 25px; border-bottom: 1px solid var(--line); }
+    .section-label { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; color: var(--ink-strong); font-weight: 700; font-size: 13px; }
+    .info-dot { width: 16px; height: 16px; display: inline-grid; place-items: center; border: 1px solid var(--ink-faint); border-radius: 50%; color: var(--ink-soft); font-size: 10px; }
+    .input-wrap { position: relative; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    .field, .text-field { width: 100%; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--surface-subtle); transition: .2s; }
+    .field { height: 42px; padding: 0 12px; }
+    .text-field { min-height: 120px; resize: vertical; padding: 12px; line-height: 1.7; }
+    .prompt-preview-shell { overflow: hidden; margin-top: 14px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface-subtle); }
+    .prompt-preview-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 11px; border-bottom: 1px solid var(--line); color: var(--ink-soft); font-size: 10px; }
+    .prompt-preview-meta span:last-child { color: var(--mint); white-space: nowrap; }
+    .prompt-preview { max-height: 235px; overflow: auto; margin: 0; padding: 11px; color: var(--ink-strong); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 10px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .field:hover, .text-field:hover { border-color: var(--ink-faint); }
+    .field:focus, .text-field:focus { border-color: var(--blue); outline: none; background: var(--surface); }
+    .key-input { padding-right: 12px; letter-spacing: 0; font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif; }
+    .key-input::placeholder { letter-spacing: 0; }
+    .eye-button { position: absolute; right: 7px; top: 7px; width: 28px; height: 28px; border-radius: 7px; background: transparent; color: var(--ink-faint); }
+    .field-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+    .helper { display: flex; justify-content: space-between; gap: 10px; margin-top: 9px; color: var(--ink-faint); font-size: 11px; }
+    .helper a, .config-links a { color: var(--blue); text-decoration: none; }
+    .helper a:hover, .config-links a:hover { text-decoration: underline; }
+    .model-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 25px 0 12px; }
+    .model-toolbar strong { color: var(--ink-strong); font-size: 13px; }
+    .model-toolbar span { display: inline-grid; place-items: center; min-width: 23px; height: 20px; margin-left: 4px; border-radius: 10px; background: var(--surface-active); color: var(--blue); font-size: 11px; }
+    .model-actions { display: flex; gap: 6px; }
+    .model-actions button { height: 30px; padding: 0 9px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink-soft); }
+    .model-actions button:hover { color: var(--blue); border-color: var(--blue); }
+    .config-links { padding: 16px 25px; color: var(--ink-soft); font-size: 11px; }
+    .config-left .provider-list { max-height: calc(100vh - 205px); overflow-y: auto; }
+    .provider-logo img { width: 18px; height: 18px; display: block; object-fit: contain; filter: var(--provider-icon-filter, none); }
+    [data-theme="dark"] .provider-logo img { filter: invert(1) brightness(1.6); }
+    .model-summary { overflow: hidden; border: 1px solid var(--line); border-radius: 13px; background: var(--surface-subtle); }
+    .model-summary-head { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 14px; background: var(--surface); border-bottom: 1px solid var(--line); }
+    .model-summary-logo { width: 34px; height: 34px; background: var(--surface-subtle); }
+    .model-summary-logo img { width: 21px; height: 21px; }
+    .model-summary-copy { min-width: 0; }
+    .model-summary-copy strong { display: block; overflow: hidden; color: var(--ink-strong); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+    .model-summary-copy span { display: block; overflow: hidden; margin-top: 4px; color: var(--ink-faint); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+    .connected-badge { padding: 4px 7px; border-radius: 7px; background: var(--mint-soft); color: var(--mint); font-size: 10px; white-space: nowrap; }
+    .model-summary-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 14px; color: var(--ink-soft); font-size: 11px; }
+    .model-summary-row + .model-summary-row { border-top: 1px solid var(--line); }
+    .model-summary-row code { overflow: hidden; color: var(--ink-strong); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+    .available-models { max-height: 180px; overflow: auto; margin-top: 9px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+    .available-models button { display: block; width: 100%; padding: 9px 12px; background: transparent; color: var(--ink-soft); text-align: left; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; }
+    .available-models button:hover, .available-models button.is-selected { background: var(--surface-active); color: var(--blue); }
+    .configured-model-list { display: grid; gap: 6px; min-height: 56px; padding: 7px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface-subtle); }
+    .configured-model-empty { display: grid; place-items: center; min-height: 52px; color: var(--ink-faint); font-size: 11px; }
+    .configured-model-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; gap: 9px; min-height: 44px; padding: 6px 8px; border: 1px solid transparent; border-radius: 9px; background: var(--surface); cursor: context-menu; transition: border-color .18s var(--ease), background .18s var(--ease); }
+    .configured-model-row:hover { border-color: var(--line-strong); background: var(--surface-active); }
+    .configured-model-row.is-reader-selected { border-color: color-mix(in srgb, var(--blue) 55%, var(--line)); }
+    .configured-model-row .provider-logo { width: 28px; height: 28px; }
+    .configured-model-row .provider-logo img { width: 17px; height: 17px; }
+    .configured-model-name { overflow: hidden; color: var(--ink-strong); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .configured-model-note { display: block; margin-top: 3px; color: var(--ink-faint); font-family: inherit; font-size: 10px; }
+    .model-default-badge { padding: 4px 6px; border-radius: 6px; background: var(--mint-soft); color: var(--mint); font-size: 10px; white-space: nowrap; }
+    .model-library-modal[hidden] { display: none; }
+    .model-library-modal { position: fixed; inset: 0; z-index: 85; display: grid; place-items: center; padding: 22px; }
+    .model-library-backdrop { position: absolute; inset: 0; background: rgba(12, 22, 39, .32); backdrop-filter: blur(5px); }
+    .model-library-dialog { position: relative; width: min(760px, 100%); max-height: min(760px, calc(100vh - 44px)); display: flex; flex-direction: column; padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: var(--shadow-float); animation: dialog-in .24s var(--ease) both; }
+    .model-library-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; margin-bottom: 17px; }
+    .model-library-head h2 { margin: 0; color: var(--ink-strong); font-size: 18px; }
+    .model-library-head p { margin: 6px 0 0; color: var(--ink-soft); font-size: 11px; }
+    .model-library-search { display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--surface-subtle); }
+    .model-library-search img { width: 17px; height: 17px; opacity: .65; }
+    .model-library-search input { width: 100%; border: 0; outline: 0; background: transparent; color: var(--ink-strong); }
+    .model-library-meta { display: flex; justify-content: space-between; gap: 10px; padding: 12px 1px 9px; color: var(--ink-faint); font-size: 11px; }
+    .model-library-groups { min-height: 0; overflow: auto; padding-right: 4px; }
+    .model-library-group { margin-bottom: 12px; border: 1px solid var(--line); border-radius: 11px; overflow: hidden; }
+    .model-library-group-head { display: flex; justify-content: space-between; gap: 10px; padding: 10px 12px; background: var(--surface-subtle); color: var(--ink-strong); font-size: 12px; font-weight: 700; }
+    .model-library-group-head span { color: var(--ink-faint); font-size: 10px; font-weight: 500; }
+    .model-library-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) 31px; align-items: center; gap: 9px; padding: 8px 12px; border-top: 1px solid var(--line); }
+    .model-library-row .provider-logo { width: 28px; height: 28px; }
+    .model-library-row .provider-logo img { width: 17px; height: 17px; }
+    .model-library-row code { overflow: hidden; color: var(--ink-strong); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .model-library-action { width: 29px; height: 29px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface); color: var(--blue); font-size: 18px; line-height: 1; }
+    .model-library-action:hover { border-color: var(--blue); background: var(--surface-active); }
+    .model-library-action.is-remove { color: var(--rose); }
+    .right-section { padding: 24px 25px; border-bottom: 1px solid var(--line); }
+    .right-section .section-label { margin-bottom: 11px; }
+    .right-section .helper { margin-top: 8px; line-height: 1.6; }
+    .number-field { appearance: textfield; }
+    .number-field::-webkit-inner-spin-button { opacity: .55; }
+    .save-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 18px 25px; }
+    .save-state { color: var(--mint); font-size: 11px; }
+    .config-right { display: flex; flex-direction: column; overflow-y: auto; }
+    .config-right .save-row { margin-top: auto; }
+
+    .custom-provider-modal[hidden] { display: none; }
+    .custom-provider-modal { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 22px; }
+    .custom-provider-backdrop { position: absolute; inset: 0; background: rgba(12, 22, 39, .32); backdrop-filter: blur(5px); }
+    .custom-provider-dialog { position: relative; width: min(460px, 100%); padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: var(--shadow-float); animation: dialog-in .24s var(--ease) both; }
+    @keyframes dialog-in { from { opacity: 0; transform: translateY(9px) scale(.98); } to { opacity: 1; transform: none; } }
+    .custom-provider-dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; margin-bottom: 20px; }
+    .custom-provider-dialog h2 { margin: 0; color: var(--ink-strong); font-size: 17px; }
+    .custom-provider-dialog-head p { margin: 6px 0 0; color: var(--ink-soft); font-size: 11px; }
+    .dialog-close { width: 30px; height: 30px; border-radius: 8px; background: var(--surface-subtle); color: var(--ink-soft); font-size: 20px; line-height: 1; }
+    .dialog-close:hover { color: var(--blue); background: var(--surface-active); }
+    .form-field { display: grid; gap: 7px; margin-bottom: 13px; color: var(--ink-strong); font-size: 12px; font-weight: 700; }
+    .form-field .field { height: 40px; }
+    .dialog-note { margin: 2px 0 18px; color: var(--ink-faint); font-size: 11px; line-height: 1.6; }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+    .toast { position: fixed; left: 50%; bottom: 25px; z-index: 30; padding: 11px 15px; border: 1px solid var(--line); border-radius: 10px; background: var(--ink-strong); color: var(--surface); box-shadow: var(--shadow-float); opacity: 0; pointer-events: none; transform: translate(-50%, 12px); transition: .25s var(--ease); font-size: 12px; }
+    .toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+    .export-menu { position: absolute; top: calc(100% + 8px); right: 0; z-index: 20; min-width: 145px; padding: 6px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); box-shadow: var(--shadow-float); opacity: 0; pointer-events: none; transform: translateY(-4px); transition: .2s var(--ease); }
+    .export-menu.is-open { opacity: 1; pointer-events: auto; transform: none; }
+    .export-wrap { position: relative; }
+    .export-menu button { display: block; width: 100%; padding: 9px 10px; border-radius: 7px; background: transparent; color: var(--ink-soft); text-align: left; font-size: 12px; }
+    .export-menu button:hover { background: var(--surface-active); color: var(--blue); }
+    body.theme-transitioning::after { content: ""; position: fixed; inset: 0; z-index: 100; pointer-events: none; background: var(--surface); animation: theme-wash .58s var(--ease) both; }
+    @keyframes theme-wash { 0% { opacity: .74; transform: scale(1.035); } 100% { opacity: 0; transform: scale(1); } }
+
+    @media (max-width: 1120px) {
+      .reader-grid { grid-template-columns: 260px minmax(0, 1fr); }
+      .language-bar { flex-wrap: wrap; }
+      .mode-switch { margin-left: 0; }
+      .config-grid { grid-template-columns: 245px minmax(360px, 1fr); }
+      .config-right { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, 1fr); border-left: 0 !important; border-top: 1px solid var(--line); }
+      .config-right .config-titlebar { grid-column: 1 / -1; }
+      .config-right .save-row { grid-column: 1 / -1; margin-top: 0; }
+    }
+    @media (max-width: 780px) {
+      .app-shell { display: block; }
+      .rail { position: sticky; height: auto; flex-direction: row; justify-content: space-between; padding: 9px 14px; border-right: 0; border-bottom: 1px solid var(--line); }
+      .rail-nav { display: flex; width: auto; margin: 0 auto 0 17px; gap: 5px; }
+      .nav-button { min-height: 40px; min-width: 57px; padding: 4px 7px; }
+      .rail-bottom { display: flex; width: auto; margin: 0; gap: 7px; }
+      .theme-button { min-width: 40px; }
+      .app-main { padding: 13px 12px 18px; }
+      .topbar { margin-bottom: 13px; }
+      .breadcrumb-divider, .breadcrumb span:last-child { display: none; }
+      .reader-grid { display: block; min-height: 0; }
+      .history-panel { margin-bottom: 13px; max-height: 270px; }
+      .history-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .history-item { min-width: 0; }
+      .history-footer { padding-top: 9px; padding-bottom: 9px; }
+      .reader-panel { min-height: calc(100vh - 325px); }
+      .reader-header { padding: 14px; }
+      .reader-tools .icon-button:nth-child(n+3) { display: none; }
+      .language-bar { flex-wrap: wrap; margin-top: 14px; }
+      .reader-model-select { width: min(245px, 42vw); }
+      .mode-switch { margin-left: 0; }
+      .mode-switch { width: min(100%, 224px); }
+      .mode-switch button { padding: 0 8px; white-space: nowrap; }
+      .reader-scroll { padding: 18px 18px 118px 28px; }
+      .reader-status-line { grid-template-columns: 1fr auto; gap: 8px 12px; }
+      .reader-status-line .session-desc { grid-column: 1 / -1; grid-row: 2; }
+      .session-metrics { justify-content: space-between; }
+      .progress-card { right: 14px; bottom: 14px; }
+      .config-grid { display: block; min-height: 0; }
+      .config-panel, .config-grid > .config-panel:first-child, .config-grid > .config-panel:last-child { border-radius: var(--radius-xl); }
+      .config-panel + .config-panel { margin-top: 13px; border: 1px solid var(--line); box-shadow: var(--shadow-card); }
+      .config-right { display: block; }
+      .config-right .save-row { margin-top: 0; }
+      .config-right .config-titlebar { grid-column: auto; }
+      .config-search { margin-bottom: 7px; }
+    }
+  </style>
+</head>
+<body data-theme="light" data-mode="parallel">
+  <div class="app-shell">
+    <aside class="rail" aria-label="主导航">
+      <div class="brand-mark" title="EchoLang"><img src="/assets/ui/echolang-brand.png?v=20260805-v3" alt="EchoLang" /></div>
+      <nav class="rail-nav">
+        <button class="nav-button is-active" data-page="reader" aria-label="文档阅读">
+          <span class="nav-glyph">⌁</span><span class="nav-label">阅读</span>
+        </button>
+        <button class="nav-button" data-page="config" aria-label="模型设置">
+          <span class="nav-glyph">⚙</span><span class="nav-label">设置</span>
+        </button>
+      </nav>
+      <div class="rail-bottom">
+        <button class="theme-button" id="themeToggle" aria-label="切换到深色模式"><span class="theme-emoji" aria-hidden="true">🌙</span></button>
+      </div>
+    </aside>
+
+    <main class="app-main">
+      <header class="topbar">
+        <div class="breadcrumb"><strong id="breadcrumbTitle">文档阅读</strong><span class="breadcrumb-divider">/</span><span id="breadcrumbMeta">EchoLang translation desk</span></div>
+      </header>
+
+      <section class="page is-active" id="page-reader" aria-label="文档阅读">
+        <div class="reader-grid">
+          <aside class="panel history-panel">
+            <div class="panel-heading">
+              <div class="history-heading-row">
+                <h1>文档列表</h1>
+                <label class="button small history-import-button" for="fileInput"><span>＋</span>导入</label>
+                <input class="hidden-file" id="fileInput" type="file" multiple accept=".txt,.md,.html,.htm,.doc,.docx,.pdf,.ppt,.pptx,.xls,.xlsx,.csv,.tsv,.json" />
+              </div>
+            </div>
+            <div class="search-box">
+              <input id="historySearch" type="search" autocomplete="off" placeholder="搜索文档..." aria-label="搜索文档" />
+              <img class="search-icon" src="/assets/ui/search.png" alt="" />
+            </div>
+            <div class="history-list" id="historyList">
+              <div class="history-item is-active" data-doc="The Quiet Work of Attention.md">
+                <span class="file-badge">W</span><span><strong class="history-name">The Quiet Work of Attention.md</strong><span class="history-meta"><span>今天</span><span>English sample</span></span></span><span class="history-check">·</span>
+              </div>
+              <div class="history-item" data-doc="ETF Market Analysis.pdf">
+                <span class="file-badge pdf">PDF</span><span><strong class="history-name">ETF Market Analysis.pdf</strong><span class="history-meta"><span>今天 10:15</span><span>8,231 字</span></span></span><span class="history-check">✓</span>
+              </div>
+              <div class="history-item" data-doc="Q2 Investment Strategy.pptx">
+                <span class="file-badge ppt">PPT</span><span><strong class="history-name">Q2 Investment Strategy.pptx</strong><span class="history-meta"><span>昨天 16:45</span><span>15,678 字</span></span></span><span class="history-check">✓</span>
+              </div>
+              <div class="history-item" data-doc="ESG Research Report.docx">
+                <span class="file-badge">W</span><span><strong class="history-name">ESG Research Report.docx</strong><span class="history-meta"><span>昨天 11:20</span><span>9,876 字</span></span></span><span class="history-check">✓</span>
+              </div>
+              <div class="history-item" data-doc="Global Equities Outlook.pdf">
+                <span class="file-badge pdf">PDF</span><span><strong class="history-name">Global Equities Outlook.pdf</strong><span class="history-meta"><span>5月20日</span><span>11,542 字</span></span></span><span class="history-check">✓</span>
+              </div>
+              <div class="history-item" data-doc="Market Data Summary.xlsx">
+                <span class="file-badge xls">XLSX</span><span><strong class="history-name">Market Data Summary.xlsx</strong><span class="history-meta"><span>5月19日</span><span>6,321 字</span></span></span><span class="history-check">✓</span>
+              </div>
+              <div class="history-item" data-doc="Factor Model Overview.docx">
+                <span class="file-badge">W</span><span><strong class="history-name">Factor Model Overview.docx</strong><span class="history-meta"><span>5月18日</span><span>7,654 字</span></span></span><span class="history-check">✓</span>
+              </div>
+            </div>
+            <div class="empty-state" id="historyEmpty">没有匹配的文档</div>
+            <div class="history-footer"><span id="historySummary"><strong>0</strong> 个文档</span><span class="pager"><button disabled aria-label="上一页">‹</button><button disabled aria-label="下一页">›</button></span></div>
+          </aside>
+
+          <section class="panel reader-panel">
+            <div class="reader-header">
+              <div class="reader-header-top">
+                <div class="document-title"><span class="status-dot"></span><h2 id="documentTitle">The Quiet Work of Attention.md</h2><button class="source-file-button" id="openSourceFile" title="打开原文件" aria-label="打开原文件" disabled><img src="/assets/ui/reader-file.svg" alt="" /></button></div>
+                <div class="reader-tools">
+                  <button class="icon-button" id="downloadTranslation" title="下载译文" aria-label="下载译文"><img src="/assets/ui/reader-download.svg" alt="" /></button>
+                  <button class="icon-button" id="copyTranslation" title="复制内容" aria-label="复制内容"><img src="/assets/ui/reader-copy.svg" alt="" /></button>
+                  <button class="icon-button" id="readingSettings" title="阅读设置" aria-label="阅读设置"><img src="/assets/ui/reader-book.svg" alt="" /></button>
+                  <div class="export-wrap">
+                    <button class="icon-button" id="exportButton" title="导出当前阅读模式" aria-label="导出当前阅读模式"><span>↥</span></button>
+                    <div class="export-menu" id="exportMenu" role="menu">
+                      <button data-export="txt">纯文本 .txt</button>
+                      <button data-export="md">Markdown .md</button>
+                      <button data-export="html">网页 .html</button>
+                      <button data-export="json">段落数据 .json</button>
+                      <button data-export="csv">段落表格 .csv</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="language-bar">
+                <select class="language-select" aria-label="原文语言"><option>英语</option><option>日语</option><option>法语</option></select>
+                <span class="language-arrow">→</span>
+                 <select class="language-select" aria-label="目标语言"><option>中文</option><option>英语</option><option>日语</option></select>
+                  <label class="reader-model-control"><span>模型</span><select class="reader-model-select" id="readerModelSelect" aria-label="翻译模型"></select></label>
+                 <button class="button primary small reader-start-button" id="startTranslation">开始翻译</button>
+                 <div class="mode-switch" id="modeSwitch" role="group" aria-label="阅读模式">
+                   <span class="mode-switch-thumb" aria-hidden="true"></span>
+                   <button type="button" data-mode="source" aria-pressed="false">原文</button><button type="button" class="is-active" data-mode="parallel" aria-pressed="true">中英对照</button><button type="button" data-mode="translation" aria-pressed="false">翻译</button>
+                 </div>
+               </div>
+               <div class="reader-status-line" id="translationStatusLine" hidden>
+                 <div class="session-title"><span class="mini-pulse"></span><span id="sessionStatus">尚未开始翻译</span></div>
+                 <div class="session-desc" id="sessionDesc">导入文档后，程序会逐段请求模型，完成一段就保存一段。</div>
+                 <div class="session-metrics"><span>RPM <b id="rpmValue">—</b></span><span>请求 <b id="requestValue">—</b></span></div>
+               </div>
+             </div>
+             <div class="reader-scroll">
+              <div class="paragraph-list" id="paragraphList">
+                <article class="paragraph-block" data-index="1" data-status="done">
+                  <span class="paragraph-number">01</span>
+                  <p class="source-text">Many index providers construct their indices with a fixed number of constituents, as exemplified by FTSE, S&amp;P, and Deutsche Börse guidelines. This fixed-constituent approach, however, places a heavy burden of trust on economists and investors regarding the index provider’s selection decisions.</p>
+                  <p class="translation-text">许多指数提供商在构建其指数时都采用固定的成分股数量，例如富时（FTSE）、标普（S&amp;P）和德意志交易所的编制指南。然而，这种固定成分数量的方法，将巨大的信任负担推给了经济学家和投资者。</p>
+                </article>
+                <article class="paragraph-block" data-index="2" data-status="done">
+                  <span class="paragraph-number">02</span>
+                  <p class="source-text">When such an index is intended to serve as a proxy for the overall market performance, the subjective choice of which assets to include—and which to exclude—becomes a critical point of contention.</p>
+                  <p class="translation-text">当这样的指数被用作整体市场表现的代理指标时，哪些资产应当纳入、哪些应当排除，这种主观选择便成为争议的核心。</p>
+                </article>
+                <article class="paragraph-block is-processing" data-index="3" data-status="processing">
+                  <span class="paragraph-number">03</span>
+                  <p class="source-text">Investors must essentially rely on the provider’s judgment without a transparent, data-driven rationale for the constituent count, which can undermine confidence in the index’s representativeness.</p>
+                  <p class="translation-text is-processing">投资者实际上只能依赖提供商的判断；如果成分股数量缺乏透明且以数据为依据的解释，指数的代表性就可能受到质疑<span class="stream-caret"></span></p>
+                </article>
+                <article class="paragraph-block is-queued" data-index="4" data-status="queued">
+                  <span class="paragraph-number">04</span>
+                  <p class="source-text">In contrast, the CRSP index family, designed for the US equity market, adopts a fundamentally different philosophy by not imposing any fixed limit on the number of constituents.</p>
+                  <p class="translation-text is-queued"></p>
+                </article>
+                <article class="paragraph-block is-queued" data-index="5" data-status="queued">
+                  <span class="paragraph-number">05</span>
+                  <p class="source-text">Instead, CRSP reviews and adjusts the constituent set daily until the selected members cover a predefined share of the total market capitalization.</p>
+                  <p class="translation-text is-queued"></p>
+                </article>
+              </div>
+            </div>
+            <div class="progress-card" id="progressCard" style="display:none">
+              <div class="progress-top"><div class="progress-ring"><span id="progressPercent">34%</span></div><div class="progress-copy"><strong id="progressTitle">正在翻译段落</strong><span id="progressDetail">第 3 段，共 8 段</span></div></div>
+              <div class="progress-bar"><span id="progressBar"></span></div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="page" id="page-config" aria-label="模型设置">
+        <div class="panel config-grid">
+          <aside class="config-panel config-left">
+            <div class="config-heading"><div class="config-heading-title"><h1>模型供应商配置</h1><div class="config-heading-actions"><button class="button small" id="restoreProviders" hidden>恢复</button><button class="button small add-provider-button" id="addProvider">＋ 自定义</button></div></div></div>
+            <div class="search-box config-search"><input type="search" autocomplete="off" placeholder="搜索模型平台..." aria-label="搜索模型平台" /><img class="search-icon" src="/assets/ui/search.png" alt="" /></div>
+            <div class="provider-list">
+              <div class="provider-item is-active" data-provider="opencode"><span class="provider-logo"><img src="/assets/providers/opencode.png" alt="OpenCode Zen logo" /></span><span><strong>OpenCode Zen</strong></span></div>
+            </div>
+          </aside>
+
+          <section class="config-panel config-center">
+            <div class="config-titlebar"><div><h2>供应商连接配置</h2></div><button class="toggle is-on" id="providerToggle" aria-label="启用供应商"></button></div>
+            <div class="config-section">
+              <div class="section-label"><span>API 密钥</span><button class="button small" id="testKey">检测</button></div>
+              <form class="input-wrap" id="apiKeyForm" onsubmit="return false;"><input class="sr-only" type="text" tabindex="-1" aria-hidden="true" autocomplete="username" value="provider" /><input class="field key-input" id="apiKey" type="password" autocomplete="new-password" value="" placeholder="输入当前供应商的 API Key" /><button class="eye-button" id="eyeButton" type="button" aria-label="显示或隐藏密钥">◉</button></form>
+              <div class="section-label" style="margin-top:28px;"><span>API 地址 <span class="info-dot">?</span></span><button class="button small" id="resetUrl">重置</button></div>
+              <input class="field" id="apiUrl" autocomplete="off" value="https://opencode.ai/zen/v1" />
+              <div class="helper"><span id="apiPreview">预览： https://opencode.ai/zen/v1/chat/completions</span></div>
+              <div class="model-toolbar"><strong>当前模型 <span id="modelCount">1</span></strong><div class="model-actions"><button id="refreshModels">↻ 获取模型列表</button><button id="addModel" aria-label="添加模型">＋</button></div></div>
+              <div class="configured-model-list" id="configuredModelList"></div>
+              <div class="config-links" id="providerLinks">模型列表来自当前供应商接口；点击“获取模型列表”可添加模型。</div>
+            </div>
+          </section>
+
+          <aside class="config-panel config-right">
+            <div class="config-titlebar"><div><h2>该模型的请求设置</h2></div></div>
+             <div class="right-section"><div class="section-label">每分钟最大请求数</div><input class="field number-field" id="rpmInput" autocomplete="off" type="number" min="1" max="999" value="10" /><div class="helper"><span>限制每分钟可配额发送的最大请求数量。</span></div></div>
+             <div class="right-section"><div class="section-label">最大并发请求数</div><input class="field number-field" id="concurrencyInput" autocomplete="off" type="number" min="1" max="20" value="1" /><div class="helper"><span>同时发送到模型的最大段落请求数。</span></div></div>
+             <div class="right-section prompt-section"><div class="section-label"><span>请求提示词 <span class="info-dot">?</span></span><button class="button small" id="copyPromptPreview" type="button">复制完整提示词</button></div><textarea class="text-field" id="promptInput" autocomplete="off">你是一名专业翻译。请准确、自然地将原文翻译为目标语言。保留段落语气、专有名词、数字、单位和标点；不要解释或添加原文没有的信息。</textarea><div class="helper"><span>上面的前置指令会并入真实请求；下方实时显示包含翻译规则与本次段落数据的完整提示词。</span></div><div class="prompt-preview-shell"><div class="prompt-preview-meta"><span>实际发送预览</span><span id="promptPreviewStatus">正在生成…</span></div><pre id="promptPreview" class="prompt-preview">正在生成本次请求的完整提示词…</pre></div></div>
+            <div class="right-section"><div class="section-label">失败最大重试次数</div><input class="field number-field" autocomplete="off" type="number" min="0" max="9" value="3" /><div class="helper"><span>请求失败时的最大重试次数，超过后将返回错误。</span></div></div>
+            <div class="save-row"><span class="save-state" id="saveState">● 已自动保存</span><button class="button primary" id="saveConfig">保存设置</button></div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="history-context-menu" id="historyContextMenu" hidden role="menu">
+    <button type="button" data-history-action="open">打开文档</button>
+    <button type="button" data-history-action="up">上移</button>
+    <button type="button" data-history-action="down">下移</button>
+    <div class="menu-divider"></div>
+    <button type="button" data-history-action="clear">清除翻译</button>
+    <button type="button" data-history-action="delete" class="is-danger">删除记录</button>
+  </div>
+  <div class="history-context-menu" id="providerContextMenu" hidden role="menu">
+    <button type="button" data-provider-action="open">打开配置</button>
+    <button type="button" data-provider-action="up">上移</button>
+    <button type="button" data-provider-action="down">下移</button>
+    <div class="menu-divider"></div>
+    <button type="button" data-provider-action="delete" class="is-danger">删除供应商</button>
+  </div>
+  <div class="history-context-menu" id="modelContextMenu" hidden role="menu">
+    <button type="button" data-model-action="default">设为默认模型</button>
+    <button type="button" data-model-action="remove" class="is-danger">删除模型</button>
+  </div>
+  <div class="custom-provider-modal" id="customProviderModal" hidden>
+    <div class="custom-provider-backdrop" data-close-provider></div>
+    <section class="custom-provider-dialog" role="dialog" aria-modal="true" aria-labelledby="customProviderTitle">
+      <div class="custom-provider-dialog-head"><div><h2 id="customProviderTitle">添加自定义供应商</h2><p>连接任意 OpenAI 兼容接口，配置会写入本地 JSON。</p></div><button class="dialog-close" type="button" data-close-provider aria-label="关闭">×</button></div>
+      <form id="customProviderForm">
+        <label class="form-field"><span>供应商名称</span><input class="field" name="name" autocomplete="off" required maxlength="40" placeholder="例如：公司内部模型" /></label>
+        <label class="form-field"><span>API 地址</span><input class="field" name="baseUrl" autocomplete="off" required inputmode="url" placeholder="https://example.com/v1" /></label>
+        <label class="form-field"><span>默认模型</span><input class="field" name="model" autocomplete="off" required maxlength="120" placeholder="例如：gpt-4o-mini" /></label>
+        <label class="form-field"><span>API 密钥</span><input class="field" name="apiKey" required type="password" autocomplete="new-password" placeholder="只写入 config.local.json" /></label>
+        <p class="dialog-note">密钥不会写入浏览器缓存；保存后由后端读取本地 JSON。添加后可在左侧供应商列表切换。</p>
+        <div class="dialog-actions"><button class="button" type="button" data-close-provider>取消</button><button class="button primary" type="submit">保存供应商</button></div>
+      </form>
+    </section>
+  </div>
+  <div class="model-library-modal" id="modelLibraryModal" hidden>
+    <div class="model-library-backdrop" data-close-model-library></div>
+    <section class="model-library-dialog" role="dialog" aria-modal="true" aria-labelledby="modelLibraryTitle">
+      <div class="model-library-head"><div><h2 id="modelLibraryTitle">添加模型</h2><p id="modelLibraryProvider"></p></div><button class="dialog-close" type="button" data-close-model-library aria-label="关闭">×</button></div>
+      <div class="model-library-search"><img src="/assets/ui/search.png" alt="" /><input id="modelLibrarySearch" type="search" autocomplete="off" placeholder="搜索模型 ID 或名称" aria-label="搜索模型" /></div>
+      <div class="model-library-meta"><span id="modelLibraryCount">0 个模型</span><span>点击加号添加，减号移除</span></div>
+      <div class="model-library-groups" id="modelLibraryGroups"></div>
+    </section>
+  </div>
+
+  <script src="/app/providers.js"></script>
+  <script src="/app/document-store.js"></script>
+  <script>
+    const body = document.body;
+    const toast = document.getElementById('toast');
+    let toastTimer;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('is-visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2600);
+    }
+
+    function setTheme(theme) {
+      body.dataset.theme = theme;
+      const themeToggle = document.getElementById('themeToggle');
+      if (themeToggle) {
+        const icon = themeToggle.querySelector('.theme-emoji') || document.createElement('span');
+        icon.className = 'theme-emoji';
+        icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+        if (!icon.parentElement) themeToggle.appendChild(icon);
+        themeToggle.setAttribute('aria-label', theme === 'dark' ? '切换到浅色模式' : '切换到深色模式');
+      }
+      localStorage.setItem('echolang-theme', theme);
+    }
+    if (!localStorage.getItem('echolang-theme') && localStorage.getItem('zi-theme')) localStorage.setItem('echolang-theme', localStorage.getItem('zi-theme'));
+    setTheme(localStorage.getItem('echolang-theme') || 'light');
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      setTheme(body.dataset.theme === 'dark' ? 'light' : 'dark');
+      showToast(body.dataset.theme === 'dark' ? '已切换到深色模式' : '已切换到浅色模式');
+    });
+
+    const pageTitles = { reader: ['文档阅读', 'EchoLang translation desk'], config: ['模型设置', 'Provider & request configuration'] };
+    document.querySelectorAll('.nav-button').forEach((button) => {
+      button.addEventListener('click', () => {
+        const page = button.dataset.page;
+        document.querySelectorAll('.nav-button').forEach((item) => item.classList.toggle('is-active', item === button));
+        document.querySelectorAll('.page').forEach((section) => section.classList.toggle('is-active', section.id === `page-${page}`));
+        document.getElementById('breadcrumbTitle').textContent = pageTitles[page][0];
+        document.getElementById('breadcrumbMeta').textContent = pageTitles[page][1];
+      });
+    });
+    const initialPage = new URLSearchParams(window.location.search).get('page');
+    if (initialPage === 'config') document.querySelector('[data-page="config"]').click();
+
+    const readingModeButtons = [...document.querySelectorAll('.mode-switch [data-mode]')];
+    function setReadingMode(mode) {
+      body.dataset.mode = mode;
+      readingModeButtons.forEach((button) => {
+        const active = button.dataset.mode === mode;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', String(active));
+      });
+    }
+    readingModeButtons.forEach((button) => button.addEventListener('click', () => setReadingMode(button.dataset.mode)));
+
+    const searchInput = document.getElementById('historySearch');
+    const historyList = document.getElementById('historyList');
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim().toLowerCase();
+      let visible = 0;
+      historyList.querySelectorAll('.history-item').forEach((item) => {
+        const matches = item.dataset.doc.toLowerCase().includes(query);
+        item.hidden = !matches;
+        if (matches) visible += 1;
+      });
+      historyList.classList.toggle('is-empty', visible === 0);
+    });
+
+    document.querySelectorAll('.history-item').forEach((item) => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.history-item').forEach((historyItem) => historyItem.classList.toggle('is-active', historyItem === item));
+        document.getElementById('documentTitle').textContent = item.dataset.doc;
+        showToast(`已打开：${item.dataset.doc}`);
+      });
+    });
+
+    const exportButton = document.getElementById('exportButton');
+    const exportMenu = document.getElementById('exportMenu');
+    exportButton.addEventListener('click', (event) => { event.stopPropagation(); exportMenu.classList.toggle('is-open'); });
+    document.addEventListener('click', () => exportMenu.classList.remove('is-open'));
+    function getStructuredExportRows() {
+      const state = typeof realDocumentState !== 'undefined' ? realDocumentState : null;
+      if (!state?.blocks?.length) return Array.from(document.querySelectorAll('.paragraph-block')).map((block, index) => ({ type: 'paragraph', index: index + 1, source: block.querySelector('.source-text')?.textContent || '', translation: block.querySelector('.translation-text')?.textContent || '' }));
+      const paragraphMap = new Map((state.paragraphs || []).map((paragraph) => [String(paragraph.id), paragraph]));
+      const rows = [];
+      state.blocks.forEach((block, blockIndex) => {
+        if (block.type !== 'table') {
+          const paragraph = paragraphMap.get(String(block.id));
+          rows.push({ type: 'paragraph', index: rows.length + 1, source: paragraph?.source || block.text || '', translation: paragraph?.translation || '' });
+          return;
+        }
+        (block.rows || []).forEach((row, rowIndex) => (row.cells || []).forEach((cell, columnIndex) => {
+          const paragraph = paragraphMap.get(String(cell.id));
+          rows.push({ type: 'table-cell', table: block.id, page: block.page, row: Number(cell.row) || rowIndex + 1, column: Number(cell.column) || columnIndex + 1, source: cell.text || '', translation: paragraph?.translation || '' });
+        }));
+        });
+      return rows;
+    }
+    function getExportMode() {
+      return body.dataset.mode || 'parallel';
+    }
+    function getModeExportRows() {
+      const mode = getExportMode();
+      return getStructuredExportRows().map((row) => {
+        const { source, translation, ...metadata } = row;
+        if (mode === 'source') return { ...metadata, content: source };
+        if (mode === 'translation') return { ...metadata, content: translation };
+        return { ...metadata, source, translation, content: [source, translation].filter(Boolean).join('\n') };
+      });
+    }
+    function getDocumentText() {
+      return getModeExportRows().map((row) => `${row.type === 'table-cell' ? `[${row.table} r${row.row}c${row.column}]` : ''} ${row.content}`.trim()).join('\n\n');
+    }
+    function csvEscape(value) {
+      return `"${String(value).replace(/"/g, '""')}"`;
+    }
+    document.querySelectorAll('[data-export]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const format = button.dataset.export;
+        const title = document.getElementById('documentTitle').textContent.replace(/\.[^.]+$/, '');
+        const bodyText = getDocumentText();
+        let content = bodyText;
+        let type = 'text/plain';
+        if (format === 'md') { content = `# ${title}\n\n${bodyText.replace(/\n/g, '\n\n')}`; type = 'text/markdown'; }
+        if (format === 'html') { content = `<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>${title}</title><body><pre>${bodyText.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</pre></body></html>`; type = 'text/html'; }
+        if (format === 'json') {
+          content = JSON.stringify({ document: title, mode: getExportMode(), rows: getModeExportRows() }, null, 2);
+          type = 'application/json';
+        }
+        if (format === 'csv') {
+          const mode = getExportMode();
+          const rows = getModeExportRows().map((row) => mode === 'parallel'
+            ? [row.type, row.table || '', row.page || '', row.row || '', row.column || '', row.source, row.translation]
+            : [row.type, row.table || '', row.page || '', row.row || '', row.column || '', row.content]);
+          const header = mode === 'parallel' ? ['类型', '表格', '页码', '行', '列', '原文', '译文'] : ['类型', '表格', '页码', '行', '列', mode === 'source' ? '原文' : '翻译'];
+          content = [header, ...rows].map((row) => row.map(csvEscape).join(',')).join('\n');
+          type = 'text/csv';
+        }
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([content], { type }));
+        link.download = `${title}.${format}`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        showToast(`已导出 ${format.toUpperCase()} 文件`);
+      });
+    });
+
+    document.getElementById('fileInput').addEventListener('change', (event) => {
+      const files = Array.from(event.target.files || []);
+      if (!files.length) return;
+      const first = files[0];
+      document.getElementById('documentTitle').textContent = first.name;
+      showToast(files.length > 1 ? `已导入 ${files.length} 个文件，正在排队` : `已导入：${first.name}`);
+      if (/\.(txt|md|html?)$/i.test(first.name)) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const blocks = String(reader.result).split(/\n\s*\n/).map((text) => text.trim()).filter(Boolean).slice(0, 5);
+          if (blocks.length) {
+            document.querySelectorAll('.source-text').forEach((node, index) => { if (blocks[index]) node.textContent = blocks[index]; });
+            updateRequestPreview();
+            showToast(`已读取 ${blocks.length} 个段落`);
+          }
+        };
+        reader.readAsText(first);
+      }
+    });
+
+    function getRequestUnitCount(limit) {
+      return document.querySelectorAll('.source-text').length;
+    }
+    function updateRequestPreview() {
+      const requestCount = getRequestUnitCount();
+      document.getElementById('sessionDesc').textContent = `逐段请求 · ${requestCount} 个请求单元 · 当前模型：DeepSeek V4 Flash Free`;
+    }
+    updateRequestPreview();
+
+    let translationRunning = false;
+    const translatedResults = [
+      '投资者实际上只能依赖提供商的判断；如果成分股数量缺乏透明且以数据为依据的解释，指数的代表性就可能受到质疑。',
+      '相比之下，面向美国股票市场设计的 CRSP 指数系列采取了截然不同的理念：它不对成分股数量设定任何固定上限。',
+      '相反，CRSP 每日审查并调整成分股集合，直到所选成员覆盖预先设定比例的总市值。'
+    ];
+    function updateProgress(done, current) {
+      const percent = Math.min(100, Math.round(done / 8 * 100));
+      document.getElementById('progressPercent').textContent = `${percent}%`;
+      document.getElementById('progressBar').style.width = `${percent}%`;
+      document.getElementById('progressCard').style.setProperty('--progress', `${percent}%`);
+      document.getElementById('progressDetail').textContent = done >= 8 ? '全部 8 段已完成' : `第 ${current} 段，共 8 段`;
+      document.getElementById('requestValue').textContent = `${Math.max(1, current)} / 8`;
+      document.getElementById('rpmValue').textContent = `${Math.min(60, 42 + done * 2)} / 60`;
+    }
+    document.getElementById('startTranslation').addEventListener('click', () => {
+      if (translationRunning) return;
+      translationRunning = true;
+      const button = document.getElementById('startTranslation');
+      button.textContent = '翻译中…';
+      const blocks = Array.from(document.querySelectorAll('.paragraph-block'));
+      const queue = blocks.filter((block) => block.dataset.status !== 'done');
+      let cursor = 0;
+      const processNext = () => {
+        if (cursor >= queue.length) {
+          translationRunning = false;
+          button.textContent = '已完成';
+          document.getElementById('sessionStatus').textContent = '本次翻译已完成';
+          document.getElementById('progressTitle').textContent = '翻译完成';
+          document.getElementById('progressCard').classList.add('is-complete');
+          updateProgress(8, 8);
+          showToast('文档翻译完成');
+          return;
+        }
+        const block = queue[cursor];
+        const index = Number(block.dataset.index);
+        block.dataset.status = 'processing';
+        block.classList.remove('is-queued');
+        block.classList.add('is-processing');
+        const text = block.querySelector('.translation-text');
+        text.className = 'translation-text is-processing';
+        text.innerHTML = '正在生成译文<span class="stream-caret"></span>';
+        document.getElementById('sessionStatus').textContent = `正在翻译第 ${index} 段`;
+        document.getElementById('progressTitle').textContent = '正在翻译段落';
+        updateProgress(Math.max(2, index - 1), index);
+        setTimeout(() => {
+          text.className = 'translation-text';
+          text.textContent = translatedResults[Math.min(cursor, translatedResults.length - 1)];
+          block.dataset.status = 'done';
+          block.classList.remove('is-processing');
+          cursor += 1;
+          updateProgress(Math.min(8, 3 + cursor), index + 1);
+          setTimeout(processNext, 350);
+        }, 1050);
+      };
+      processNext();
+    });
+
+    document.querySelectorAll('.provider-item').forEach((item) => item.addEventListener('click', () => {
+      document.querySelectorAll('.provider-item').forEach((provider) => provider.classList.toggle('is-active', provider === item));
+      if (item.dataset.provider !== 'mimo') showToast('该供应商配置将在下一步接入');
+    }));
+    document.getElementById('providerToggle').addEventListener('click', (event) => event.currentTarget.classList.toggle('is-on'));
+    document.getElementById('eyeButton').addEventListener('click', () => {
+      const input = document.getElementById('apiKey');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    });
+    document.getElementById('testKey').addEventListener('click', () => showToast('密钥检测通过，接口响应正常'));
+    document.getElementById('resetUrl').addEventListener('click', () => { document.getElementById('apiUrl').value = 'https://opencode.ai/zen/v1'; showToast('API 地址已重置'); });
+    document.getElementById('refreshModels').addEventListener('click', (event) => { event.currentTarget.textContent = '⟳ 更新完成'; showToast('已获取最新模型列表'); setTimeout(() => event.currentTarget.textContent = '⟳ 获取模型列表', 1800); });
+    document.getElementById('addModel').addEventListener('click', () => showToast('请先获取模型列表'));
+    document.getElementById('saveConfig').addEventListener('click', () => { document.getElementById('saveState').textContent = '● 设置已保存'; showToast('模型请求设置已保存'); });
+    ['rpmInput', 'promptInput'].forEach((id) => document.getElementById(id).addEventListener('input', () => {
+      document.getElementById('saveState').textContent = '○ 有未保存修改';
+    }));
+    /* Real application runtime: the UI above is kept as the visual shell; this layer binds it to the local API. */
+    (() => {
+      const realSettingsKey = 'zi-settings';
+      const realActiveDocumentKey = 'zi-active-document';
+      const realHistoryKey = 'zi-document-history';
+      const realProviderDirectory = (window.EchoLangProviderCatalog || window.ZiProviderCatalog || []).map((provider) => ({ ...provider, custom: false }));
+      let realDocumentState = { id: 'empty', name: '未导入文档', size: 0, format: '', pageCount: null, structured: false, warning: '', paragraphs: [], blocks: [], tables: [] };
+      let realTranslationAbort = null;
+      let realServerConfigured = false;
+      let realCustomProviders = [];
+      let realSelectedProviderId = 'opencode';
+      let realProviderStatus = new Map();
+      let realHistoryCache = [];
+      let realDocumentCache = new Map();
+      let realStoreReady = false;
+      let realContextItem = null;
+      let realProviderContextItem = null;
+      let realModelContextItem = null;
+      let realModelLibraryProviderId = null;
+      let realModelLibraryItems = [];
+      let realDraggingProviderId = null;
+      let promptPreviewTimer = null;
+      let promptPreviewRequest = 0;
+      let seededBuiltInSample = false;
+      const builtInSampleParagraphs = [
+        { id: 'sample-p1', source: 'There is a kind of attention that does not announce itself. It arrives when we set down the noise of the day and allow one small thing to become clear: the grain of a wooden table, the rhythm of a sentence, the changing light on a wall.', translation: '', status: 'queued', kind: 'paragraph' },
+        { id: 'sample-p2', source: 'When we walk through a familiar street, the mind often travels elsewhere. Yet the street is never exactly the same. A shopkeeper lifts a shutter, a tree loses one more leaf, and a quiet corner gathers the weather of the morning.', translation: '', status: 'queued', kind: 'paragraph' },
+        { id: 'sample-p3', source: 'Modern life rewards quick reaction, but understanding asks for a slower gift. To pay attention is to resist the pressure to move on before a thought has finished arriving. It is a modest act of patience, and patience changes what we are able to see.', translation: '', status: 'queued', kind: 'paragraph' },
+        { id: 'sample-p4', source: 'This does not mean that every detail deserves equal weight. Attention is also a form of judgment: it helps us notice what is essential, what is merely loud, and what has been waiting quietly at the edge of our awareness.', translation: '', status: 'queued', kind: 'paragraph' },
+        { id: 'sample-p5', source: 'The reward is not a life emptied of distraction. It is a life in which distraction no longer has the final word. We become a little more available to our work, to other people, and to the ordinary beauty that keeps appearing without asking to be admired.', translation: '', status: 'queued', kind: 'paragraph' },
+        { id: 'sample-p6', source: 'Perhaps this is why attention feels less like a skill than a way of keeping company with the world. We look closely, and the world gives us back its texture. We listen carefully, and even a familiar voice seems to contain a new room.', translation: '', status: 'queued', kind: 'paragraph' },
+      ];
+
+      function realCreateBuiltInSample() {
+        const now = new Date().toISOString();
+        return realHydrateDocument({
+          id: 'echolang-built-in-attention',
+          name: 'The Quiet Work of Attention.md',
+          format: 'md',
+          savedAt: now,
+          updatedAt: now,
+          paragraphs: builtInSampleParagraphs.map((paragraph) => ({ ...paragraph })),
+          blocks: builtInSampleParagraphs.map((paragraph) => ({ type: 'paragraph', id: paragraph.id, page: null, text: paragraph.source })),
+        });
+      }
+
+      function replaceWithFreshNode(id) {
+        const oldNode = document.getElementById(id);
+        if (!oldNode) return null;
+        const newNode = oldNode.cloneNode(true);
+        oldNode.replaceWith(newNode);
+        return newNode;
+      }
+
+      function realSettings() {
+        try { return JSON.parse(localStorage.getItem(realSettingsKey) || '{}'); } catch { return {}; }
+      }
+      function realSaveSettings(next) {
+        const current = realSettings();
+        localStorage.setItem(realSettingsKey, JSON.stringify({ ...current, ...next }));
+      }
+      function realMigrateSettings() {
+        const current = realSettings();
+        let changed = false;
+        if (current.prompt === '你是一个有用、准确且专业的 AI 助手。请根据用户的问题，使用简洁清晰的语言进行回答。') {
+          current.prompt = '你是一名专业翻译。请准确、自然地将原文翻译为目标语言。保留段落语气、专有名词、数字、单位和标点；不要解释或添加原文没有的信息。';
+          changed = true;
+        }
+        if (Object.prototype.hasOwnProperty.call(current, 'maxChars')) { delete current.maxChars; changed = true; }
+        const providers = current.providers && typeof current.providers === 'object' ? { ...current.providers } : {};
+        Object.entries(providers).forEach(([providerId, value]) => {
+          if (!value || typeof value !== 'object') return;
+          const next = { ...value };
+          if (providerId === 'opencode' && !next.modelListInitialized) {
+            next.models = [];
+            next.defaultModel = '';
+            next.modelListInitialized = true;
+            changed = true;
+          }
+          if (!next.defaultModel && next.model) { next.defaultModel = next.model; changed = true; }
+          if (!Array.isArray(next.models) && next.model) { next.models = [next.model]; changed = true; }
+          if (Array.isArray(next.models)) {
+            const models = [...new Set(next.models.map((model) => String(model || '').trim()).filter(Boolean))];
+            if (JSON.stringify(models) !== JSON.stringify(next.models)) { next.models = models; changed = true; }
+          }
+          if (Object.prototype.hasOwnProperty.call(next, 'model')) { delete next.model; changed = true; }
+          if (providerId === 'opencode' && next.modelListInitialized && Array.isArray(next.models) && !next.models.includes(next.defaultModel)) { next.defaultModel = ''; changed = true; }
+          providers[providerId] = next;
+        });
+        if (JSON.stringify(providers) !== JSON.stringify(current.providers || {})) { current.providers = providers; changed = true; }
+        if (!Array.isArray(current.providerOrder)) { current.providerOrder = realProviderDirectory.map((provider) => provider.id); changed = true; }
+        if (!current.readerModels || typeof current.readerModels !== 'object') { current.readerModels = {}; changed = true; }
+        if (changed) localStorage.setItem(realSettingsKey, JSON.stringify(current));
+        return current;
+      }
+      function realAllProviders() {
+        const all = [
+          ...realProviderDirectory,
+          ...realCustomProviders.map((provider) => ({ ...provider, detail: '自定义 · 本地 JSON', custom: true })),
+        ];
+        const settings = realSettings();
+        const hidden = new Set(Array.isArray(settings.hiddenProviders) ? settings.hiddenProviders : []);
+        const byId = new Map(all.map((provider) => [provider.id, provider]));
+        const order = Array.isArray(settings.providerOrder) ? settings.providerOrder : [];
+        return [...order.map((id) => byId.get(id)).filter(Boolean), ...all.filter((provider) => !order.includes(provider.id))]
+          .filter((provider) => !hidden.has(provider.id));
+      }
+      function realProviderById(id) {
+        return realAllProviders().find((provider) => provider.id === id) || realAllProviders()[0];
+      }
+      function realProviderSettings(providerId) {
+        const settings = realSettings();
+        return settings.providers && typeof settings.providers === 'object' ? (settings.providers[providerId] || {}) : {};
+      }
+      function realSaveProviderSettings(providerId, next) {
+        const settings = realSettings();
+        const providers = settings.providers && typeof settings.providers === 'object' ? settings.providers : {};
+        realSaveSettings({ providers: { ...providers, [providerId]: { ...(providers[providerId] || {}), ...next } } });
+      }
+      function realProviderBaseUrl(provider = realProviderById(realSelectedProviderId)) {
+        const saved = realProviderSettings(provider?.id);
+        return String(saved.baseUrl || provider?.baseUrl || '').replace(/\/$/, '');
+      }
+      function realProviderDefaultModel(provider = realProviderById(realSelectedProviderId)) {
+        const saved = realProviderSettings(provider?.id);
+        const models = realProviderModels(provider);
+        if (saved.modelListInitialized && Array.isArray(saved.models)) return models.includes(String(saved.defaultModel || '')) ? String(saved.defaultModel) : (models[0] || '');
+        return String(saved.defaultModel || saved.model || provider?.defaultModel || provider?.model || models[0] || '').trim();
+      }
+      function realProviderModels(provider = realProviderById(realSelectedProviderId)) {
+        const saved = realProviderSettings(provider?.id);
+        const models = saved.modelListInitialized && Array.isArray(saved.models)
+          ? saved.models
+          : Array.isArray(saved.models) && saved.models.length ? saved.models : provider?.models || (provider?.model ? [provider.model] : []);
+        return [...new Set((Array.isArray(models) ? models : []).map((model) => String(model || '').trim()).filter(Boolean))];
+      }
+      function realProviderLibraryModels(provider = realProviderById(realSelectedProviderId)) {
+        const saved = realProviderSettings(provider?.id);
+        return [...new Set([
+          ...(Array.isArray(saved.fetchedModels) ? saved.fetchedModels : []),
+          ...realProviderModels(provider),
+          ...(Array.isArray(provider?.models) ? provider.models : []),
+          provider?.defaultModel,
+        ].map((model) => String(model || '').trim()).filter(Boolean))];
+      }
+      function realReaderModel(provider = realProviderById(realSelectedProviderId)) {
+        const settings = realSettings();
+        const selected = settings.readerModels && typeof settings.readerModels === 'object' ? settings.readerModels[provider?.id] : '';
+        const models = realProviderModels(provider);
+        const defaultModel = realProviderDefaultModel(provider);
+        return models.includes(String(selected || '')) ? String(selected) : models.includes(defaultModel) ? defaultModel : models[0] || '';
+      }
+      function realProviderLogo(provider, size = '') {
+        const logo = document.createElement('span');
+        logo.className = `provider-logo${size ? ` ${size}` : ''}`;
+        const image = document.createElement('img');
+        image.src = provider?.custom ? '/assets/ui/provider-custom.png' : `/assets/providers/${provider?.id || 'opencode'}.png`;
+        image.alt = `${provider?.name || '供应商'} logo`;
+        image.loading = 'lazy';
+        image.onerror = () => { image.src = '/assets/ui/provider-custom.png'; };
+        logo.appendChild(image);
+        return logo;
+      }
+      function realAnimateProviderReorder(list, previousPositions) {
+        if (!previousPositions.size || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+        list.querySelectorAll('.provider-item').forEach((row) => {
+          const previous = previousPositions.get(row.dataset.provider);
+          if (!previous) return;
+          const current = row.getBoundingClientRect();
+          const offset = previous.top - current.top;
+          if (Math.abs(offset) < 1) return;
+          row.animate([
+            { transform: `translateY(${offset}px)` },
+            { transform: 'translateY(0)' },
+          ], { duration: 340, easing: 'cubic-bezier(.22, .75, .23, 1)' });
+        });
+      }
+      function realRenderProviderDirectory() {
+        const list = document.querySelector('.provider-list');
+        if (!list) return;
+        const previousPositions = new Map([...list.querySelectorAll('.provider-item')].map((row) => [row.dataset.provider, row.getBoundingClientRect()]));
+        list.innerHTML = '';
+        const providers = realAllProviders();
+        providers.forEach((provider) => {
+          const row = document.createElement('div');
+          row.className = `provider-item ${provider.id === realSelectedProviderId ? 'is-active' : ''}`;
+          row.dataset.provider = provider.id;
+          row.dataset.custom = String(Boolean(provider.custom));
+          row.draggable = true;
+          const logo = realProviderLogo(provider);
+          const copy = document.createElement('span');
+          const title = document.createElement('strong');
+          title.textContent = provider.name;
+          copy.append(title);
+          row.append(logo, copy);
+          row.addEventListener('click', () => realSelectProvider(provider.id));
+          row.addEventListener('contextmenu', (event) => realOpenProviderContextMenu(event, provider));
+          row.addEventListener('dragstart', (event) => { realDraggingProviderId = provider.id; row.classList.add('is-dragging'); event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', provider.id); });
+          row.addEventListener('dragover', (event) => { event.preventDefault(); if (realDraggingProviderId && realDraggingProviderId !== provider.id) row.classList.add('is-drop-target'); });
+          row.addEventListener('dragleave', () => row.classList.remove('is-drop-target'));
+          row.addEventListener('drop', (event) => { event.preventDefault(); row.classList.remove('is-drop-target'); realReorderProviders(realDraggingProviderId || event.dataTransfer.getData('text/plain'), provider.id); });
+          row.addEventListener('dragend', () => { realDraggingProviderId = null; row.classList.remove('is-dragging'); list.querySelectorAll('.is-drop-target').forEach((node) => node.classList.remove('is-drop-target')); });
+          list.appendChild(row);
+        });
+        if (!providers.length) {
+          const empty = document.createElement('div');
+          empty.className = 'configured-model-empty';
+          empty.textContent = '没有可显示的供应商';
+          list.appendChild(empty);
+        }
+        window.requestAnimationFrame(() => realAnimateProviderReorder(list, previousPositions));
+        const restore = document.getElementById('restoreProviders');
+        if (restore) restore.hidden = !((realSettings().hiddenProviders || []).length);
+        const search = document.querySelector('.config-search input');
+        if (search) search.oninput = () => {
+          const query = search.value.trim().toLowerCase();
+          list.querySelectorAll('.provider-item').forEach((item) => { item.hidden = !item.textContent.toLowerCase().includes(query); });
+        };
+      }
+      function realLoadProviderModelOptions(provider) {
+        const select = document.getElementById('readerModelSelect');
+        if (!select) return;
+        const models = realProviderModels(provider);
+        select.innerHTML = '';
+        models.forEach((model) => {
+          const option = document.createElement('option');
+          option.value = model;
+          option.textContent = model;
+          select.appendChild(option);
+        });
+        const selected = realReaderModel(provider);
+        if (selected) select.value = selected;
+        if (!models.length) {
+          const option = document.createElement('option');
+          option.value = '';
+          option.textContent = '请先添加模型';
+          select.appendChild(option);
+        }
+        select.disabled = !models.length;
+      }
+      function realProviderCanRequest() {
+        const provider = realProviderById(realSelectedProviderId);
+        const status = realProviderStatus.get(provider?.id);
+        return Boolean(provider && provider.requestStyle !== 'unsupported' && (provider.custom ? status?.configured : status?.configured || (provider.id === 'opencode' && realServerConfigured)));
+      }
+      function realRenderConfiguredModels(provider = realProviderById(realSelectedProviderId)) {
+        const list = document.getElementById('configuredModelList');
+        const count = document.getElementById('modelCount');
+        if (!list) return;
+        const models = realProviderModels(provider);
+        const defaultModel = realProviderDefaultModel(provider);
+        const readerModel = realReaderModel(provider);
+        list.innerHTML = '';
+        if (count) count.textContent = models.length;
+        if (!models.length) {
+          const empty = document.createElement('div');
+          empty.className = 'configured-model-empty';
+          empty.textContent = '还没有模型，请点击“获取模型列表”或“＋”添加';
+          list.appendChild(empty);
+          return;
+        }
+        models.forEach((model) => {
+          const row = document.createElement('div');
+          row.className = `configured-model-row${model === readerModel ? ' is-reader-selected' : ''}`;
+          row.dataset.model = model;
+          row.append(realProviderLogo(provider));
+          const name = document.createElement('div');
+          name.className = 'configured-model-name';
+          name.textContent = model;
+          const note = document.createElement('span');
+          note.className = 'configured-model-note';
+          note.textContent = model === readerModel ? '当前翻译模型' : '右键设置默认模型';
+          name.appendChild(note);
+          row.appendChild(name);
+          if (model === defaultModel) {
+            const badge = document.createElement('span');
+            badge.className = 'model-default-badge';
+            badge.textContent = '默认';
+            row.appendChild(badge);
+          } else row.appendChild(document.createElement('span'));
+          row.addEventListener('click', () => realSelectReaderModel(model));
+          row.addEventListener('contextmenu', (event) => realOpenModelContextMenu(event, provider, model));
+          list.appendChild(row);
+        });
+      }
+      function realSelectProvider(providerId, options = {}) {
+        const provider = realProviderById(providerId);
+        if (!provider) return;
+        realSelectedProviderId = provider.id;
+        realSaveSettings({ providerId: provider.id });
+        document.querySelectorAll('.provider-item').forEach((item) => item.classList.toggle('is-active', item.dataset.provider === provider.id));
+        const urlInput = document.getElementById('apiUrl');
+        if (urlInput) urlInput.value = realProviderBaseUrl(provider);
+        const preview = document.getElementById('apiPreview');
+        if (preview) preview.textContent = provider.endpoint || provider.requestStyle === 'openai' ? `预览： ${realProviderBaseUrl(provider)}${provider.endpoint || '/chat/completions'}` : '该供应商没有统一的公开请求路径，请填写自定义接口';
+        realLoadProviderModelOptions(provider);
+        realRenderConfiguredModels(provider);
+        const keyInput = document.getElementById('apiKey');
+        const configured = realProviderStatus.get(provider.id)?.configured;
+        if (keyInput) { keyInput.value = ''; keyInput.readOnly = false; keyInput.placeholder = configured ? '已保存到 config.local.json（不展示密钥）' : `输入 ${provider.name} 的 API Key`; }
+        const links = document.getElementById('providerLinks');
+        if (links) links.textContent = provider.requestStyle === 'unsupported' ? `该服务没有可直接复用的通用 Chat Completions 接口；${provider.docs ? '请查看官方文档后使用“＋ 自定义”。' : '请使用“＋ 自定义”。'}` : 'API 地址和默认模型已按供应商独立保存；点击“获取模型列表”可刷新。';
+        realUpdateSession();
+        realSchedulePromptPreview();
+        if (!options.silent) showToast(provider.requestStyle === 'unsupported' ? `${provider.name} 需要自定义接口` : `已切换到 ${provider.name}`);
+      }
+      async function realLoadProviders() {
+        try {
+          const response = await fetch('/api/providers');
+          const data = await response.json();
+          if (response.ok) {
+            realProviderStatus = new Map((data.providers || []).map((provider) => [provider.id, provider]));
+            realCustomProviders = (data.providers || []).filter((provider) => provider.custom);
+          }
+        } catch { /* The built-in directory remains usable when the server is offline. */ }
+        realSelectedProviderId = realSettings().providerId || 'opencode';
+        if (!realProviderById(realSelectedProviderId)) realSelectedProviderId = 'opencode';
+        realRenderProviderDirectory();
+        realSelectProvider(realSelectedProviderId, { silent: true });
+      }
+      function realSelectReaderModel(model) {
+        const provider = realProviderById(realSelectedProviderId);
+        if (!provider || !realProviderModels(provider).includes(model)) return;
+        const settings = realSettings();
+        realSaveSettings({ readerModels: { ...(settings.readerModels || {}), [provider.id]: model } });
+        const select = document.getElementById('readerModelSelect');
+        if (select) select.value = model;
+        realRenderConfiguredModels(provider);
+        realUpdateSession();
+      }
+      function realSaveProviderOrder(ids) {
+        realSaveSettings({ providerOrder: [...new Set(ids)] });
+      }
+      function realReorderProviders(sourceId, targetId) {
+        if (!sourceId || sourceId === targetId) return;
+        const ids = realAllProviders().map((provider) => provider.id);
+        const from = ids.indexOf(sourceId);
+        const to = ids.indexOf(targetId);
+        if (from < 0 || to < 0) return;
+        ids.splice(from, 1);
+        ids.splice(ids.indexOf(targetId), 0, sourceId);
+        realSaveProviderOrder(ids);
+        realRenderProviderDirectory();
+      }
+      function realMoveProvider(providerId, offset) {
+        const ids = realAllProviders().map((provider) => provider.id);
+        const index = ids.indexOf(providerId);
+        const target = index + offset;
+        if (index < 0 || target < 0 || target >= ids.length) return showToast('已经在当前列表边界');
+        [ids[index], ids[target]] = [ids[target], ids[index]];
+        realSaveProviderOrder(ids);
+        realRenderProviderDirectory();
+      }
+      async function realDeleteProvider(provider) {
+        if (!provider) return;
+        if (!window.confirm(`确定删除“${provider.name}”吗？`)) return;
+        if (provider.custom) {
+          const response = await fetch(`/api/providers/${encodeURIComponent(provider.id)}`, { method: 'DELETE' });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(data.detail || data.error || '删除失败');
+          realCustomProviders = realCustomProviders.filter((item) => item.id !== provider.id);
+          realProviderStatus.delete(provider.id);
+        } else {
+          const settings = realSettings();
+          realSaveSettings({ hiddenProviders: [...new Set([...(settings.hiddenProviders || []), provider.id])] });
+        }
+        const settings = realSettings();
+        const providers = { ...(settings.providers || {}) };
+        const readerModels = { ...(settings.readerModels || {}) };
+        delete providers[provider.id];
+        delete readerModels[provider.id];
+        realSaveSettings({ providers, readerModels, providerOrder: (settings.providerOrder || []).filter((id) => id !== provider.id) });
+        const remaining = realAllProviders();
+        if (!remaining.length) {
+          realSaveSettings({ hiddenProviders: [] });
+          return realLoadProviders();
+        }
+        realRenderProviderDirectory();
+        if (realSelectedProviderId === provider.id) realSelectProvider(remaining[0].id, { silent: true });
+        showToast(`已删除供应商：${provider.name}`);
+      }
+      function realCloseProviderContextMenu() {
+        const menu = document.getElementById('providerContextMenu');
+        if (menu) menu.hidden = true;
+        realProviderContextItem = null;
+      }
+      function realOpenProviderContextMenu(event, provider) {
+        event.preventDefault();
+        realCloseModelContextMenu();
+        const menu = document.getElementById('providerContextMenu');
+        if (!menu) return;
+        realProviderContextItem = provider;
+        menu.hidden = false;
+        menu.style.left = `${Math.min(event.clientX, window.innerWidth - 185)}px`;
+        menu.style.top = `${Math.min(event.clientY, window.innerHeight - 175)}px`;
+      }
+      function realCloseModelContextMenu() {
+        const menu = document.getElementById('modelContextMenu');
+        if (menu) menu.hidden = true;
+        realModelContextItem = null;
+      }
+      function realOpenModelContextMenu(event, provider, model) {
+        event.preventDefault();
+        realCloseProviderContextMenu();
+        const menu = document.getElementById('modelContextMenu');
+        if (!menu) return;
+        realModelContextItem = { provider, model };
+        menu.hidden = false;
+        menu.style.left = `${Math.min(event.clientX, window.innerWidth - 185)}px`;
+        menu.style.top = `${Math.min(event.clientY, window.innerHeight - 100)}px`;
+      }
+      function realSetDefaultModel(provider, model) {
+        if (!provider || !realProviderModels(provider).includes(model)) return;
+        realSaveProviderSettings(provider.id, { defaultModel: model });
+        realRenderConfiguredModels(provider);
+        realLoadProviderModelOptions(provider);
+        realUpdateSession();
+        showToast(`已将 ${model} 设为默认模型`);
+      }
+      function realRemoveProviderModel(provider, model) {
+        const models = realProviderModels(provider);
+        const nextModels = models.filter((item) => item !== model);
+        const currentDefault = realProviderDefaultModel(provider);
+        const nextDefault = currentDefault === model || !nextModels.includes(currentDefault) ? nextModels[0] : currentDefault;
+        realSaveProviderSettings(provider.id, { models: nextModels, defaultModel: nextDefault || '', modelListInitialized: true });
+        const settings = realSettings();
+        if (settings.readerModels?.[provider.id] === model) {
+          const readerModels = { ...(settings.readerModels || {}), [provider.id]: nextDefault };
+          realSaveSettings({ readerModels });
+        }
+        realLoadProviderModelOptions(provider);
+        realRenderConfiguredModels(provider);
+        realUpdateSession();
+        showToast(`已移除模型：${model}`);
+      }
+      function realGroupModelId(model) {
+        const id = String(model || '').trim();
+        if (!id) return '其他模型';
+        if (id.includes('/')) return id.split('/')[0].toLowerCase();
+        const match = id.match(/^(deepseek|gpt|claude|gemini|qwen|mimo|kimi|llama|grok|mistral|ernie|minimax|yi|o\d+)/i);
+        return match ? match[1].toLowerCase() : '其他模型';
+      }
+      function realModelGroupLabel(group) {
+        if (group === '其他模型') return group;
+        return group.replace(/(^|[-_])([a-z])/g, (_, prefix, letter) => `${prefix}${letter.toUpperCase()}`);
+      }
+      function realRenderModelLibrary() {
+        const container = document.getElementById('modelLibraryGroups');
+        const count = document.getElementById('modelLibraryCount');
+        const provider = realProviderById(realModelLibraryProviderId);
+        if (!container || !provider) return;
+        const query = (document.getElementById('modelLibrarySearch')?.value || '').trim().toLowerCase();
+        const models = realModelLibraryItems.filter((model) => !query || model.toLowerCase().includes(query));
+        if (count) count.textContent = `${models.length} 个模型`;
+        container.innerHTML = '';
+        const groups = new Map();
+        models.forEach((model) => { const group = realGroupModelId(model); if (!groups.has(group)) groups.set(group, []); groups.get(group).push(model); });
+        [...groups.entries()].sort(([a], [b]) => a.localeCompare(b)).forEach(([group, groupModels]) => {
+          const section = document.createElement('section');
+          section.className = 'model-library-group';
+          const head = document.createElement('div');
+          head.className = 'model-library-group-head';
+          const groupName = document.createElement('span');
+          groupName.textContent = realModelGroupLabel(group);
+          const groupCount = document.createElement('span');
+          groupCount.textContent = String(groupModels.length);
+          head.append(groupName, groupCount);
+          section.appendChild(head);
+          groupModels.forEach((model) => {
+            const row = document.createElement('div');
+            row.className = 'model-library-row';
+            row.appendChild(realProviderLogo(provider));
+            const id = document.createElement('code');
+            id.textContent = model;
+            row.appendChild(id);
+            const configured = realProviderModels(provider).includes(model);
+            const action = document.createElement('button');
+            action.type = 'button';
+            action.className = `model-library-action${configured ? ' is-remove' : ''}`;
+            action.textContent = configured ? '−' : '+';
+            action.title = configured ? '移除模型' : '添加模型';
+            action.addEventListener('click', () => {
+              const current = realProviderModels(provider);
+              if (configured) realRemoveProviderModel(provider, model);
+              else {
+                const currentDefault = realProviderDefaultModel(provider);
+                 realSaveProviderSettings(provider.id, { models: [...current, model], defaultModel: current.includes(currentDefault) ? currentDefault : model, modelListInitialized: true });
+                realLoadProviderModelOptions(provider);
+                realRenderConfiguredModels(provider);
+                showToast(`已添加模型：${model}`);
+              }
+              realRenderModelLibrary();
+            });
+            row.appendChild(action);
+            section.appendChild(row);
+          });
+          container.appendChild(section);
+        });
+        if (!models.length) {
+          const empty = document.createElement('div');
+          empty.className = 'configured-model-empty';
+          empty.textContent = '没有匹配的模型';
+          container.appendChild(empty);
+        }
+      }
+      function realOpenModelLibrary(models) {
+        const provider = realProviderById(realSelectedProviderId);
+        if (!provider) return;
+        realModelLibraryProviderId = provider.id;
+        realModelLibraryItems = [...new Set((models?.length ? models : realProviderLibraryModels(provider)).map((model) => String(model || '').trim()).filter(Boolean))];
+        const title = document.getElementById('modelLibraryProvider');
+        if (title) title.textContent = provider.name;
+        const search = document.getElementById('modelLibrarySearch');
+        if (search) search.value = '';
+        document.getElementById('modelLibraryModal').hidden = false;
+        realRenderModelLibrary();
+        search?.focus();
+      }
+      async function realRefreshModels() {
+        if (!realProviderCanRequest()) return showToast('请先保存当前供应商的 API Key');
+        try {
+          const response = await fetch('/api/models', { headers: realHeaders() });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.detail || data.error);
+          const models = (Array.isArray(data.data) ? data.data : []).map((model) => typeof model === 'string' ? model : model.id).filter(Boolean);
+          realSaveProviderSettings(realSelectedProviderId, { fetchedModels: models });
+          realOpenModelLibrary([...new Set([...models, ...realProviderLibraryModels(realProviderById(realSelectedProviderId))])]);
+          showToast(`已获取 ${models.length} 个模型，请在弹窗中选择`);
+        } catch (error) { showToast(`获取模型失败：${error.message}`); }
+      }
+      function realCloseModelLibrary() {
+        const modal = document.getElementById('modelLibraryModal');
+        if (modal) modal.hidden = true;
+      }
+      function realBaseUrl() {
+        const provider = realProviderById(realSelectedProviderId);
+        return (document.getElementById('apiUrl')?.value.trim() || realProviderBaseUrl(provider)).replace(/\/$/, '');
+      }
+      function realModel() {
+        const provider = realProviderById(realSelectedProviderId);
+        return realReaderModel(provider);
+      }
+      function realHeaders() {
+        return { 'content-type': 'application/json', 'x-provider-base-url': realBaseUrl(), 'x-provider-id': realSelectedProviderId };
+      }
+      function realPromptPreviewUnits() {
+        const paragraph = realDocumentState.paragraphs.find((item) => String(item.source || '').trim());
+        return [{ id: String(paragraph?.id || 'p-1'), text: String(paragraph?.source || '{{此处替换为待翻译段落}}') }];
+      }
+      async function realUpdatePromptPreview() {
+        const preview = document.getElementById('promptPreview');
+        if (!preview) return;
+        const status = document.getElementById('promptPreviewStatus');
+        const requestId = ++promptPreviewRequest;
+        if (status) status.textContent = '生成中…';
+        try {
+          const response = await fetch('/api/prompt-preview', {
+            method: 'POST',
+            headers: realHeaders(),
+            body: JSON.stringify({
+              paragraphs: realPromptPreviewUnits(),
+              sourceLanguage: document.querySelector('.language-select')?.value || '英语',
+              targetLanguage: document.querySelectorAll('.language-select')[1]?.value || '中文',
+              systemPrompt: document.getElementById('promptInput')?.value || '',
+            }),
+          });
+          const data = await response.json();
+          if (requestId !== promptPreviewRequest) return;
+          if (!response.ok) throw new Error(data.detail || data.error || `HTTP ${response.status}`);
+          preview.textContent = data.providerStyle === 'anthropic'
+            ? `[system]\n${data.systemPrompt}\n\n[messages[0].content]\n${data.userPrompt}`
+            : `[messages[0].content]\n${data.userPrompt}`;
+          if (status) status.textContent = `${data.provider || '当前供应商'} · 实际请求格式`;
+        } catch (error) {
+          if (requestId !== promptPreviewRequest) return;
+          preview.textContent = `提示词预览失败：${error.message}`;
+          if (status) status.textContent = '预览不可用';
+        }
+      }
+      function realSchedulePromptPreview() {
+        window.clearTimeout(promptPreviewTimer);
+        promptPreviewTimer = window.setTimeout(() => realUpdatePromptPreview(), 140);
+      }
+      function realUuid() {
+        return globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      }
+      function realNormalizeParagraph(item, index) {
+        const source = String(item?.source ?? item?.text ?? item ?? '').trim();
+        const translation = String(item?.translation ?? '').trim();
+        return {
+          ...(item && typeof item === 'object' ? item : {}),
+          id: String(item?.id || `p-${index + 1}`),
+          source,
+          translation,
+          status: item?.status || (translation ? 'done' : 'queued'),
+          page: item?.page ?? null,
+          kind: item?.kind || 'paragraph',
+          tableId: item?.tableId || null,
+        };
+      }
+      function realNormalizeBlocks(rawBlocks, paragraphs) {
+        const paragraphMap = new Map(paragraphs.map((paragraph) => [String(paragraph.id), paragraph]));
+        if (!Array.isArray(rawBlocks) || !rawBlocks.length) return paragraphs.map((paragraph) => ({ type: 'paragraph', id: paragraph.id, page: paragraph.page, text: paragraph.source }));
+        return rawBlocks.map((block, blockIndex) => {
+          if (block?.type !== 'table') {
+            const paragraph = paragraphMap.get(String(block?.id));
+            return { type: 'paragraph', id: String(block?.id || paragraph?.id || `p-${blockIndex + 1}`), page: block?.page ?? paragraph?.page ?? null, text: String(block?.text ?? paragraph?.source ?? '') };
+          }
+          const tableId = String(block.id || `table-${blockIndex + 1}`);
+          const rows = Array.isArray(block.rows) ? block.rows : [];
+          return {
+            ...block,
+            type: 'table',
+            id: tableId,
+            page: block.page ?? null,
+            columns: Math.max(1, Number(block.columns) || rows.reduce((max, row) => Math.max(max, Array.isArray(row?.cells) ? row.cells.length : 0), 0)),
+            rows: rows.map((row, rowIndex) => ({
+              ...row,
+              header: Boolean(row?.header) || rowIndex === 0,
+              cells: (Array.isArray(row?.cells) ? row.cells : []).map((cell, columnIndex) => ({
+                ...cell,
+                id: String(cell?.id || `${tableId}-r${rowIndex + 1}-c${columnIndex + 1}`),
+                text: String(cell?.text ?? ''),
+                row: Number(cell?.row) || rowIndex + 1,
+                column: Number(cell?.column) || columnIndex + 1,
+              })),
+            })),
+          };
+        }).filter((block) => block.type === 'table' ? block.rows.length : block.text.trim());
+      }
+      function realHydrateDocument(input) {
+        const rawParagraphs = Array.isArray(input?.paragraphs) ? input.paragraphs : [];
+        const paragraphs = rawParagraphs.map(realNormalizeParagraph).filter((paragraph) => paragraph.source);
+        const blocks = realNormalizeBlocks(input?.blocks, paragraphs);
+        return {
+          ...input,
+          id: String(input?.id || realUuid()),
+          name: String(input?.name || '未导入文档'),
+          size: Number(input?.size) || paragraphs.reduce((sum, paragraph) => sum + paragraph.source.length, 0),
+          format: String(input?.format || ''),
+          pageCount: input?.pageCount ?? null,
+          structured: Boolean(input?.structured),
+          warning: String(input?.warning || ''),
+          paragraphs,
+          blocks,
+          tables: blocks.filter((block) => block.type === 'table'),
+        };
+      }
+      function realRequestUnitCount(paragraphs) {
+        return paragraphs.filter((paragraph) => String(paragraph.source || '').trim()).length;
+      }
+      function realUpdateSession(copy) {
+        const model = realModel();
+        const modelLabel = model || '未选择模型';
+        const maxConcurrency = Math.max(1, Number(document.getElementById('concurrencyInput')?.value) || 1);
+        const tableCount = Array.isArray(realDocumentState.tables) ? realDocumentState.tables.length : 0;
+        const structure = tableCount ? ` · ${tableCount} 个表格${realDocumentState.pageCount ? ` · ${realDocumentState.pageCount} 页` : ''}` : '';
+        document.getElementById('sessionDesc').textContent = copy || (realDocumentState.paragraphs.length
+          ? `逐段请求 · ${realRequestUnitCount(realDocumentState.paragraphs)} 个请求单元${structure} · 并发上限 ${maxConcurrency} · 当前模型：${modelLabel}`
+          : '导入文档后，程序会逐段请求模型，完成一段就保存一段');
+        document.querySelectorAll('[data-model-name]').forEach((node) => { node.textContent = modelLabel; });
+      }
+      function realSetProgress(percent, current, total, rpmUsed, rpmLimit) {
+        const safePercent = Math.max(0, Math.min(100, Number(percent) || 0));
+        document.getElementById('progressPercent').textContent = `${safePercent}%`;
+        document.getElementById('progressBar').style.width = `${safePercent}%`;
+        document.getElementById('progressCard').style.setProperty('--progress', `${safePercent}%`);
+        document.getElementById('progressDetail').textContent = total ? `第 ${current || 0} 个请求，共 ${total} 个请求` : '等待翻译任务';
+        document.getElementById('requestValue').textContent = total ? `${current || 0} / ${total}` : '—';
+        document.getElementById('rpmValue').textContent = rpmLimit ? `${rpmUsed || 0} / ${rpmLimit}` : '—';
+      }
+      function realRenderParagraphs() {
+        const list = document.getElementById('paragraphList');
+        list.innerHTML = '';
+        const blocks = Array.isArray(realDocumentState.blocks) && realDocumentState.blocks.length
+          ? realDocumentState.blocks
+          : realDocumentState.paragraphs.map((paragraph) => ({ type: 'paragraph', id: paragraph.id, page: paragraph.page, text: paragraph.source }));
+        if (!realDocumentState.paragraphs.length || !blocks.length) {
+          const empty = document.createElement('div');
+          empty.className = 'empty-state';
+          empty.style.display = 'block';
+          empty.style.padding = '88px 20px';
+          empty.innerHTML = '<strong style="display:block;color:var(--ink-strong);font-size:15px;margin-bottom:8px;">还没有文档</strong><span>点击文档列表旁的“导入”，开始使用真实翻译流程。</span>';
+          list.appendChild(empty);
+          return;
+        }
+        const paragraphMap = new Map(realDocumentState.paragraphs.map((paragraph) => [String(paragraph.id), paragraph]));
+        let paragraphNumber = 0;
+        const appendTextPair = (parent, rawItem, sourceText, sourceClass, translationClass) => {
+          const item = rawItem || { source: sourceText, translation: '', status: 'queued' };
+          const status = item.status || (item.translation ? 'done' : 'queued');
+          const source = document.createElement('div');
+          source.className = sourceClass;
+          source.textContent = String(item.source || sourceText || '');
+          const translation = document.createElement('div');
+          translation.className = `${translationClass}${status === 'processing' ? ' is-processing' : ''}`;
+          if (status === 'processing') translation.innerHTML = '正在生成译文<span class="stream-caret"></span>';
+          else translation.textContent = item.translation || '';
+          parent.append(source, translation);
+          return status;
+        };
+        const appendCell = (cell, parent, header = false) => {
+          const item = paragraphMap.get(String(cell.id)) || { source: cell.text, translation: '', status: 'queued' };
+          const cellWrap = document.createElement('div');
+          cellWrap.className = 'pdf-table-cell';
+          cellWrap.dataset.cellId = String(cell.id);
+          cellWrap.dataset.status = item.status || 'queued';
+          appendTextPair(cellWrap, item, cell.text, 'pdf-cell-source', 'pdf-cell-translation');
+          parent.appendChild(cellWrap);
+          return header ? cellWrap : cellWrap;
+        };
+        blocks.forEach((sourceBlock, blockIndex) => {
+          if (sourceBlock.type !== 'table') {
+            const paragraph = paragraphMap.get(String(sourceBlock.id)) || realNormalizeParagraph({ id: sourceBlock.id, source: sourceBlock.text, page: sourceBlock.page }, blockIndex);
+            paragraphNumber += 1;
+            const block = document.createElement('article');
+            const status = paragraph.status || 'queued';
+            block.className = `paragraph-block ${status === 'processing' ? 'is-processing' : ''}`;
+            block.dataset.index = String(paragraphNumber);
+            block.dataset.status = status;
+            const number = document.createElement('span');
+            number.className = 'paragraph-number';
+            number.textContent = String(paragraphNumber).padStart(2, '0');
+            const content = document.createElement('div');
+            appendTextPair(content, paragraph, paragraph.source, 'source-text', 'translation-text');
+            block.append(number, content);
+            list.appendChild(block);
+            return;
+          }
+          const section = document.createElement('section');
+          section.className = 'document-table-block';
+          section.dataset.tableId = String(sourceBlock.id);
+          const head = document.createElement('div');
+          head.className = 'table-block-head';
+          const title = document.createElement('div');
+          title.className = 'table-block-title';
+          title.textContent = `表格 ${sourceBlock.id.replace(/^table-/, '')}`;
+          const page = document.createElement('span');
+          page.className = 'table-block-page';
+          page.textContent = `${sourceBlock.page ? `第 ${sourceBlock.page} 页` : '未标记页码'}${Number(sourceBlock.columns) > 4 ? ' · 横向滚动' : ''}`;
+          head.append(title, page);
+          const scroll = document.createElement('div');
+          scroll.className = 'table-scroll';
+          const table = document.createElement('table');
+          table.className = 'pdf-table';
+          table.setAttribute('aria-label', title.textContent);
+          const rows = Array.isArray(sourceBlock.rows) ? sourceBlock.rows : [];
+          const headerRows = rows.filter((row) => row.header);
+          const headerRow = headerRows[0];
+          if (headerRow) {
+            const thead = document.createElement('thead');
+            const tr = document.createElement('tr');
+            tr.dataset.row = String(headerRow.cells?.[0]?.row || 1);
+            (headerRow.cells || []).forEach((cell) => {
+              const th = document.createElement('th');
+              th.scope = 'col';
+              th.dataset.cellId = String(cell.id);
+              appendCell(cell, th, true);
+              tr.appendChild(th);
+            });
+            thead.appendChild(tr);
+            table.appendChild(thead);
+          }
+          const tbody = document.createElement('tbody');
+          rows.filter((row) => row !== headerRow).forEach((row) => {
+            const tr = document.createElement('tr');
+            tr.dataset.row = String(row.cells?.[0]?.row || '');
+            (row.cells || []).forEach((cell) => {
+              const td = document.createElement('td');
+              td.dataset.cellId = String(cell.id);
+              appendCell(cell, td);
+              tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+          });
+          table.appendChild(tbody);
+          scroll.appendChild(table);
+          section.append(head, scroll);
+          list.appendChild(section);
+        });
+        if (realDocumentState.warning) {
+          const warning = document.createElement('div');
+          warning.className = 'document-warning';
+          warning.textContent = realDocumentState.warning;
+          list.insertBefore(warning, list.firstChild);
+        }
+      }
+      function realUpdateSourceFileButton() {
+        const button = document.getElementById('openSourceFile');
+        if (!button) return;
+        const hasHandle = Boolean(realDocumentState.sourceFile?.handle);
+        button.disabled = !hasHandle;
+        button.title = hasHandle ? '打开原文件' : '当前记录没有文件句柄，仅保存了文档内容';
+      }
+      async function realOpenSourceFile() {
+        const handle = realDocumentState.sourceFile?.handle;
+        if (!handle?.getFile) return showToast('当前记录只有内容快照；请使用支持文件关联的导入方式重新打开原文件');
+        try {
+          if (handle.queryPermission) {
+            const permission = await handle.queryPermission({ mode: 'read' });
+            if (permission !== 'granted' && handle.requestPermission) {
+              const requested = await handle.requestPermission({ mode: 'read' });
+              if (requested !== 'granted') throw new Error('未获得原文件读取权限');
+            }
+          }
+          const file = await handle.getFile();
+          const url = URL.createObjectURL(file);
+          window.open(url, '_blank', 'noopener');
+          window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+        } catch (error) {
+          showToast(`无法打开原文件：${error.message}`);
+        }
+      }
+      function realSnapshotForLocal(state) {
+        const snapshot = { ...state };
+        if (snapshot.sourceFile) {
+          const { handle, ...fileReference } = snapshot.sourceFile;
+          snapshot.sourceFile = fileReference;
+        }
+        return snapshot;
+      }
+      function realSyncHistoryFallback() {
+        try {
+          localStorage.setItem(realHistoryKey, JSON.stringify(realHistoryCache.map(realSnapshotForLocal)));
+        } catch {
+          try {
+            localStorage.setItem(realHistoryKey, JSON.stringify(realHistoryCache.map((item) => ({ id: item.id, name: item.name, size: item.size, format: item.format, pageCount: item.pageCount, savedAt: item.savedAt, hasTranslation: item.paragraphs?.some((paragraph) => paragraph.translation) }))));
+          } catch { /* IndexedDB remains the primary store. */ }
+        }
+      }
+      function realPersistHistoryOrder() {
+        realSyncHistoryFallback();
+        if (realStoreReady) window.ZiDocumentStore.setMeta('historyOrder', realHistoryCache.map((item) => String(item.id))).catch(() => {});
+      }
+      function realPersistDocument(state = realDocumentState, options = {}) {
+        const snapshot = realHydrateDocument(state);
+        const isActive = options.active ?? (String(snapshot.id) === String(realDocumentState.id));
+        realDocumentCache.set(String(snapshot.id), snapshot);
+        const historyIndex = realHistoryCache.findIndex((item) => String(item.id) === String(snapshot.id));
+        if (historyIndex !== -1) realHistoryCache[historyIndex] = snapshot;
+        if (isActive) {
+          try { localStorage.setItem(realActiveDocumentKey, JSON.stringify(realSnapshotForLocal(snapshot))); } catch { /* IndexedDB is used for large documents. */ }
+          if (realStoreReady) window.ZiDocumentStore.setMeta('activeId', String(snapshot.id)).catch(() => {});
+        }
+        if (realStoreReady) window.ZiDocumentStore.putDocument(snapshot).catch(() => {});
+        realSyncHistoryFallback();
+      }
+      function historyBadge(name) {
+        const extension = name.split('.').pop()?.toLowerCase();
+        if (extension === 'pdf') return ['pdf', 'PDF'];
+        if (['ppt', 'pptx'].includes(extension)) return ['ppt', 'PPT'];
+        if (['xls', 'xlsx', 'csv'].includes(extension)) return ['xls', 'XLSX'];
+        return ['', 'W'];
+      }
+      function realLoadHistory() {
+        if (realStoreReady || realHistoryCache.length) return realHistoryCache;
+        try {
+          const legacy = JSON.parse(localStorage.getItem(realHistoryKey) || '[]');
+          realHistoryCache = Array.isArray(legacy) ? legacy.map(realHydrateDocument) : [];
+          realHistoryCache.forEach((item) => realDocumentCache.set(String(item.id), item));
+          return realHistoryCache;
+        } catch { return []; }
+      }
+      function realSaveHistory(documentState) {
+        const snapshot = realHydrateDocument({ ...documentState, savedAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+        const replaced = realHistoryCache.filter((item) => item.name === snapshot.name && String(item.id) !== String(snapshot.id));
+        replaced.forEach((item) => { if (realStoreReady) window.ZiDocumentStore.deleteDocument(item.id).catch(() => {}); });
+        realHistoryCache = [snapshot, ...realHistoryCache.filter((item) => item.name !== snapshot.name && String(item.id) !== String(snapshot.id))].slice(0, 20);
+        realDocumentCache.set(String(snapshot.id), snapshot);
+        realPersistDocument(snapshot, { active: true });
+        realPersistHistoryOrder();
+        realRenderHistory();
+      }
+      function realApplyHistoryFilter() {
+        const list = document.getElementById('historyList');
+        const query = document.getElementById('historySearch')?.value.trim().toLowerCase() || '';
+        let visible = 0;
+        list.querySelectorAll('.history-item').forEach((item) => {
+          const matches = String(item.dataset.doc || '').toLowerCase().includes(query);
+          item.hidden = !matches;
+          if (matches) visible += 1;
+        });
+        list.classList.toggle('is-empty', visible === 0);
+      }
+      function realCloseHistoryContextMenu() {
+        const menu = document.getElementById('historyContextMenu');
+        if (menu) menu.hidden = true;
+        realContextItem = null;
+      }
+      function realOpenHistoryContextMenu(event, item) {
+        event.preventDefault();
+        event.stopPropagation();
+        const menu = document.getElementById('historyContextMenu');
+        if (!menu) return;
+        realContextItem = item;
+        menu.hidden = false;
+        const left = Math.min(event.clientX, window.innerWidth - 184);
+        const top = Math.min(event.clientY, window.innerHeight - 220);
+        menu.style.left = `${Math.max(8, left)}px`;
+        menu.style.top = `${Math.max(8, top)}px`;
+      }
+      function realOpenHistoryItem(item) {
+        realDocumentState = realHydrateDocument(item);
+        document.getElementById('documentTitle').textContent = realDocumentState.name;
+        realRenderHistory();
+        realRenderParagraphs();
+        realPersistDocument(realDocumentState, { active: true });
+        document.getElementById('startTranslation').disabled = false;
+        const complete = realDocumentState.paragraphs.length > 0 && realDocumentState.paragraphs.every((paragraph) => paragraph.translation && paragraph.status === 'done');
+        document.getElementById('progressCard').style.display = complete ? 'block' : 'none';
+        const statusLine = document.getElementById('translationStatusLine');
+        if (statusLine) statusLine.hidden = !complete;
+        if (!complete) realSetProgress(0, 0, 0, 0, 0);
+        document.getElementById('startTranslation').textContent = complete ? '重新翻译' : '继续翻译';
+        document.getElementById('sessionStatus').textContent = complete ? '已保存翻译结果' : '尚未开始翻译';
+        realUpdateSession();
+        realSchedulePromptPreview();
+        realUpdateSourceFileButton();
+        showToast(`已打开：${item.name}`);
+      }
+      function realClearTranslation(item) {
+        const snapshot = realHydrateDocument(item);
+        snapshot.paragraphs = snapshot.paragraphs.map((paragraph) => ({ ...paragraph, translation: '', status: 'queued' }));
+        snapshot.updatedAt = new Date().toISOString();
+        const isActive = String(snapshot.id) === String(realDocumentState.id);
+        realDocumentCache.set(String(snapshot.id), snapshot);
+        const index = realHistoryCache.findIndex((historyItem) => String(historyItem.id) === String(snapshot.id));
+        if (index !== -1) realHistoryCache[index] = snapshot;
+        realPersistDocument(snapshot, { active: isActive });
+        if (isActive) {
+          realDocumentState = snapshot;
+          realRenderParagraphs();
+          document.getElementById('progressCard').style.display = 'none';
+          const statusLine = document.getElementById('translationStatusLine');
+          if (statusLine) statusLine.hidden = true;
+          document.getElementById('sessionStatus').textContent = '尚未开始翻译';
+          realSetProgress(0, 0, 0, 0, 0);
+          document.getElementById('startTranslation').textContent = '开始翻译';
+          realUpdateSession();
+        }
+        realRenderHistory();
+        showToast(`已清除“${snapshot.name}”的译文`);
+      }
+      function realMoveHistory(itemId, direction) {
+        const index = realHistoryCache.findIndex((item) => String(item.id) === String(itemId));
+        const nextIndex = index + direction;
+        if (index < 0 || nextIndex < 0 || nextIndex >= realHistoryCache.length) return showToast(direction < 0 ? '已经是最前面' : '已经是最后面');
+        [realHistoryCache[index], realHistoryCache[nextIndex]] = [realHistoryCache[nextIndex], realHistoryCache[index]];
+        realPersistHistoryOrder();
+        realRenderHistory();
+      }
+      function realReorderHistory(sourceId, targetId) {
+        const sourceIndex = realHistoryCache.findIndex((item) => String(item.id) === String(sourceId));
+        const targetIndex = realHistoryCache.findIndex((item) => String(item.id) === String(targetId));
+        if (sourceIndex < 0 || targetIndex < 0 || sourceIndex === targetIndex) return;
+        const [source] = realHistoryCache.splice(sourceIndex, 1);
+        realHistoryCache.splice(Math.min(targetIndex, realHistoryCache.length), 0, source);
+        realPersistHistoryOrder();
+        realRenderHistory();
+      }
+      function realResetDocument() {
+        realDocumentState = { id: 'empty', name: '未导入文档', size: 0, format: '', pageCount: null, structured: false, warning: '', paragraphs: [], blocks: [], tables: [] };
+        localStorage.removeItem(realActiveDocumentKey);
+        if (realStoreReady) window.ZiDocumentStore.setMeta('activeId', null).catch(() => {});
+        document.getElementById('documentTitle').textContent = realDocumentState.name;
+        document.getElementById('startTranslation').disabled = true;
+        document.getElementById('startTranslation').textContent = '开始翻译';
+        document.getElementById('progressCard').style.display = 'none';
+        const statusLine = document.getElementById('translationStatusLine');
+        if (statusLine) statusLine.hidden = true;
+        document.getElementById('sessionStatus').textContent = '尚未开始翻译';
+        realSetProgress(0, 0, 0, 0, 0);
+        realRenderParagraphs();
+        realUpdateSourceFileButton();
+        realUpdateSession();
+      }
+      async function realDeleteHistory(item) {
+        const index = realHistoryCache.findIndex((historyItem) => String(historyItem.id) === String(item.id));
+        if (index < 0) return;
+        const wasActive = String(item.id) === String(realDocumentState.id);
+        realHistoryCache.splice(index, 1);
+        realDocumentCache.delete(String(item.id));
+        realPersistHistoryOrder();
+        if (realStoreReady) await window.ZiDocumentStore.deleteDocument(item.id).catch(() => {});
+        if (wasActive) {
+          const next = realHistoryCache[0];
+          if (next) realOpenHistoryItem(next); else realResetDocument();
+        }
+        realRenderHistory();
+        showToast(`已删除历史记录：${item.name}`);
+      }
+      function realRenderHistory() {
+        const list = document.getElementById('historyList');
+        list.innerHTML = '';
+        const history = realLoadHistory();
+        document.getElementById('historyEmpty').style.display = history.length ? 'none' : 'block';
+        const summary = document.getElementById('historySummary');
+        if (summary) summary.innerHTML = `<strong>${history.length}</strong> 个文档`;
+        let draggingId = null;
+        history.forEach((item) => {
+          const row = document.createElement('div');
+          row.className = `history-item ${String(item.id) === String(realDocumentState.id) ? 'is-active' : ''}`;
+          row.dataset.doc = item.name;
+          row.dataset.id = String(item.id);
+          row.draggable = true;
+          const [badgeClass, badgeText] = historyBadge(item.name);
+          const badge = document.createElement('span');
+          badge.className = `file-badge ${badgeClass}`;
+          badge.textContent = badgeText;
+          const details = document.createElement('span');
+          const name = document.createElement('strong');
+          name.className = 'history-name';
+          name.textContent = item.name;
+          const meta = document.createElement('span');
+          meta.className = 'history-meta';
+          const date = document.createElement('span');
+          date.textContent = new Date(item.savedAt).toLocaleDateString('zh-CN');
+          const size = document.createElement('span');
+          size.textContent = `${item.size.toLocaleString()} 字`;
+          meta.append(date, size);
+          details.append(name, meta);
+          const check = document.createElement('span');
+          check.className = 'history-check';
+          check.textContent = item.paragraphs?.length && item.paragraphs.every((paragraph) => paragraph.translation && paragraph.status === 'done') ? '✓' : '·';
+          row.append(badge, details, check);
+          row.addEventListener('click', () => realOpenHistoryItem(item));
+          row.addEventListener('contextmenu', (event) => realOpenHistoryContextMenu(event, item));
+          row.addEventListener('dragstart', (event) => { draggingId = String(item.id); row.classList.add('is-dragging'); event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', draggingId); });
+          row.addEventListener('dragover', (event) => { event.preventDefault(); if (draggingId && draggingId !== String(item.id)) row.classList.add('is-drop-target'); });
+          row.addEventListener('dragleave', () => row.classList.remove('is-drop-target'));
+          row.addEventListener('drop', (event) => { event.preventDefault(); row.classList.remove('is-drop-target'); realReorderHistory(draggingId || event.dataTransfer.getData('text/plain'), item.id); });
+          row.addEventListener('dragend', () => { draggingId = null; row.classList.remove('is-dragging'); list.querySelectorAll('.is-drop-target').forEach((node) => node.classList.remove('is-drop-target')); });
+          list.appendChild(row);
+        });
+        realApplyHistoryFilter();
+      }
+      async function realPickFiles() {
+        if (!window.showOpenFilePicker) return document.getElementById('fileInput')?.click();
+        try {
+          const handles = await window.showOpenFilePicker({
+            multiple: true,
+            types: [{ description: '可翻译文档', accept: { 'text/plain': ['.txt', '.md', '.csv', '.tsv'], 'application/pdf': ['.pdf'], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'], 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'], 'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx'] } }],
+          });
+          const files = await Promise.all(handles.map((handle) => handle.getFile()));
+          await realImportFiles(files, handles);
+        } catch (error) {
+          if (error.name !== 'AbortError') showToast(`选择文件失败：${error.message}`);
+        }
+      }
+      async function realImportFiles(files, handles = []) {
+        const startLabel = document.querySelector('label[for="fileInput"]');
+        if (startLabel) startLabel.textContent = '解析中…';
+        try {
+          for (const [fileIndex, file] of files.entries()) {
+            const response = await fetch('/api/extract', { method: 'POST', headers: { 'content-type': file.type || 'application/octet-stream', 'x-file-name': encodeURIComponent(file.name) }, body: file });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.detail || data.error || '文件解析失败');
+            const paragraphs = (data.paragraphs || []).map(realNormalizeParagraph).filter((paragraph) => paragraph.source);
+            if (!paragraphs.length) throw new Error('文件中没有检测到可翻译的段落');
+            realDocumentState = realHydrateDocument({ id: realUuid(), name: data.name || file.name, size: paragraphs.reduce((sum, paragraph) => sum + paragraph.source.length, 0), fileSize: file.size, format: data.format || file.name.split('.').pop()?.toLowerCase() || '', pageCount: data.pageCount ?? null, structured: Boolean(data.structured), warning: data.warning || '', paragraphs, blocks: data.blocks || [], tables: data.tables || [], sourceFile: { name: file.name, size: file.size, type: file.type, lastModified: file.lastModified, handle: handles[fileIndex] || null } });
+            document.getElementById('documentTitle').textContent = realDocumentState.name;
+            realPersistDocument();
+            realSaveHistory(realDocumentState);
+            realRenderParagraphs();
+            realSchedulePromptPreview();
+            realUpdateSourceFileButton();
+             document.getElementById('startTranslation').disabled = false;
+             document.getElementById('progressCard').style.display = 'none';
+             document.getElementById('progressCard').classList.remove('is-complete');
+             const statusLine = document.getElementById('translationStatusLine');
+             if (statusLine) statusLine.hidden = true;
+              realSetProgress(0, 0, realRequestUnitCount(paragraphs), 0, Number(document.getElementById('rpmInput').value) || 10);
+            realUpdateSession();
+            showToast(`已解析 ${paragraphs.length} 个段落${realDocumentState.tables.length ? `，识别 ${realDocumentState.tables.length} 个表格` : ''}：${realDocumentState.name}`);
+          }
+        } catch (error) {
+          showToast(`导入失败：${error.message}。请确认已用 npm start 启动程序。`);
+        } finally {
+          if (startLabel) startLabel.innerHTML = '<span>＋</span>导入';
+        }
+      }
+      async function realConsumeSse(response, onEvent) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        while (true) {
+          const { value, done } = await reader.read();
+          buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+          let boundary;
+          while ((boundary = buffer.indexOf('\n\n')) !== -1) {
+            const block = buffer.slice(0, boundary);
+            buffer = buffer.slice(boundary + 2);
+            const event = block.match(/^event:\s*(.+)$/m)?.[1] || 'message';
+            const data = block.match(/^data:\s*(.+)$/m)?.[1];
+            if (data) onEvent(event, JSON.parse(data));
+          }
+          if (done) break;
+        }
+      }
+      async function realStartTranslation() {
+        if (realTranslationAbort) {
+          realTranslationAbort.abort();
+          realTranslationAbort = null;
+          document.getElementById('startTranslation').textContent = '继续翻译';
+          document.getElementById('sessionStatus').textContent = '已停止翻译';
+          showToast('翻译请求已停止');
+          return;
+        }
+        if (!realDocumentState.paragraphs.length) return showToast('请先导入文档');
+        if (!realProviderCanRequest()) {
+          const provider = realProviderById(realSelectedProviderId);
+          return showToast(provider?.requestStyle === 'unsupported' ? '当前供应商没有可直接调用的通用文本接口' : `请先保存 ${provider?.name || '当前供应商'} 的 API Key`);
+        }
+        if (!realModel()) return showToast('请先在供应商设置中添加并选择模型');
+        const pending = realDocumentState.paragraphs.filter((paragraph) => !paragraph.translation || paragraph.status !== 'done');
+        if (!pending.length) return showToast('当前文档已经翻译完成');
+        realTranslationAbort = new AbortController();
+        const button = document.getElementById('startTranslation');
+        button.textContent = '停止翻译';
+        button.disabled = false;
+        document.getElementById('progressCard').style.display = 'block';
+        document.getElementById('progressCard').classList.remove('is-complete');
+        const statusLine = document.getElementById('translationStatusLine');
+        if (statusLine) statusLine.hidden = false;
+        pending.forEach((paragraph) => { paragraph.status = 'queued'; paragraph.translation = ''; });
+        realRenderParagraphs();
+        document.getElementById('sessionStatus').textContent = '正在连接模型…';
+        try {
+          const response = await fetch('/api/translate', { method: 'POST', headers: realHeaders(), signal: realTranslationAbort.signal, body: JSON.stringify({ paragraphs: pending.map(({ id, source }) => ({ id, text: source })), sourceLanguage: document.querySelector('.language-select')?.value || '英语', targetLanguage: document.querySelectorAll('.language-select')[1]?.value || '中文', maxRpm: Number(document.getElementById('rpmInput').value) || 10, maxConcurrency: Number(document.getElementById('concurrencyInput').value) || 1, retries: 3, model: realModel(), systemPrompt: document.getElementById('promptInput').value }) });
+          if (!response.ok) { const error = await response.json().catch(() => ({})); throw new Error(error.detail || error.error || `HTTP ${response.status}`); }
+          await realConsumeSse(response, (event, data) => {
+            if (event === 'meta') {
+              document.getElementById('sessionStatus').textContent = `开始逐段翻译，共 ${data.units} 个请求单元`;
+              realUpdateSession(`逐段请求 · ${data.units} 个请求单元 · 最大 ${data.maxRpm} RPM · 并发 ${data.maxConcurrency || 1} · 当前模型：${data.model}`);
+              realSetProgress(0, 0, data.units, 0, data.maxRpm);
+            }
+            if (event === 'unit-start') {
+              const paragraph = realDocumentState.paragraphs.find((item) => String(item.id) === String(data.id));
+              if (paragraph) { paragraph.status = 'processing'; paragraph.translation = ''; realRenderParagraphs(); }
+              document.getElementById('sessionStatus').textContent = `正在发送第 ${data.unit} 个请求`;
+            }
+            if (event === 'paragraph') {
+              const paragraph = realDocumentState.paragraphs.find((item) => String(item.id) === String(data.id));
+              if (paragraph) { paragraph.translation = data.translation; paragraph.status = 'done'; realPersistDocument(); realRenderParagraphs(); }
+            }
+            if (event === 'progress') {
+              document.getElementById('sessionStatus').textContent = `已完成第 ${data.unit} 个请求`;
+              realSetProgress(data.percent, data.unit, data.units, data.rpmUsed, Number(document.getElementById('rpmInput').value) || 10);
+            }
+            if (event === 'error') throw new Error(data.message);
+            if (event === 'done') {
+              document.getElementById('sessionStatus').textContent = '本次翻译已完成';
+              document.getElementById('progressTitle').textContent = '翻译完成';
+              document.getElementById('progressCard').classList.add('is-complete');
+              realSetProgress(100, data.units, data.units, Number(document.getElementById('rpmInput').value) || 10, Number(document.getElementById('rpmInput').value) || 10);
+              realSaveHistory(realDocumentState);
+            }
+          });
+          button.textContent = '重新翻译';
+        } catch (error) {
+          pending.forEach((paragraph) => { if (paragraph.status === 'processing') paragraph.status = 'queued'; });
+          realRenderParagraphs();
+          if (error.name !== 'AbortError') { document.getElementById('sessionStatus').textContent = '翻译失败'; showToast(`翻译失败：${error.message}`); }
+          button.textContent = '继续翻译';
+        } finally {
+          realTranslationAbort = null;
+        }
+      }
+
+      const saved = realMigrateSettings();
+      if (Object.prototype.hasOwnProperty.call(saved, 'apiKey')) { delete saved.apiKey; localStorage.setItem(realSettingsKey, JSON.stringify(saved)); }
+      const keyInput = document.getElementById('apiKey');
+      const urlInput = document.getElementById('apiUrl');
+       if (document.getElementById('rpmInput')) document.getElementById('rpmInput').value = saved.rpm || '10';
+       if (document.getElementById('concurrencyInput')) document.getElementById('concurrencyInput').value = saved.maxConcurrency || '1';
+      if (document.getElementById('promptInput') && saved.prompt) document.getElementById('promptInput').value = saved.prompt;
+      if (keyInput) { keyInput.value = ''; keyInput.readOnly = false; keyInput.type = 'password'; keyInput.placeholder = '输入当前供应商的 API Key'; const eye = document.getElementById('eyeButton'); if (eye) eye.style.display = 'inline-grid'; }
+      if (urlInput) urlInput.value = '';
+      realRenderProviderDirectory();
+      realSelectedProviderId = realSettings().providerId || 'opencode';
+      realSelectProvider(realSelectedProviderId, { silent: true });
+      const runtimeStartButton = replaceWithFreshNode('startTranslation');
+      const runtimeFileInput = replaceWithFreshNode('fileInput');
+      const runtimeValidateButton = replaceWithFreshNode('testKey');
+      const runtimeResetButton = replaceWithFreshNode('resetUrl');
+      const runtimeRefreshButton = replaceWithFreshNode('refreshModels');
+      const runtimeAddModelButton = replaceWithFreshNode('addModel');
+      const runtimeSaveButton = replaceWithFreshNode('saveConfig');
+      if (runtimeStartButton) runtimeStartButton.addEventListener('click', realStartTranslation);
+      if (runtimeFileInput) runtimeFileInput.addEventListener('change', (event) => realImportFiles(Array.from(event.target.files || [])));
+      document.querySelector('label[for="fileInput"]')?.addEventListener('click', (event) => { if (window.showOpenFilePicker) { event.preventDefault(); realPickFiles(); } });
+      if (runtimeValidateButton) runtimeValidateButton.addEventListener('click', async () => {
+        const provider = realProviderById(realSelectedProviderId);
+        if (provider?.requestStyle === 'unsupported') return showToast('该供应商没有可直接调用的通用文本接口');
+        try {
+          const typedKey = keyInput?.value.trim();
+          if (typedKey) {
+            const saveResponse = await fetch('/api/provider-key', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ providerId: realSelectedProviderId, apiKey: typedKey }) });
+            const saveData = await saveResponse.json();
+            if (!saveResponse.ok) throw new Error(saveData.detail || saveData.error || 'API 密钥保存失败');
+            realProviderStatus.set(realSelectedProviderId, { ...(realProviderStatus.get(realSelectedProviderId) || {}), id: realSelectedProviderId, configured: true });
+            keyInput.value = '';
+            realSelectProvider(realSelectedProviderId, { silent: true });
+            showToast('API 密钥已保存到本地 JSON');
+          }
+          if (!realProviderCanRequest()) return showToast('请先输入并保存当前供应商的 API Key');
+          const response = await fetch('/api/validate', { method: 'POST', headers: realHeaders() });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.detail || data.error);
+          showToast(`密钥有效，可用模型 ${data.models.length} 个`);
+        } catch (error) { showToast(`检测失败：${error.message}`); }
+      });
+      if (runtimeResetButton) runtimeResetButton.addEventListener('click', () => { const provider = realProviderById(realSelectedProviderId); urlInput.value = provider?.baseUrl || ''; realSaveProviderSettings(realSelectedProviderId, { baseUrl: urlInput.value }); const preview = document.getElementById('apiPreview'); if (preview) preview.textContent = provider?.endpoint || provider?.requestStyle === 'openai' ? `预览： ${realBaseUrl()}${provider.endpoint || '/chat/completions'}` : '该供应商没有统一的公开请求路径'; showToast('当前供应商 API 地址已重置'); });
+      urlInput?.addEventListener('input', () => { realSaveProviderSettings(realSelectedProviderId, { baseUrl: urlInput.value.trim() }); const provider = realProviderById(realSelectedProviderId); const preview = document.getElementById('apiPreview'); if (preview) preview.textContent = provider?.endpoint || provider?.requestStyle === 'openai' ? `预览： ${realBaseUrl()}${provider.endpoint || '/chat/completions'}` : '该供应商没有统一的公开请求路径'; });
+       if (runtimeRefreshButton) runtimeRefreshButton.addEventListener('click', realRefreshModels);
+       if (runtimeAddModelButton) runtimeAddModelButton.addEventListener('click', () => realOpenModelLibrary(realProviderLibraryModels(realProviderById(realSelectedProviderId))));
+       document.getElementById('readerModelSelect')?.addEventListener('change', (event) => realSelectReaderModel(event.target.value));
+       if (runtimeSaveButton) runtimeSaveButton.addEventListener('click', () => { realSaveProviderSettings(realSelectedProviderId, { baseUrl: urlInput.value.trim() }); realSaveSettings({ rpm: document.getElementById('rpmInput').value, maxConcurrency: document.getElementById('concurrencyInput').value, prompt: document.getElementById('promptInput').value }); document.getElementById('saveState').textContent = '● 设置已保存'; showToast('当前供应商设置已保存，后续请求会使用独立配置'); realUpdateSession(); realSchedulePromptPreview(); });
+       ['rpmInput', 'concurrencyInput', 'promptInput'].forEach((id) => document.getElementById(id)?.addEventListener('input', () => { realSaveSettings({ [id === 'concurrencyInput' ? 'maxConcurrency' : id]: document.getElementById(id).value }); realUpdateSession(); if (id === 'promptInput') realSchedulePromptPreview(); }));
+       document.querySelectorAll('.language-select').forEach((select) => select.addEventListener('change', realSchedulePromptPreview));
+       document.getElementById('copyPromptPreview')?.addEventListener('click', async () => {
+         const preview = document.getElementById('promptPreview');
+         if (!preview?.textContent) return;
+         try { await navigator.clipboard.writeText(preview.textContent); showToast('完整提示词已复制'); }
+         catch { showToast('浏览器未允许访问剪贴板'); }
+       });
+      const customProviderModal = document.getElementById('customProviderModal');
+      const customProviderForm = document.getElementById('customProviderForm');
+      const setCustomProviderModal = (open) => { if (customProviderModal) customProviderModal.hidden = !open; if (open) customProviderForm?.querySelector('input')?.focus(); };
+      document.getElementById('addProvider')?.addEventListener('click', () => setCustomProviderModal(true));
+      document.querySelectorAll('[data-close-provider]').forEach((node) => node.addEventListener('click', () => setCustomProviderModal(false)));
+      customProviderForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const submitButton = customProviderForm.querySelector('button[type="submit"]');
+        if (submitButton) { submitButton.disabled = true; submitButton.textContent = '保存中…'; }
+        try {
+          const payload = Object.fromEntries(new FormData(customProviderForm).entries());
+          const response = await fetch('/api/providers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.detail || data.error || '保存失败');
+          realCustomProviders = [...realCustomProviders.filter((provider) => provider.id !== data.provider.id), data.provider];
+          realProviderStatus.set(data.provider.id, { ...data.provider, configured: true });
+          realRenderProviderDirectory();
+          realSelectProvider(data.provider.id, { silent: true });
+          customProviderForm.reset();
+          setCustomProviderModal(false);
+          showToast(`已添加自定义供应商：${data.provider.name}`);
+        } catch (error) { showToast(`添加供应商失败：${error.message}`); }
+        finally { if (submitButton) { submitButton.disabled = false; submitButton.textContent = '保存供应商'; } }
+      });
+      document.getElementById('restoreProviders')?.addEventListener('click', () => {
+        realSaveSettings({ hiddenProviders: [] });
+        realRenderProviderDirectory();
+        if (!realProviderById(realSelectedProviderId)) realSelectProvider(realAllProviders()[0]?.id || 'opencode', { silent: true });
+        showToast('已恢复预置供应商');
+      });
+      document.querySelectorAll('#providerContextMenu [data-provider-action]').forEach((button) => button.addEventListener('click', async () => {
+        const provider = realProviderContextItem;
+        const action = button.dataset.providerAction;
+        realCloseProviderContextMenu();
+        if (!provider) return;
+        try {
+          if (action === 'open') realSelectProvider(provider.id);
+          if (action === 'up') realMoveProvider(provider.id, -1);
+          if (action === 'down') realMoveProvider(provider.id, 1);
+          if (action === 'delete') await realDeleteProvider(provider);
+        } catch (error) { showToast(`删除供应商失败：${error.message}`); }
+      }));
+      document.querySelectorAll('#modelContextMenu [data-model-action]').forEach((button) => button.addEventListener('click', () => {
+        const item = realModelContextItem;
+        const action = button.dataset.modelAction;
+        realCloseModelContextMenu();
+        if (!item) return;
+        if (action === 'default') realSetDefaultModel(item.provider, item.model);
+        if (action === 'remove') realRemoveProviderModel(item.provider, item.model);
+      }));
+      document.querySelectorAll('[data-close-model-library]').forEach((node) => node.addEventListener('click', realCloseModelLibrary));
+      document.getElementById('modelLibrarySearch')?.addEventListener('input', realRenderModelLibrary);
+      const runtimeThemeButton = replaceWithFreshNode('themeToggle');
+      runtimeThemeButton?.addEventListener('click', () => {
+        document.body.classList.add('theme-transitioning');
+        const nextTheme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+        window.setTimeout(() => setTheme(nextTheme), 120);
+        window.setTimeout(() => document.body.classList.remove('theme-transitioning'), 650);
+      });
+      document.getElementById('openSourceFile')?.addEventListener('click', realOpenSourceFile);
+      document.getElementById('downloadTranslation')?.addEventListener('click', () => {
+        if (!realDocumentState.paragraphs.length) return showToast('请先导入文档');
+        const title = realDocumentState.name.replace(/\.[^.]+$/, '');
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([getDocumentText()], { type: 'text/plain;charset=utf-8' }));
+        link.download = `${title}.translation.txt`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        showToast('译文已下载');
+      });
+      document.getElementById('copyTranslation')?.addEventListener('click', async () => {
+        if (!realDocumentState.paragraphs.length) return showToast('请先导入文档');
+        try { await navigator.clipboard.writeText(getDocumentText()); showToast('原文与译文已复制'); }
+        catch { showToast('浏览器未允许访问剪贴板'); }
+      });
+      document.getElementById('readingSettings')?.addEventListener('click', () => showToast('请使用下方“原文 / 中英对照 / 翻译”切换阅读模式'));
+      document.querySelectorAll('#historyContextMenu [data-history-action]').forEach((button) => button.addEventListener('click', async () => {
+        const item = realContextItem;
+        const action = button.dataset.historyAction;
+        realCloseHistoryContextMenu();
+        if (!item) return;
+        if (action === 'open') realOpenHistoryItem(item);
+        if (action === 'up') realMoveHistory(item.id, -1);
+        if (action === 'down') realMoveHistory(item.id, 1);
+        if (action === 'clear') realClearTranslation(item);
+        if (action === 'delete') {
+          if (window.confirm(`确定删除“${item.name}”的历史记录吗？`)) await realDeleteHistory(item);
+        }
+      }));
+      document.addEventListener('click', (event) => {
+        if (!event.target.closest('#historyContextMenu')) realCloseHistoryContextMenu();
+        if (!event.target.closest('#providerContextMenu')) realCloseProviderContextMenu();
+        if (!event.target.closest('#modelContextMenu')) realCloseModelContextMenu();
+      });
+      document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { realCloseHistoryContextMenu(); realCloseProviderContextMenu(); realCloseModelContextMenu(); realCloseModelLibrary(); } });
+      const readerGlyph = document.querySelector('[data-page="reader"] .nav-glyph');
+      const configGlyph = document.querySelector('[data-page="config"] .nav-glyph');
+      if (readerGlyph) readerGlyph.innerHTML = '<img src="/assets/ui/reader.png" alt="" />';
+      if (configGlyph) configGlyph.innerHTML = '<img src="/assets/ui/settings.png" alt="" />';
+      const serviceStatus = document.createElement('span');
+      serviceStatus.id = 'serviceStatus';
+      serviceStatus.className = 'service-status';
+      serviceStatus.textContent = '服务检测中';
+      document.querySelector('.breadcrumb')?.appendChild(serviceStatus);
+       fetch('/api/health', { headers: realHeaders() }).then((response) => response.json()).then((data) => { realServerConfigured = Boolean(data.configured); realProviderStatus.set('opencode', { ...(realProviderStatus.get('opencode') || {}), id: 'opencode', configured: realServerConfigured }); serviceStatus.textContent = '● 服务在线'; serviceStatus.classList.add('is-ready'); realUpdateSession(); }).catch(() => { serviceStatus.textContent = '○ 请用 npm start 启动'; });
+      document.getElementById('documentTitle').textContent = '未导入文档';
+      document.getElementById('sessionStatus').textContent = '尚未开始翻译';
+      document.getElementById('progressTitle').textContent = '等待翻译任务';
+      document.getElementById('startTranslation').textContent = '开始翻译';
+      document.getElementById('startTranslation').disabled = true;
+      document.getElementById('progressCard').style.display = 'none';
+       realRenderHistory();
+       realRenderParagraphs();
+       realUpdateSession();
+       realSetProgress(0, 0, 0, 0, 0);
+       realLoadProviders();
+       realSchedulePromptPreview();
+       (async () => {
+        try {
+          const store = window.ZiDocumentStore;
+          const database = store ? await store.ready : null;
+          realStoreReady = Boolean(database);
+          let documents = realStoreReady ? await store.listDocuments() : [];
+          documents = documents.map(realHydrateDocument);
+          documents.forEach((item) => realDocumentCache.set(String(item.id), item));
+          const storedOrder = realStoreReady ? await store.getMeta('historyOrder') : null;
+          const byId = new Map(documents.map((item) => [String(item.id), item]));
+          const orderedIds = Array.isArray(storedOrder) ? storedOrder.map(String) : [];
+          realHistoryCache = [...orderedIds.map((id) => byId.get(id)).filter(Boolean), ...documents.filter((item) => !orderedIds.includes(String(item.id))).sort((a, b) => new Date(b.updatedAt || b.savedAt || 0) - new Date(a.updatedAt || a.savedAt || 0))].slice(0, 20);
+           if (!realHistoryCache.length) {
+             let legacyHistory = [];
+             try { legacyHistory = JSON.parse(localStorage.getItem(realHistoryKey) || '[]'); } catch { legacyHistory = []; }
+             realHistoryCache = Array.isArray(legacyHistory) ? legacyHistory.map(realHydrateDocument).slice(0, 20) : [];
+             realHistoryCache.forEach((item) => realDocumentCache.set(String(item.id), item));
+             if (realStoreReady) await Promise.all(realHistoryCache.map((item) => store.putDocument(item).catch(() => {})));
+           }
+           if (!realHistoryCache.length) {
+             const sample = realCreateBuiltInSample();
+             realHistoryCache = [sample];
+             realDocumentCache.set(String(sample.id), sample);
+             seededBuiltInSample = true;
+             realPersistDocument(sample, { active: true });
+             realPersistHistoryOrder();
+           }
+           const localActive = (() => { try { return JSON.parse(localStorage.getItem(realActiveDocumentKey) || 'null'); } catch { return null; } })();
+           const storedActiveId = realStoreReady ? await store.getMeta('activeId') : null;
+           const active = realHistoryCache.find((item) => String(item.id) === String(storedActiveId || localActive?.id)) || (localActive?.paragraphs?.length ? realHydrateDocument(localActive) : null) || (seededBuiltInSample ? realHistoryCache[0] : null);
+          if (active) {
+            realDocumentState = realHydrateDocument(active);
+            realDocumentCache.set(String(active.id), realDocumentState);
+            document.getElementById('documentTitle').textContent = realDocumentState.name;
+             document.getElementById('startTranslation').disabled = false;
+             const complete = realDocumentState.paragraphs.length > 0 && realDocumentState.paragraphs.every((paragraph) => paragraph.translation && paragraph.status === 'done');
+             const statusLine = document.getElementById('translationStatusLine');
+             if (statusLine) statusLine.hidden = !complete;
+             document.getElementById('sessionStatus').textContent = complete ? '已恢复保存的翻译结果' : '尚未开始翻译';
+            document.getElementById('startTranslation').textContent = complete ? '重新翻译' : '继续翻译';
+          }
+          realRenderHistory();
+          realRenderParagraphs();
+          realUpdateSourceFileButton();
+          realUpdateSession();
+        } catch (error) {
+          console.warn('文档本地存储初始化失败', error);
+          realRenderHistory();
+        }
+      })();
+    })();
+  </script>
+</body>
+</html>

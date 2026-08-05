@@ -1,0 +1,6 @@
+{
+  "provider": "opencode",
+  "baseUrl": "https://opencode.ai/zen/v1",
+  "model": "deepseek-v4-flash-free",
+  "apiKey": "PASTE_YOUR_OPENCODE_API_KEY_HERE"
+}
