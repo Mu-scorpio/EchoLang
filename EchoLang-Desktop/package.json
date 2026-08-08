@@ -20,8 +20,8 @@
     "node": ">=20"
   },
   "devDependencies": {
-    "electron": "^33.4.11",
-    "electron-builder": "^26.0.12"
+    "electron": "^43.3.0",
+    "electron-builder": "^26.15.3"
   },
   "build": {
     "appId": "com.echolang.desktop",
@@ -90,7 +90,7 @@
         }
       ],
       "icon": "../assets/ui/echolang-brand.png",
-      "signAndEditExecutable": false
+      "signExecutable": false
     },
     "msi": {
       "oneClick": false,
