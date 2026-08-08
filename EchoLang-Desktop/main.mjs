@@ -1,7 +1,6 @@
-import { app, BrowserWindow, dialog, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
 import { spawn } from 'node:child_process';
 import { request as httpRequest } from 'node:http';
-import { createServer } from 'node:net';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -10,9 +9,18 @@ const sourceDir = path.resolve(process.env.ECHOLANG_SOURCE_DIR || (app.isPackage
 const nodeCommand = process.env.ECHOLANG_NODE_PATH || (app.isPackaged ? process.execPath : (process.platform === 'win32' ? 'node.exe' : 'node'));
 const configDir = path.resolve(process.env.ECHOLANG_CONFIG_DIR || (app.isPackaged ? app.getPath('userData') : sourceDir));
 const serverHost = '127.0.0.1';
+const preferredServerPort = Math.max(1, Math.min(65535, Number(process.env.ECHOLANG_PORT || 4173)));
 let serverPort = null;
 let backendProcess = null;
 let mainWindow = null;
+
+const windowChannels = Object.freeze({
+  minimize: 'window:minimize',
+  toggleMaximize: 'window:toggle-maximize',
+  close: 'window:close',
+  getState: 'window:get-state',
+  stateChanged: 'window:state-changed',
+});
 
 app.setName('EchoLang');
 app.setAppUserModelId('com.echolang.desktop');
@@ -21,27 +29,48 @@ function delay(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
-function findFreePort() {
-  return new Promise((resolve, reject) => {
-    const probe = createServer();
-    probe.once('error', reject);
-    probe.listen(0, serverHost, () => {
-      const address = probe.address();
-      const port = typeof address === 'object' && address ? address.port : null;
-      probe.close((error) => {
-        if (error) reject(error);
-        else if (port) resolve(port);
-        else reject(new Error('无法分配本地端口'));
-      });
-    });
+function getWindowForEvent(event) {
+  const window = BrowserWindow.fromWebContents(event.sender);
+  const isMainFrame = event.senderFrame === event.sender.mainFrame;
+  if (!window || window !== mainWindow || !isMainFrame) throw new Error('拒绝来自未知窗口的控制请求');
+  return window;
+}
+
+function getWindowState(window) {
+  return {
+    isMaximized: window.isMaximized(),
+    isFullScreen: window.isFullScreen(),
+  };
+}
+
+function publishWindowState(window) {
+  if (!window.isDestroyed()) window.webContents.send(windowChannels.stateChanged, getWindowState(window));
+}
+
+function registerWindowControls() {
+  ipcMain.handle(windowChannels.minimize, (event) => getWindowForEvent(event).minimize());
+  ipcMain.handle(windowChannels.toggleMaximize, (event) => {
+    const window = getWindowForEvent(event);
+    if (window.isMaximized()) window.unmaximize();
+    else window.maximize();
+    return getWindowState(window);
   });
+  ipcMain.handle(windowChannels.close, (event) => getWindowForEvent(event).close());
+  ipcMain.handle(windowChannels.getState, (event) => getWindowState(getWindowForEvent(event)));
 }
 
 function probeServer(port) {
   return new Promise((resolve) => {
     const request = httpRequest({ hostname: serverHost, port, path: '/api/health', method: 'GET' }, (response) => {
-      response.resume();
-      resolve(Boolean(response.statusCode && response.statusCode < 500));
+      let body = '';
+      response.setEncoding('utf8');
+      response.on('data', (chunk) => { body += chunk; });
+      response.on('end', () => {
+        try {
+          const data = JSON.parse(body);
+          resolve(response.statusCode === 200 && data.app === 'EchoLang');
+        } catch { resolve(false); }
+      });
     });
     request.setTimeout(1000, () => {
       request.destroy();
@@ -59,7 +88,8 @@ function stopBackend() {
 }
 
 async function startBackend() {
-  serverPort = await findFreePort();
+  serverPort = preferredServerPort;
+  if (await probeServer(serverPort)) return;
   let launchError = null;
   const serverEntry = app.isPackaged ? path.join(sourceDir, 'server.mjs') : 'server.mjs';
   backendProcess = spawn(nodeCommand, [serverEntry], {
@@ -97,13 +127,19 @@ async function createWindow() {
     title: 'EchoLang',
     icon: path.join(sourceDir, 'favicon.ico'),
     backgroundColor: '#f3f6fa',
+    frame: false,
+    show: false,
+    thickFrame: true,
     autoHideMenuBar: true,
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
+      preload: path.join(currentDir, 'preload.cjs'),
     },
   });
+
+  mainWindow.setMenuBarVisibility(false);
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     if (/^https?:/i.test(url)) shell.openExternal(url);
@@ -114,6 +150,10 @@ async function createWindow() {
     event.preventDefault();
     if (/^https?:/i.test(url)) shell.openExternal(url);
   });
+  ['maximize', 'unmaximize', 'enter-full-screen', 'leave-full-screen'].forEach((eventName) => {
+    mainWindow.on(eventName, () => publishWindowState(mainWindow));
+  });
+  mainWindow.once('ready-to-show', () => mainWindow?.show());
   mainWindow.on('closed', () => { mainWindow = null; });
   await mainWindow.loadURL(appUrl);
 }
@@ -135,6 +175,19 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 app.on('activate', async () => {
-  if (!mainWindow && backendProcess) await createWindow();
+  if (!mainWindow && serverPort) await createWindow();
 });
-app.whenReady().then(bootstrap);
+const hasSingleInstanceLock = app.requestSingleInstanceLock();
+if (!hasSingleInstanceLock) app.quit();
+else {
+  app.on('second-instance', () => {
+    if (!mainWindow) return;
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.show();
+    mainWindow.focus();
+  });
+  app.whenReady().then(() => {
+    registerWindowControls();
+    return bootstrap();
+  });
+}

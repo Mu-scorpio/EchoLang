@@ -1,0 +1,455 @@
+.batch-grid {
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(340px, .72fr) minmax(0, 1.28fr);
+  gap: 18px;
+}
+
+.nav-button[data-page='batch'] .nav-glyph img {
+  filter: none;
+  opacity: .58;
+}
+
+.nav-button[data-page='batch'].is-active .nav-glyph img {
+  opacity: 1;
+}
+
+[data-theme='dark'] .nav-button[data-page='batch'] .nav-glyph img {
+  filter: brightness(1.55);
+}
+
+.batch-documents-panel,
+.batch-progress-panel {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.batch-panel-header {
+  min-height: 78px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.batch-panel-header h1 {
+  margin: 0;
+  color: var(--ink-strong);
+  font-size: 20px;
+  letter-spacing: -.035em;
+}
+
+.batch-import-wrap {
+  position: relative;
+}
+
+.batch-import-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 24;
+  width: 238px;
+  padding: 7px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+  transform-origin: top right;
+  animation: batch-menu-in 180ms var(--ease) both;
+}
+
+.batch-import-menu[hidden] {
+  display: none;
+}
+
+@keyframes batch-menu-in {
+  from { opacity: 0; transform: translateY(-5px) scale(.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.batch-import-option {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--ink-strong);
+  text-align: left;
+  transition: background-color 160ms var(--ease), color 160ms var(--ease);
+}
+
+.batch-import-option:hover,
+.batch-import-option:focus-visible {
+  background: var(--surface-active);
+  color: var(--blue);
+}
+
+.batch-import-option-icon {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-subtle);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.batch-import-option strong,
+.batch-import-option small {
+  display: block;
+}
+
+.batch-import-option strong {
+  font-size: 12px;
+}
+
+.batch-import-option small {
+  margin-top: 3px;
+  color: var(--ink-faint);
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.batch-document-list,
+.batch-queue-list {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+
+.batch-document-list {
+  padding: 14px 12px 18px;
+}
+
+.batch-document-row {
+  position: relative;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  min-height: 84px;
+  padding: 12px 13px;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 180ms var(--ease), transform 180ms var(--ease);
+}
+
+.batch-document-row:hover {
+  background: var(--surface-subtle);
+}
+
+.batch-document-row:active {
+  transform: scale(.992);
+}
+
+.batch-document-row.is-active {
+  background: var(--surface-active);
+}
+
+.batch-document-row.is-active::before {
+  content: '';
+  position: absolute;
+  inset: 10px auto 10px 0;
+  width: 3px;
+  border-radius: 4px;
+  background: var(--blue);
+}
+
+.batch-file-icon {
+  position: relative;
+  width: 42px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--blue);
+  color: #fff;
+  box-shadow: 0 6px 12px color-mix(in srgb, var(--blue) 18%, transparent);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  transition: background-color 220ms var(--ease), color 220ms var(--ease), box-shadow 220ms var(--ease);
+}
+
+.batch-file-icon::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-style: solid;
+  border-width: 0 10px 10px 0;
+  border-color: transparent rgba(255,255,255,.58) transparent transparent;
+}
+
+.batch-file-icon.is-complete {
+  border-color: var(--line-strong);
+  background: var(--surface);
+  color: var(--blue);
+  box-shadow: 0 4px 10px rgba(31, 54, 92, .07);
+}
+
+.batch-file-icon.is-complete::after {
+  border-right-color: var(--surface-active);
+}
+
+.batch-document-copy {
+  min-width: 0;
+}
+
+.batch-document-name {
+  display: block;
+  overflow: hidden;
+  color: var(--ink-strong);
+  font-size: 13px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.batch-document-meta {
+  display: flex;
+  gap: 14px;
+  margin-top: 7px;
+  color: var(--ink-faint);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.batch-documents-footer {
+  min-height: 62px;
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+.batch-documents-footer .batch-footer-export {
+  justify-self: end;
+}
+
+.batch-footer-count {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.batch-clear-button {
+  justify-self: start;
+  border-color: color-mix(in srgb, var(--rose) 45%, var(--line));
+  color: var(--rose);
+  background: transparent;
+}
+
+.batch-clear-button:hover,
+.batch-clear-button:focus-visible {
+  border-color: var(--rose);
+  background: var(--rose-soft);
+  color: var(--rose);
+}
+
+.batch-header-tools {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.batch-header-tools .icon-button {
+  width: 36px;
+  min-height: 36px;
+  padding: 0;
+}
+
+.batch-header-tools img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  opacity: .78;
+}
+
+[data-theme='dark'] .batch-header-tools img {
+  filter: invert(1) brightness(1.65);
+}
+
+.batch-start-button {
+  min-width: 88px;
+  margin-right: 4px;
+  white-space: nowrap;
+}
+
+.batch-queue-head,
+.batch-queue-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(105px, .36fr) minmax(150px, .72fr);
+  align-items: center;
+  column-gap: 18px;
+}
+
+.batch-queue-head {
+  min-height: 54px;
+  flex: 0 0 auto;
+  padding: 0 25px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 11px;
+}
+
+.batch-queue-row {
+  min-height: 96px;
+  padding: 17px 25px;
+  border-bottom: 1px solid var(--line);
+  transition: opacity 240ms var(--ease), transform 240ms var(--ease), max-height 240ms var(--ease), padding 240ms var(--ease);
+}
+
+.batch-queue-row.is-leaving {
+  max-height: 0;
+  min-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateX(12px);
+}
+
+.batch-queue-document {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.batch-queue-document .batch-file-icon {
+  width: 38px;
+  height: 42px;
+  flex: 0 0 auto;
+  font-size: 12px;
+}
+
+.batch-queue-document strong {
+  overflow: hidden;
+  color: var(--ink-strong);
+  font-size: 12px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.batch-queue-count {
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.batch-queue-count.is-error {
+  color: var(--rose);
+}
+
+.batch-progress-track {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.batch-progress-track span {
+  display: block;
+  width: var(--batch-progress, 0%);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--blue);
+  transition: width 260ms var(--ease);
+}
+
+.batch-queue-empty {
+  min-height: 100%;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  padding: 44px;
+  color: var(--ink-faint);
+  text-align: center;
+}
+
+.batch-empty-mark {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 13px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface-subtle);
+  color: var(--blue);
+  font-size: 22px;
+}
+
+.batch-queue-empty strong {
+  color: var(--ink-strong);
+  font-size: 14px;
+}
+
+.batch-queue-empty span {
+  max-width: 300px;
+  margin-top: 7px;
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+@media (max-width: 1120px) {
+  .batch-grid {
+    grid-template-columns: 320px minmax(0, 1fr);
+  }
+
+  .batch-queue-head,
+  .batch-queue-row {
+    grid-template-columns: minmax(150px, 1fr) 82px minmax(110px, .65fr);
+    column-gap: 12px;
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .batch-start-button {
+    min-width: 78px;
+    padding-inline: 10px;
+  }
+}
+
+@media (max-width: 780px) {
+  .batch-grid {
+    display: block;
+    height: auto;
+  }
+
+  .batch-documents-panel,
+  .batch-progress-panel {
+    min-height: 560px;
+  }
+
+  .batch-progress-panel {
+    margin-top: 13px;
+  }
+
+  .batch-header-tools .icon-button {
+    display: none;
+  }
+}

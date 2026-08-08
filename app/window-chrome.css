@@ -1,0 +1,245 @@
+:root {
+  --window-titlebar-height: 46px;
+  --window-control-width: 46px;
+}
+
+.window-titlebar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 100;
+  height: var(--window-titlebar-height);
+  display: flex;
+  align-items: stretch;
+  color: var(--ink-soft);
+  background: color-mix(in srgb, var(--surface) 89%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
+  backdrop-filter: blur(22px) saturate(1.16);
+  -webkit-backdrop-filter: blur(22px) saturate(1.16);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--surface) 65%, transparent);
+  user-select: none;
+  transition: background-color 220ms var(--ease), border-color 220ms var(--ease), opacity 160ms var(--ease);
+}
+
+.window-titlebar__drag-region {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  -webkit-app-region: drag;
+}
+
+.window-titlebar__identity {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink-strong);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+
+.window-titlebar__logo {
+  width: 24px;
+  height: 24px;
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 5px color-mix(in srgb, var(--blue) 12%, transparent));
+}
+
+.window-titlebar__divider {
+  width: 1px;
+  height: 16px;
+  flex: 0 0 auto;
+  background: var(--line-strong);
+}
+
+.window-titlebar .breadcrumb {
+  min-width: 0;
+  gap: 8px;
+}
+
+.window-titlebar .breadcrumb strong {
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.window-titlebar #breadcrumbMeta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+}
+
+.window-titlebar.is-context-changing .breadcrumb {
+  animation: titlebar-context-in 240ms var(--ease) both;
+}
+
+@keyframes titlebar-context-in {
+  from { opacity: .25; transform: translateX(-4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.window-controls {
+  flex: 0 0 auto;
+  display: none;
+  align-items: stretch;
+  -webkit-app-region: no-drag;
+}
+
+.has-desktop-window-controls .window-controls {
+  display: flex;
+}
+
+.window-control {
+  position: relative;
+  width: var(--window-control-width);
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink-soft);
+  transition: background-color 120ms ease-out, color 120ms ease-out;
+}
+
+.window-control svg {
+  width: 12px;
+  height: 12px;
+  overflow: visible;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  fill: none;
+  pointer-events: none;
+}
+
+.window-control:hover {
+  background: var(--surface-active);
+  color: var(--ink-strong);
+}
+
+.window-control:active {
+  background: var(--line);
+}
+
+.window-control--close:hover,
+.window-control--close:focus-visible {
+  background: #c42b1c;
+  color: #fff;
+}
+
+.window-control--close:active {
+  background: #a92315;
+}
+
+.window-control__restore,
+[data-maximized='true'] .window-control__maximize {
+  display: none;
+}
+
+[data-maximized='true'] .window-control__restore {
+  display: block;
+}
+
+.app-shell {
+  height: 100vh;
+  min-height: 100vh;
+  padding-top: var(--window-titlebar-height);
+}
+
+.rail {
+  top: var(--window-titlebar-height);
+  height: calc(100vh - var(--window-titlebar-height));
+}
+
+.rail-nav {
+  margin-top: 8px;
+}
+
+.app-main {
+  min-height: 0;
+  overflow: hidden;
+  padding-top: 18px;
+}
+
+.page.is-active {
+  height: 100%;
+}
+
+.reader-grid,
+.config-grid {
+  height: 100%;
+  min-height: 0;
+}
+
+.reader-scroll,
+.history-list,
+.provider-list,
+.config-right {
+  scrollbar-gutter: stable;
+}
+
+.paragraph-block {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 180px;
+}
+
+body:not(.is-window-focused) .window-titlebar {
+  opacity: .84;
+}
+
+@media (max-width: 780px) {
+  body {
+    overflow: auto;
+  }
+
+  .app-shell {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .window-titlebar__identity span,
+  .window-titlebar #breadcrumbMeta {
+    display: none;
+  }
+
+  .window-titlebar__divider {
+    margin-left: -3px;
+  }
+
+  .rail {
+    top: var(--window-titlebar-height);
+    height: auto;
+  }
+
+  .rail-nav {
+    margin: 0 auto 0 0;
+  }
+
+  .app-main {
+    overflow: visible;
+    padding-top: 13px;
+  }
+
+  .page.is-active,
+  .reader-grid,
+  .config-grid {
+    height: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

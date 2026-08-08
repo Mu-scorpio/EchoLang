@@ -1,7 +1,7 @@
 {
   "name": "echolang-desktop",
   "productName": "EchoLang",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "author": "Mu-scorpio",
   "description": "EchoLang desktop application",
@@ -11,7 +11,9 @@
     "start": "electron .",
     "dev": "electron .",
     "check": "node --check main.mjs",
-    "dist": "electron-builder --win nsis portable",
+    "dist": "electron-builder --win msi portable",
+    "dist:msi": "electron-builder --win msi",
+    "dist:portable": "electron-builder --win portable",
     "dist:dir": "electron-builder --win --dir"
   },
   "engines": {
@@ -27,6 +29,7 @@
     "asar": true,
     "files": [
       "main.mjs",
+      "preload.cjs",
       "package.json"
     ],
     "extraResources": [
@@ -74,7 +77,7 @@
     "win": {
       "target": [
         {
-          "target": "nsis",
+          "target": "msi",
           "arch": [
             "x64"
           ]
@@ -89,10 +92,10 @@
       "icon": "../assets/ui/echolang-brand.png",
       "signAndEditExecutable": false
     },
-    "nsis": {
+    "msi": {
       "oneClick": false,
       "perMachine": false,
-      "allowToChangeInstallationDirectory": true,
+      "runAfterFinish": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "EchoLang"

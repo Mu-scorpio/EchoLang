@@ -41,29 +41,34 @@
 
     [data-theme="dark"] {
       color-scheme: dark;
-      --bg: #111724;
-      --bg-wash: #161f30;
-      --surface: #182131;
-      --surface-subtle: #1d293a;
-      --surface-active: #1e3156;
-      --ink: #e9eef7;
-      --ink-strong: #ffffff;
-      --ink-soft: #9ba8bc;
-      --ink-faint: #66758e;
-      --line: #2a3649;
-      --line-strong: #3a4860;
-      --blue: #72a1ff;
-      --blue-dark: #8bb3ff;
-      --blue-soft: #253b66;
-      --mint: #47d29f;
-      --mint-soft: #183f38;
-      --amber: #f0b35d;
-      --amber-soft: #483720;
-      --rose: #ff8993;
-      --rose-soft: #4b2831;
-      --shadow-card: 0 16px 34px rgba(0, 0, 0, .16), 0 2px 7px rgba(0, 0, 0, .08);
-      --shadow-float: 0 24px 55px rgba(0, 0, 0, .35), 0 4px 15px rgba(0, 0, 0, .18);
+      --bg: #0d1117;
+      --bg-wash: #010409;
+      --surface: #161b22;
+      --surface-subtle: #21262d;
+      --surface-active: #1f2d3d;
+      --ink: #c9d1d9;
+      --ink-strong: #f0f6fc;
+      --ink-soft: #8b949e;
+      --ink-faint: #6e7681;
+      --line: #30363d;
+      --line-strong: #484f58;
+      --blue: #58a6ff;
+      --blue-dark: #1f6feb;
+      --blue-soft: #1c2d41;
+      --mint: #3fb950;
+      --mint-soft: #173b28;
+      --amber: #d29922;
+      --amber-soft: #3d2f13;
+      --rose: #f85149;
+      --rose-soft: #4b1f24;
+      --shadow-card: 0 16px 34px rgba(0, 0, 0, .24), 0 2px 7px rgba(0, 0, 0, .16);
+      --shadow-float: 0 24px 55px rgba(0, 0, 0, .48), 0 4px 15px rgba(0, 0, 0, .28);
     }
+
+    body[data-theme="light"][data-accent="claude"] { --blue: #c15f3c; --blue-dark: #a34b30; --blue-soft: #f3e2dc; --surface-active: #fbf1ed; --bg-wash: #f1e8e2; }
+    body[data-theme="light"][data-accent="burgundy"] { --blue: #8c2f4b; --blue-dark: #6f2039; --blue-soft: #f2dce4; --surface-active: #faf0f3; --bg-wash: #f0e6ea; }
+    body[data-theme="light"][data-accent="orange"] { --blue: #d76524; --blue-dark: #b64e15; --blue-soft: #f9e4d4; --surface-active: #fff3e9; --bg-wash: #f3e9df; }
+    body[data-theme="light"][data-accent="sage"] { --blue: #557761; --blue-dark: #3f5f4a; --blue-soft: #dfeae2; --surface-active: #eff6f1; --bg-wash: #e7eee9; }
 
     * { box-sizing: border-box; }
     html, body { min-height: 100%; }
@@ -91,12 +96,6 @@
       border-right: 1px solid var(--line);
       backdrop-filter: blur(20px);
     }
-    .brand-mark {
-      width: 46px; height: 46px; display: grid; place-items: center;
-      border: 0; border-radius: 14px;
-      background: transparent; user-select: none;
-    }
-    .brand-mark img { width: 50px; height: 50px; display: block; object-fit: contain; }
     .rail-nav { display: grid; gap: 10px; margin-top: 42px; width: 100%; }
     .nav-button {
       min-height: 57px; padding: 9px 3px 8px; display: grid; place-items: center; gap: 4px;
@@ -105,9 +104,12 @@
     .nav-button:hover { background: var(--surface-subtle); color: var(--ink-soft); }
     .nav-button.is-active { background: var(--surface-active); color: var(--blue); }
     .nav-label { font-size: 11px; line-height: 1; }
-    .nav-glyph { width: 21px; height: 21px; display: grid; place-items: center; font-size: 20px; line-height: 1; font-weight: 500; }
-    .nav-glyph img { width: 21px; height: 21px; display: block; object-fit: contain; }
-    [data-theme="dark"] .nav-glyph img { filter: invert(1) brightness(1.7); }
+    .nav-glyph { width: 22px; height: 22px; display: grid; place-items: center; }
+    .nav-icon { width: 22px; height: 22px; display: block; background: currentColor; mask: var(--nav-icon) center / contain no-repeat; -webkit-mask: var(--nav-icon) center / contain no-repeat; }
+    .nav-icon-reader { --nav-icon: url('/assets/ui/nav-reader.svg'); }
+    .nav-icon-batch { --nav-icon: url('/assets/ui/nav-batch.svg'); }
+    .nav-icon-api { --nav-icon: url('/assets/ui/api-settings.svg'); }
+    .nav-icon-settings { --nav-icon: url('/assets/ui/general-settings.svg'); }
     .rail-bottom { margin-top: auto; display: grid; gap: 9px; width: 100%; }
     .theme-button { min-height: 42px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 11px; background: var(--surface-subtle); color: var(--ink-soft); transition: .2s var(--ease); }
     .theme-emoji { display: block; font-size: 18px; line-height: 1; opacity: .82; transition: transform .25s var(--ease), opacity .2s var(--ease); }
@@ -115,12 +117,9 @@
     .theme-button:hover { color: var(--blue); border-color: var(--blue-soft); transform: translateY(-1px); }
 
     .app-main { min-width: 0; padding: 20px 22px 24px; }
-    .topbar { min-height: 50px; display: flex; align-items: center; justify-content: space-between; gap: 18px; margin: 0 auto 18px; max-width: 1680px; }
     .breadcrumb { display: flex; align-items: center; gap: 10px; min-width: 0; color: var(--ink-soft); }
     .breadcrumb strong { color: var(--ink-strong); font-size: 15px; }
     .breadcrumb-divider { color: var(--ink-faint); }
-    .service-status { margin-left: 10px; color: var(--ink-faint); font-size: 11px; white-space: nowrap; }
-    .service-status.is-ready { color: var(--mint); }
     .icon-button, .button {
       min-height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       padding: 0 13px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
@@ -151,7 +150,7 @@
     .search-box input { width: 100%; height: 40px; padding: 0 35px 0 13px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--surface-subtle); color: var(--ink); }
     .search-box .search-icon { position: absolute; width: 16px; height: 16px; right: 12px; top: 12px; object-fit: contain; opacity: .7; }
     .history-list { padding: 0 10px; overflow: auto; }
-    .history-item { position: relative; display: grid; grid-template-columns: 36px minmax(0, 1fr) 14px; align-items: center; gap: 11px; padding: 14px 10px; border-radius: 11px; border-bottom: 1px solid var(--line); cursor: grab; transition: background .2s var(--ease), opacity .2s var(--ease), transform .2s var(--ease); }
+    .history-item { position: relative; display: grid; grid-template-columns: 36px minmax(0, 1fr); align-items: center; gap: 11px; padding: 14px 10px; border-radius: 11px; border-bottom: 1px solid var(--line); cursor: grab; transition: background .2s var(--ease), opacity .2s var(--ease), transform .2s var(--ease); }
     .history-item:active { cursor: grabbing; }
     .history-item:hover { background: var(--surface-subtle); }
     .history-item.is-active { background: var(--surface-active); border-bottom-color: transparent; }
@@ -165,7 +164,6 @@
     .file-badge.xls { background: #1fa36a; }
     .history-name { display: block; overflow: hidden; color: var(--ink-strong); font-weight: 600; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
     .history-meta { display: flex; gap: 13px; margin-top: 6px; color: var(--ink-faint); font-size: 11px; }
-    .history-check { color: var(--mint); font-size: 17px; }
     .history-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding: 14px 16px 17px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 12px; }
     .history-footer strong { color: var(--ink-strong); font-weight: 700; }
     .pager { display: flex; align-items: center; gap: 12px; }
@@ -177,7 +175,6 @@
     .reader-header-top { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
     .document-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
     .document-title h2 { margin: 0; overflow: hidden; color: var(--ink-strong); font-size: 15px; text-overflow: ellipsis; white-space: nowrap; }
-    .document-title .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 4px var(--mint-soft); }
     .reader-tools { display: flex; align-items: center; gap: 7px; }
     .reader-tools .icon-button { width: 34px; padding: 0; min-height: 34px; }
     .reader-tools .icon-button img { width: 18px; height: 18px; display: block; object-fit: contain; opacity: .76; transition: opacity .2s var(--ease), transform .2s var(--ease); }
@@ -193,7 +190,11 @@
     .reader-model-select { width: min(245px, 22vw); height: 35px; min-width: 130px; padding: 0 28px 0 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-subtle); color: var(--ink-strong); overflow: hidden; text-overflow: ellipsis; }
     .reader-model-select:disabled { opacity: .6; cursor: not-allowed; }
     .reader-start-button { flex: 0 0 auto; white-space: nowrap; }
-    .language-arrow { color: var(--ink-faint); font-size: 17px; }
+    .language-swap { width: 34px; height: 34px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 9px; background: transparent; color: var(--ink-faint); font-size: 20px; line-height: 1; transition: color .2s var(--ease), background .2s var(--ease), transform .34s var(--ease); }
+    .language-swap:hover { background: var(--surface-active); color: var(--blue); }
+    .language-swap.is-swapping { transform: rotate(180deg); }
+    .language-select.is-swapping { animation: language-select-swap .34s var(--ease); }
+    @keyframes language-select-swap { 45% { opacity: .35; transform: translateY(-3px); } 100% { opacity: 1; transform: none; } }
     .mode-switch { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: min(224px, 100%); gap: 0; margin-left: auto; padding: 3px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-subtle); }
     .mode-switch-thumb { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc((100% - 6px) / 3); border-radius: 6px; background: var(--surface); box-shadow: 0 1px 5px rgba(50, 68, 94, .10); pointer-events: none; transition: transform .32s var(--ease); }
     body[data-mode="parallel"] .mode-switch-thumb { transform: translateX(100%); }
@@ -202,8 +203,6 @@
     .mode-switch button.is-active { background: transparent; color: var(--ink-strong); box-shadow: none; }
     .reader-scroll { flex: 1; min-height: 0; overflow: auto; padding: 23px clamp(24px, 6vw, 92px) 110px; }
     .session-title { display: flex; align-items: center; gap: 8px; color: var(--ink-strong); font-size: 12px; font-weight: 700; }
-    .session-title .mini-pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); animation: pulse 1.65s infinite; }
-    @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--mint) 25%, transparent); } 50% { box-shadow: 0 0 0 6px transparent; } }
     .session-desc { margin-top: 5px; color: var(--ink-soft); font-size: 11px; }
     .session-metrics { display: flex; align-items: center; gap: 15px; color: var(--ink-soft); font-size: 11px; white-space: nowrap; }
     .session-metrics b { color: var(--ink-strong); font-size: 12px; }
@@ -211,6 +210,11 @@
     .reader-status-line .session-desc { min-width: 0; margin-top: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .reader-status-line[hidden] { display: none; }
     .paragraph-list { max-width: 1120px; margin: 0 auto; }
+    .document-visual { width: min(100%, 850px); margin: 8px auto 28px; display: grid; place-items: center; break-inside: avoid; }
+    .document-visual img { display: block; width: auto; height: auto; max-width: 100%; max-height: 72vh; object-fit: contain; border-radius: 3px; }
+    .document-visual.is-formula { width: min(92%, 760px); margin-block: 2px 24px; }
+    .document-visual.is-formula img { max-height: 220px; border-radius: 0; }
+    .document-visual-fallback { max-width: 100%; overflow-x: auto; padding: 12px 18px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-subtle); color: var(--ink-strong); font-family: Cambria, Georgia, serif; font-size: 15px; white-space: pre-wrap; }
     .paragraph-block { position: relative; max-width: 850px; padding: 0 14px 28px; margin: 0 auto 22px; border-bottom: 1px solid var(--line); }
     .paragraph-block:last-child { border-bottom: 0; }
     .paragraph-number { position: absolute; left: -22px; top: 4px; color: var(--ink-faint); font-size: 10px; font-variant-numeric: tabular-nums; }
@@ -322,9 +326,11 @@
     .prompt-preview { max-height: 235px; overflow: auto; margin: 0; padding: 11px; color: var(--ink-strong); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 10px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
     .field:hover, .text-field:hover { border-color: var(--ink-faint); }
     .field:focus, .text-field:focus { border-color: var(--blue); outline: none; background: var(--surface); }
-    .key-input { padding-right: 12px; letter-spacing: 0; font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif; }
+    .key-input { padding-right: 44px; letter-spacing: 0; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .key-input[type="password"] { letter-spacing: .08em; }
     .key-input::placeholder { letter-spacing: 0; }
-    .eye-button { position: absolute; right: 7px; top: 7px; width: 28px; height: 28px; border-radius: 7px; background: transparent; color: var(--ink-faint); }
+    .eye-button { position: absolute; right: 7px; top: 7px; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 7px; background: transparent; color: var(--ink-faint); }
+    .eye-button img { width: 17px; height: 17px; display: block; opacity: .72; }
     .field-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
     .helper { display: flex; justify-content: space-between; gap: 10px; margin-top: 9px; color: var(--ink-faint); font-size: 11px; }
     .helper a, .config-links a { color: var(--blue); text-decoration: none; }
@@ -355,18 +361,18 @@
     .available-models button:hover, .available-models button.is-selected { background: var(--surface-active); color: var(--blue); }
     .configured-model-list { display: grid; gap: 6px; min-height: 56px; padding: 7px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface-subtle); }
     .configured-model-empty { display: grid; place-items: center; min-height: 52px; color: var(--ink-faint); font-size: 11px; }
-    .configured-model-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; gap: 9px; min-height: 44px; padding: 6px 8px; border: 1px solid transparent; border-radius: 9px; background: var(--surface); cursor: context-menu; transition: border-color .18s var(--ease), background .18s var(--ease); }
+    .configured-model-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; gap: 10px; min-height: 50px; padding: 8px 10px; border: 1px solid transparent; border-radius: 9px; background: var(--surface); cursor: context-menu; transition: border-color .18s var(--ease), background .18s var(--ease); }
     .configured-model-row:hover { border-color: var(--line-strong); background: var(--surface-active); }
     .configured-model-row.is-reader-selected { border-color: color-mix(in srgb, var(--blue) 55%, var(--line)); }
     .configured-model-row .provider-logo { width: 28px; height: 28px; }
     .configured-model-row .provider-logo img { width: 17px; height: 17px; }
-    .configured-model-name { overflow: hidden; color: var(--ink-strong); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-    .configured-model-note { display: block; margin-top: 3px; color: var(--ink-faint); font-family: inherit; font-size: 10px; }
+    .configured-model-name { overflow: hidden; color: var(--ink-strong); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 13.5px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+    .configured-model-note { display: block; margin-top: 3px; color: var(--ink-faint); font-family: inherit; font-size: 11px; }
     .model-default-badge { padding: 4px 6px; border-radius: 6px; background: var(--mint-soft); color: var(--mint); font-size: 10px; white-space: nowrap; }
     .model-library-modal[hidden] { display: none; }
     .model-library-modal { position: fixed; inset: 0; z-index: 85; display: grid; place-items: center; padding: 22px; }
     .model-library-backdrop { position: absolute; inset: 0; background: rgba(12, 22, 39, .32); backdrop-filter: blur(5px); }
-    .model-library-dialog { position: relative; width: min(760px, 100%); max-height: min(760px, calc(100vh - 44px)); display: flex; flex-direction: column; padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: var(--shadow-float); animation: dialog-in .24s var(--ease) both; }
+    .model-library-dialog { position: relative; width: min(820px, 100%); max-height: min(760px, calc(100vh - 44px)); display: flex; flex-direction: column; padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: var(--shadow-float); animation: dialog-in .24s var(--ease) both; }
     .model-library-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; margin-bottom: 17px; }
     .model-library-head h2 { margin: 0; color: var(--ink-strong); font-size: 18px; }
     .model-library-head p { margin: 6px 0 0; color: var(--ink-soft); font-size: 11px; }
@@ -378,10 +384,10 @@
     .model-library-group { margin-bottom: 12px; border: 1px solid var(--line); border-radius: 11px; overflow: hidden; }
     .model-library-group-head { display: flex; justify-content: space-between; gap: 10px; padding: 10px 12px; background: var(--surface-subtle); color: var(--ink-strong); font-size: 12px; font-weight: 700; }
     .model-library-group-head span { color: var(--ink-faint); font-size: 10px; font-weight: 500; }
-    .model-library-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) 31px; align-items: center; gap: 9px; padding: 8px 12px; border-top: 1px solid var(--line); }
+    .model-library-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) 31px; align-items: center; gap: 10px; min-height: 54px; padding: 10px 12px; border-top: 1px solid var(--line); }
     .model-library-row .provider-logo { width: 28px; height: 28px; }
     .model-library-row .provider-logo img { width: 17px; height: 17px; }
-    .model-library-row code { overflow: hidden; color: var(--ink-strong); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .model-library-row code { overflow: hidden; color: var(--ink-strong); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 14px; line-height: 1.4; text-overflow: ellipsis; white-space: nowrap; }
     .model-library-action { width: 29px; height: 29px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface); color: var(--blue); font-size: 18px; line-height: 1; }
     .model-library-action:hover { border-color: var(--blue); background: var(--surface-active); }
     .model-library-action.is-remove { color: var(--rose); }
@@ -397,6 +403,15 @@
 
     .custom-provider-modal[hidden] { display: none; }
     .custom-provider-modal { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 22px; }
+    .confirm-modal[hidden] { display: none; }
+    .confirm-modal { position: fixed; inset: 0; z-index: 95; display: grid; place-items: center; padding: 22px; }
+    .confirm-backdrop { position: absolute; inset: 0; background: rgba(19, 27, 41, .38); backdrop-filter: blur(5px); }
+    .confirm-dialog { position: relative; width: min(420px, 100%); padding: 25px; border: 1px solid var(--line-strong); border-radius: 18px; background: var(--surface); box-shadow: 0 24px 70px rgba(18, 27, 42, .24); }
+    .confirm-dialog h2 { margin: 0; color: var(--ink-strong); font-size: 18px; }
+    .confirm-dialog p { margin: 10px 0 0; color: var(--ink-soft); font-size: 13px; line-height: 1.7; }
+    .confirm-dialog-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 24px; }
+    .button.danger { border-color: var(--rose); background: var(--rose); color: #fff; }
+    .button.danger:hover { border-color: var(--rose); background: color-mix(in srgb, var(--rose) 86%, #000); color: #fff; }
     .custom-provider-backdrop { position: absolute; inset: 0; background: rgba(12, 22, 39, .32); backdrop-filter: blur(5px); }
     .custom-provider-dialog { position: relative; width: min(460px, 100%); padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: var(--shadow-float); animation: dialog-in .24s var(--ease) both; }
     @keyframes dialog-in { from { opacity: 0; transform: translateY(9px) scale(.98); } to { opacity: 1; transform: none; } }
@@ -437,7 +452,6 @@
       .rail-bottom { display: flex; width: auto; margin: 0; gap: 7px; }
       .theme-button { min-width: 40px; }
       .app-main { padding: 13px 12px 18px; }
-      .topbar { margin-bottom: 13px; }
       .breadcrumb-divider, .breadcrumb span:last-child { display: none; }
       .reader-grid { display: block; min-height: 0; }
       .history-panel { margin-bottom: 13px; max-height: 270px; }
@@ -446,7 +460,7 @@
       .history-footer { padding-top: 9px; padding-bottom: 9px; }
       .reader-panel { min-height: calc(100vh - 325px); }
       .reader-header { padding: 14px; }
-      .reader-tools .icon-button:nth-child(n+3) { display: none; }
+      .reader-tools > .icon-button:not(#readingSettings), .reader-tools .export-wrap { display: none; }
       .language-bar { flex-wrap: wrap; margin-top: 14px; }
       .reader-model-select { width: min(245px, 42vw); }
       .mode-switch { margin-left: 0; }
@@ -466,17 +480,48 @@
       .config-search { margin-bottom: 7px; }
     }
   </style>
+  <link rel="stylesheet" href="/app/window-chrome.css?v=20260807-v1" />
+  <link rel="stylesheet" href="/app/batch-translation.css?v=20260807-v1" />
+  <link rel="stylesheet" href="/app/reader-settings.css?v=20260808-v1" />
+  <link rel="stylesheet" href="/app/product-upgrades.css?v=20260808-v3" />
 </head>
-<body data-theme="light" data-mode="parallel">
+<body data-theme="light" data-accent="blue" data-mode="parallel">
+  <header class="window-titlebar" id="windowTitlebar" data-maximized="false">
+    <div class="window-titlebar__drag-region">
+      <div class="window-titlebar__identity">
+        <img class="window-titlebar__logo" src="/assets/ui/echolang-brand.png?v=20260805-v3" alt="" />
+        <span>EchoLang</span>
+      </div>
+      <span class="window-titlebar__divider" aria-hidden="true"></span>
+      <div class="breadcrumb"><strong id="breadcrumbTitle">文档阅读</strong><span class="breadcrumb-divider">/</span><span id="breadcrumbMeta">Translation desk</span></div>
+    </div>
+    <div class="window-controls" id="windowControls" aria-label="窗口控制">
+      <button class="window-control" type="button" data-window-action="minimize" title="最小化窗口" aria-label="最小化窗口">
+        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.5 6.5h9" /></svg>
+      </button>
+      <button class="window-control" type="button" data-window-action="toggle-maximize" title="最大化窗口" aria-label="最大化窗口">
+        <svg class="window-control__maximize" viewBox="0 0 12 12" aria-hidden="true"><rect x="1.75" y="1.75" width="8.5" height="8.5" /></svg>
+        <svg class="window-control__restore" viewBox="0 0 12 12" aria-hidden="true"><path d="M3.25 3.25V1.75h7v7h-1.5M1.75 3.25h7v7h-7z" /></svg>
+      </button>
+      <button class="window-control window-control--close" type="button" data-window-action="close" title="关闭窗口" aria-label="关闭窗口">
+        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="m2 2 8 8M10 2 2 10" /></svg>
+      </button>
+    </div>
+  </header>
   <div class="app-shell">
     <aside class="rail" aria-label="主导航">
-      <div class="brand-mark" title="EchoLang"><img src="/assets/ui/echolang-brand.png?v=20260805-v3" alt="EchoLang" /></div>
       <nav class="rail-nav">
         <button class="nav-button is-active" data-page="reader" aria-label="文档阅读">
-          <span class="nav-glyph">⌁</span><span class="nav-label">阅读</span>
+          <span class="nav-glyph"><span class="nav-icon nav-icon-reader"></span></span><span class="nav-label">阅读</span>
         </button>
-        <button class="nav-button" data-page="config" aria-label="模型设置">
-          <span class="nav-glyph">⚙</span><span class="nav-label">设置</span>
+        <button class="nav-button" data-page="batch" aria-label="批量翻译">
+          <span class="nav-glyph"><span class="nav-icon nav-icon-batch"></span></span><span class="nav-label">批量翻译</span>
+        </button>
+        <button class="nav-button" data-page="config" aria-label="API 设置">
+          <span class="nav-glyph"><span class="nav-icon nav-icon-api"></span></span><span class="nav-label">API 设置</span>
+        </button>
+        <button class="nav-button" data-page="settings" aria-label="应用设置">
+          <span class="nav-glyph"><span class="nav-icon nav-icon-settings"></span></span><span class="nav-label">设置</span>
         </button>
       </nav>
       <div class="rail-bottom">
@@ -485,10 +530,6 @@
     </aside>
 
     <main class="app-main">
-      <header class="topbar">
-        <div class="breadcrumb"><strong id="breadcrumbTitle">文档阅读</strong><span class="breadcrumb-divider">/</span><span id="breadcrumbMeta">EchoLang translation desk</span></div>
-      </header>
-
       <section class="page is-active" id="page-reader" aria-label="文档阅读">
         <div class="reader-grid">
           <aside class="panel history-panel">
@@ -499,70 +540,75 @@
                 <input class="hidden-file" id="fileInput" type="file" multiple accept=".txt,.md,.html,.htm,.doc,.docx,.pdf,.ppt,.pptx,.xls,.xlsx,.csv,.tsv,.json" />
               </div>
             </div>
-            <div class="search-box">
-              <input id="historySearch" type="search" autocomplete="off" placeholder="搜索文档..." aria-label="搜索文档" />
-              <img class="search-icon" src="/assets/ui/search.png" alt="" />
-            </div>
             <div class="history-list" id="historyList">
               <div class="history-item is-active" data-doc="The Quiet Work of Attention.md">
-                <span class="file-badge">W</span><span><strong class="history-name">The Quiet Work of Attention.md</strong><span class="history-meta"><span>今天</span><span>English sample</span></span></span><span class="history-check">·</span>
+                <span class="file-badge">W</span><span><strong class="history-name">The Quiet Work of Attention.md</strong><span class="history-meta"><span>今天</span><span>English sample</span></span></span>
               </div>
               <div class="history-item" data-doc="ETF Market Analysis.pdf">
-                <span class="file-badge pdf">PDF</span><span><strong class="history-name">ETF Market Analysis.pdf</strong><span class="history-meta"><span>今天 10:15</span><span>8,231 字</span></span></span><span class="history-check">✓</span>
+                <span class="file-badge pdf">PDF</span><span><strong class="history-name">ETF Market Analysis.pdf</strong><span class="history-meta"><span>今天 10:15</span><span>8,231 字</span></span></span>
               </div>
               <div class="history-item" data-doc="Q2 Investment Strategy.pptx">
-                <span class="file-badge ppt">PPT</span><span><strong class="history-name">Q2 Investment Strategy.pptx</strong><span class="history-meta"><span>昨天 16:45</span><span>15,678 字</span></span></span><span class="history-check">✓</span>
+                <span class="file-badge ppt">PPT</span><span><strong class="history-name">Q2 Investment Strategy.pptx</strong><span class="history-meta"><span>昨天 16:45</span><span>15,678 字</span></span></span>
               </div>
               <div class="history-item" data-doc="ESG Research Report.docx">
-                <span class="file-badge">W</span><span><strong class="history-name">ESG Research Report.docx</strong><span class="history-meta"><span>昨天 11:20</span><span>9,876 字</span></span></span><span class="history-check">✓</span>
+                <span class="file-badge">W</span><span><strong class="history-name">ESG Research Report.docx</strong><span class="history-meta"><span>昨天 11:20</span><span>9,876 字</span></span></span>
               </div>
               <div class="history-item" data-doc="Global Equities Outlook.pdf">
-                <span class="file-badge pdf">PDF</span><span><strong class="history-name">Global Equities Outlook.pdf</strong><span class="history-meta"><span>5月20日</span><span>11,542 字</span></span></span><span class="history-check">✓</span>
+                <span class="file-badge pdf">PDF</span><span><strong class="history-name">Global Equities Outlook.pdf</strong><span class="history-meta"><span>5月20日</span><span>11,542 字</span></span></span>
               </div>
               <div class="history-item" data-doc="Market Data Summary.xlsx">
-                <span class="file-badge xls">XLSX</span><span><strong class="history-name">Market Data Summary.xlsx</strong><span class="history-meta"><span>5月19日</span><span>6,321 字</span></span></span><span class="history-check">✓</span>
+                <span class="file-badge xls">XLSX</span><span><strong class="history-name">Market Data Summary.xlsx</strong><span class="history-meta"><span>5月19日</span><span>6,321 字</span></span></span>
               </div>
               <div class="history-item" data-doc="Factor Model Overview.docx">
-                <span class="file-badge">W</span><span><strong class="history-name">Factor Model Overview.docx</strong><span class="history-meta"><span>5月18日</span><span>7,654 字</span></span></span><span class="history-check">✓</span>
+                <span class="file-badge">W</span><span><strong class="history-name">Factor Model Overview.docx</strong><span class="history-meta"><span>5月18日</span><span>7,654 字</span></span></span>
               </div>
             </div>
             <div class="empty-state" id="historyEmpty">没有匹配的文档</div>
             <div class="history-footer"><span id="historySummary"><strong>0</strong> 个文档</span><span class="pager"><button disabled aria-label="上一页">‹</button><button disabled aria-label="下一页">›</button></span></div>
           </aside>
 
+          <div class="pane-resizer" data-pane="reader" role="separator" aria-label="调整阅读文档列表宽度" aria-orientation="vertical"></div>
+
           <section class="panel reader-panel">
             <div class="reader-header">
               <div class="reader-header-top">
-                <div class="document-title"><span class="status-dot"></span><h2 id="documentTitle">The Quiet Work of Attention.md</h2><button class="source-file-button" id="openSourceFile" title="打开原文件" aria-label="打开原文件" disabled><img src="/assets/ui/reader-file.svg" alt="" /></button></div>
+                <div class="document-title"><h2 id="documentTitle">The Quiet Work of Attention.md</h2><button class="source-file-button" id="openSourceFile" title="打开原文件" aria-label="打开原文件" disabled><img src="/assets/ui/reader-file.svg" alt="" /></button></div>
                 <div class="reader-tools">
                   <button class="icon-button" id="downloadTranslation" title="下载译文" aria-label="下载译文"><img src="/assets/ui/reader-download.svg" alt="" /></button>
                   <button class="icon-button" id="copyTranslation" title="复制内容" aria-label="复制内容"><img src="/assets/ui/reader-copy.svg" alt="" /></button>
-                  <button class="icon-button" id="readingSettings" title="阅读设置" aria-label="阅读设置"><img src="/assets/ui/reader-book.svg" alt="" /></button>
+                  <button class="icon-button" id="readingSettings" title="打开应用设置" aria-label="打开应用设置"><img src="/assets/ui/general-settings.svg" alt="" /></button>
                   <div class="export-wrap">
-                    <button class="icon-button" id="exportButton" title="导出当前阅读模式" aria-label="导出当前阅读模式"><span>↥</span></button>
+                    <button class="icon-button" id="exportButton" title="导出当前阅读模式" aria-label="导出当前阅读模式"><img src="/assets/ui/reader-export.svg" alt="" /></button>
                     <div class="export-menu" id="exportMenu" role="menu">
-                      <button data-export="txt">纯文本 .txt</button>
-                      <button data-export="md">Markdown .md</button>
-                      <button data-export="html">网页 .html</button>
-                      <button data-export="json">段落数据 .json</button>
-                      <button data-export="csv">段落表格 .csv</button>
+                      <button data-export="docx" data-extension="DOCX">Word 文档</button>
+                      <button data-export="pdf" data-extension="PDF">PDF 文档</button>
+                      <button data-export="txt" data-extension="TXT">纯文本</button>
+                      <button data-export="md" data-extension="MD">Markdown</button>
+                      <button data-export="html" data-extension="HTML">网页</button>
+                      <button data-export="json" data-extension="JSON">段落数据</button>
+                      <button data-export="csv" data-extension="CSV">段落表格</button>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="language-bar">
-                <select class="language-select" aria-label="原文语言"><option>英语</option><option>日语</option><option>法语</option></select>
-                <span class="language-arrow">→</span>
-                 <select class="language-select" aria-label="目标语言"><option>中文</option><option>英语</option><option>日语</option></select>
-                  <label class="reader-model-control"><span>模型</span><select class="reader-model-select" id="readerModelSelect" aria-label="翻译模型"></select></label>
-                 <button class="button primary small reader-start-button" id="startTranslation">开始翻译</button>
+                <select class="language-select" aria-label="原文语言"><option>英语</option><option>中文</option><option>日语</option><option>法语</option></select>
+                <button class="language-swap" id="swapLanguages" type="button" title="互换语言" aria-label="互换原文和目标语言">⇄</button>
+                 <select class="language-select" aria-label="目标语言"><option>中文</option><option>英语</option><option>日语</option><option>法语</option></select>
+                 <label class="reader-model-control"><span>模型</span><select class="reader-model-select" id="readerModelSelect" aria-label="翻译模型"></select></label>
+                 <button class="button primary small reader-start-button" id="startTranslation">翻译</button>
+                 <div class="translation-progress-inline" id="progressCard" style="display:none" role="status" aria-live="polite">
+                   <span class="progress-percent" id="progressPercent">0%</span>
+                   <div class="progress-track"><span id="progressBar"></span></div>
+                   <div class="translation-progress-copy"><strong id="progressTitle">等待翻译任务</strong><span id="progressDetail">等待翻译任务</span><span class="progress-eta" id="progressEta">正在估算剩余时间</span></div>
+                 </div>
                  <div class="mode-switch" id="modeSwitch" role="group" aria-label="阅读模式">
                    <span class="mode-switch-thumb" aria-hidden="true"></span>
                    <button type="button" data-mode="source" aria-pressed="false">原文</button><button type="button" class="is-active" data-mode="parallel" aria-pressed="true">中英对照</button><button type="button" data-mode="translation" aria-pressed="false">翻译</button>
                  </div>
                </div>
                <div class="reader-status-line" id="translationStatusLine" hidden>
-                 <div class="session-title"><span class="mini-pulse"></span><span id="sessionStatus">尚未开始翻译</span></div>
+                 <div class="session-title"><span id="sessionStatus">尚未开始翻译</span></div>
                  <div class="session-desc" id="sessionDesc">导入文档后，程序会逐段请求模型，完成一段就保存一段。</div>
                  <div class="session-metrics"><span>RPM <b id="rpmValue">—</b></span><span>请求 <b id="requestValue">—</b></span></div>
                </div>
@@ -596,19 +642,55 @@
                 </article>
               </div>
             </div>
-            <div class="progress-card" id="progressCard" style="display:none">
-              <div class="progress-top"><div class="progress-ring"><span id="progressPercent">34%</span></div><div class="progress-copy"><strong id="progressTitle">正在翻译段落</strong><span id="progressDetail">第 3 段，共 8 段</span></div></div>
-              <div class="progress-bar"><span id="progressBar"></span></div>
-            </div>
           </section>
         </div>
       </section>
 
-      <section class="page" id="page-config" aria-label="模型设置">
+      <section class="page" id="page-batch" aria-label="批量翻译">
+        <div class="batch-grid">
+          <section class="panel batch-documents-panel">
+            <header class="batch-panel-header">
+              <h1>文档列表</h1>
+              <div class="batch-import-wrap">
+                <button class="button batch-import-button" id="batchImportButton" type="button" aria-haspopup="menu" aria-expanded="false"><span>＋</span>导入</button>
+                <div class="batch-import-menu" id="batchImportMenu" role="menu" hidden>
+                  <button class="batch-import-option" type="button" role="menuitem" data-batch-import="files"><span class="batch-import-option-icon">DOC</span><span><strong>选择多个文件</strong><small>可一次选择多份支持的文档</small></span></button>
+                  <button class="batch-import-option" type="button" role="menuitem" data-batch-import="folder"><span class="batch-import-option-icon">DIR</span><span><strong>选择文件夹</strong><small>递归扫描文件夹及其子文件夹</small></span></button>
+                </div>
+                <input class="hidden-file" id="batchFileInput" type="file" multiple accept=".txt,.md,.csv,.tsv,.json,.html,.htm,.docx,.pdf,.xlsx,.pptx" />
+                <input class="hidden-file" id="batchFolderInput" type="file" multiple webkitdirectory directory accept=".txt,.md,.csv,.tsv,.json,.html,.htm,.docx,.pdf,.xlsx,.pptx" />
+              </div>
+            </header>
+            <div class="batch-document-list" id="batchDocumentList"></div>
+            <footer class="batch-documents-footer">
+              <button class="button quiet small batch-clear-button" id="batchClearButton" type="button">清空</button>
+              <span class="batch-footer-count" id="batchDocumentCount">0 个文档</span>
+              <button class="button small batch-footer-export" id="batchExportButton" type="button">导出</button>
+            </footer>
+          </section>
+
+          <div class="pane-resizer" data-pane="batch" role="separator" aria-label="调整批量文档列表宽度" aria-orientation="vertical"></div>
+
+          <section class="panel batch-progress-panel">
+            <header class="batch-panel-header">
+              <h1>翻译进度</h1>
+              <div class="batch-header-tools">
+                <button class="button primary small batch-start-button" id="batchStartButton" type="button">开始翻译</button>
+                <button class="icon-button" id="batchDownloadButton" type="button" title="下载批量译文" aria-label="下载批量译文"><img src="/assets/ui/reader-download.svg" alt="" /></button>
+                <button class="icon-button" id="batchCopyButton" type="button" title="复制批量译文" aria-label="复制批量译文"><img src="/assets/ui/reader-copy.svg" alt="" /></button>
+                <button class="icon-button" id="batchSettingsButton" type="button" title="打开 API 设置" aria-label="打开 API 设置"><img src="/assets/ui/api-settings.svg" alt="" /></button>
+              </div>
+            </header>
+            <div class="batch-queue-head"><span>文档名</span><span>已翻译段落/总段落</span><span aria-hidden="true"></span></div>
+            <div class="batch-queue-list" id="batchQueueList"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="page" id="page-config" aria-label="API 设置">
         <div class="panel config-grid">
           <aside class="config-panel config-left">
             <div class="config-heading"><div class="config-heading-title"><h1>模型供应商配置</h1><div class="config-heading-actions"><button class="button small" id="restoreProviders" hidden>恢复</button><button class="button small add-provider-button" id="addProvider">＋ 自定义</button></div></div></div>
-            <div class="search-box config-search"><input type="search" autocomplete="off" placeholder="搜索模型平台..." aria-label="搜索模型平台" /><img class="search-icon" src="/assets/ui/search.png" alt="" /></div>
             <div class="provider-list">
               <div class="provider-item is-active" data-provider="opencode"><span class="provider-logo"><img src="/assets/providers/opencode.png" alt="OpenCode Zen logo" /></span><span><strong>OpenCode Zen</strong></span></div>
             </div>
@@ -618,7 +700,7 @@
             <div class="config-titlebar"><div><h2>供应商连接配置</h2></div><button class="toggle is-on" id="providerToggle" aria-label="启用供应商"></button></div>
             <div class="config-section">
               <div class="section-label"><span>API 密钥</span><button class="button small" id="testKey">检测</button></div>
-              <form class="input-wrap" id="apiKeyForm" onsubmit="return false;"><input class="sr-only" type="text" tabindex="-1" aria-hidden="true" autocomplete="username" value="provider" /><input class="field key-input" id="apiKey" type="password" autocomplete="new-password" value="" placeholder="输入当前供应商的 API Key" /><button class="eye-button" id="eyeButton" type="button" aria-label="显示或隐藏密钥">◉</button></form>
+              <form class="input-wrap" id="apiKeyForm" onsubmit="return false;"><input class="sr-only" type="text" tabindex="-1" aria-hidden="true" autocomplete="username" value="provider" /><input class="field key-input" id="apiKey" type="text" autocomplete="new-password" value="" placeholder="输入当前供应商的 API Key" /><button class="eye-button" id="eyeButton" type="button" aria-label="显示或隐藏密钥"><img src="/assets/ui/reader-eye.svg" alt="" /></button></form>
               <div class="section-label" style="margin-top:28px;"><span>API 地址 <span class="info-dot">?</span></span><button class="button small" id="resetUrl">重置</button></div>
               <input class="field" id="apiUrl" autocomplete="off" value="https://opencode.ai/zen/v1" />
               <div class="helper"><span id="apiPreview">预览： https://opencode.ai/zen/v1/chat/completions</span></div>
@@ -629,13 +711,42 @@
           </section>
 
           <aside class="config-panel config-right">
-            <div class="config-titlebar"><div><h2>该模型的请求设置</h2></div></div>
+            <div class="config-titlebar"><div><h2>该模型的请求设置</h2><span class="request-settings-model" id="requestSettingsModel">未选择模型</span></div></div>
              <div class="right-section"><div class="section-label">每分钟最大请求数</div><input class="field number-field" id="rpmInput" autocomplete="off" type="number" min="1" max="999" value="10" /><div class="helper"><span>限制每分钟可配额发送的最大请求数量。</span></div></div>
              <div class="right-section"><div class="section-label">最大并发请求数</div><input class="field number-field" id="concurrencyInput" autocomplete="off" type="number" min="1" max="20" value="1" /><div class="helper"><span>同时发送到模型的最大段落请求数。</span></div></div>
+             <div class="right-section"><div class="section-label">推理强度</div><select class="field" id="reasoningEffortInput"><option value="">关闭</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="xhigh">XHigh</option><option value="max">Max</option></select><div class="helper"><span>按模型独立保存；启用后向兼容接口发送 reasoning_effort，是否生效取决于模型与供应商。</span></div></div>
              <div class="right-section prompt-section"><div class="section-label"><span>请求提示词 <span class="info-dot">?</span></span><button class="button small" id="copyPromptPreview" type="button">复制完整提示词</button></div><textarea class="text-field" id="promptInput" autocomplete="off">你是一名专业翻译。请准确、自然地将原文翻译为目标语言。保留段落语气、专有名词、数字、单位和标点；不要解释或添加原文没有的信息。</textarea><div class="helper"><span>上面的前置指令会并入真实请求；下方实时显示包含翻译规则与本次段落数据的完整提示词。</span></div><div class="prompt-preview-shell"><div class="prompt-preview-meta"><span>实际发送预览</span><span id="promptPreviewStatus">正在生成…</span></div><pre id="promptPreview" class="prompt-preview">正在生成本次请求的完整提示词…</pre></div></div>
-            <div class="right-section"><div class="section-label">失败最大重试次数</div><input class="field number-field" autocomplete="off" type="number" min="0" max="9" value="3" /><div class="helper"><span>请求失败时的最大重试次数，超过后将返回错误。</span></div></div>
-            <div class="save-row"><span class="save-state" id="saveState">● 已自动保存</span><button class="button primary" id="saveConfig">保存设置</button></div>
+             <div class="right-section"><div class="section-label">失败最大重试次数</div><input class="field number-field" id="retryInput" autocomplete="off" type="number" min="0" max="5" value="3" /><div class="helper"><span>请求失败时的最大重试次数，超过后将返回错误。</span></div></div>
+            <div class="save-row"><span class="save-state" id="saveState">已自动保存</span><button class="button primary" id="saveConfig">保存设置</button></div>
           </aside>
+        </div>
+      </section>
+
+      <section class="page" id="page-settings" aria-label="应用设置">
+        <div class="settings-shell">
+          <section class="panel settings-main">
+            <div class="settings-title-row"><div><h1>应用设置</h1><p>调整界面配色与阅读排版，修改会即时应用。</p></div><div class="settings-title-actions"><span class="settings-save-state" id="appSettingsSaveState">正在读取…</span><button class="button small" id="appSettingsReset" type="button">恢复默认</button></div></div>
+            <section class="settings-section">
+              <h2>浅色配色</h2><p id="colorSchemeHint">选择应用在浅色模式下使用的主题色；深色模式固定采用 GitHub Dark。</p>
+              <div class="color-scheme-grid" role="group" aria-label="浅色配色方案">
+                <button class="color-scheme-card" data-color-scheme="blue" type="button"><span class="scheme-swatches"><i></i><i></i><i></i></span><strong>经典蓝</strong><small>当前配色</small></button>
+                <button class="color-scheme-card" data-color-scheme="claude" type="button"><span class="scheme-swatches"><i></i><i></i><i></i></span><strong>Claude</strong><small>柔和陶土</small></button>
+                <button class="color-scheme-card" data-color-scheme="burgundy" type="button"><span class="scheme-swatches"><i></i><i></i><i></i></span><strong>酒红</strong><small>沉稳浓郁</small></button>
+                <button class="color-scheme-card" data-color-scheme="orange" type="button"><span class="scheme-swatches"><i></i><i></i><i></i></span><strong>暖橘</strong><small>明快温暖</small></button>
+                <button class="color-scheme-card" data-color-scheme="sage" type="button"><span class="scheme-swatches"><i></i><i></i><i></i></span><strong>鼠尾草</strong><small>低饱和绿</small></button>
+              </div>
+            </section>
+            <section class="settings-section">
+              <h2>阅读排版</h2><p>控制原文和译文在阅读页中的显示密度。</p>
+              <div class="settings-control-grid">
+                <label class="settings-control"><span>正文字体</span><select id="appReaderFont"><option value="serif">论文衬线</option><option value="sans">现代无衬线</option><option value="system">系统字体</option></select></label>
+                <label class="settings-control"><span>字号</span><input id="appReaderFontSize" type="range" min="14" max="24" step="1" /><output id="appReaderFontSizeValue"></output></label>
+                <label class="settings-control"><span>行高</span><input id="appReaderLineHeight" type="range" min="1.4" max="2.2" step="0.04" /><output id="appReaderLineHeightValue"></output></label>
+                <label class="settings-control"><span>段落间距</span><input id="appReaderParagraphGap" type="range" min="10" max="40" step="2" /><output id="appReaderParagraphGapValue"></output></label>
+                <label class="settings-control"><span>内容宽度</span><input id="appReaderContentWidth" type="range" min="680" max="1180" step="10" /><output id="appReaderContentWidthValue"></output></label>
+              </div>
+            </section>
+          </section>
         </div>
       </section>
     </main>
@@ -657,8 +768,18 @@
     <button type="button" data-provider-action="delete" class="is-danger">删除供应商</button>
   </div>
   <div class="history-context-menu" id="modelContextMenu" hidden role="menu">
+    <button type="button" data-model-action="test">测试模型</button>
+    <div class="menu-divider"></div>
     <button type="button" data-model-action="default">设为默认模型</button>
     <button type="button" data-model-action="remove" class="is-danger">删除模型</button>
+  </div>
+  <div class="confirm-modal" id="batchClearConfirm" hidden>
+    <div class="confirm-backdrop" data-close-batch-clear></div>
+    <section class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="batchClearConfirmTitle" aria-describedby="batchClearConfirmText">
+      <h2 id="batchClearConfirmTitle">确认清空批量文档？</h2>
+      <p id="batchClearConfirmText">这会删除批量列表中保存的原文和译文，操作无法撤销。</p>
+      <div class="confirm-dialog-actions"><button class="button" type="button" data-close-batch-clear>取消</button><button class="button danger" id="batchClearConfirmButton" type="button">确认清空</button></div>
+    </section>
   </div>
   <div class="custom-provider-modal" id="customProviderModal" hidden>
     <div class="custom-provider-backdrop" data-close-provider></div>
@@ -686,16 +807,18 @@
 
   <script src="/app/providers.js"></script>
   <script src="/app/document-store.js"></script>
+  <script src="/app/window-chrome.js?v=20260807-v1"></script>
+  <script src="/app/batch-translation.js?v=20260807-v1"></script>
   <script>
     const body = document.body;
     const toast = document.getElementById('toast');
     let toastTimer;
 
-    function showToast(message) {
+    function showToast(message, duration = 2600) {
       toast.textContent = message;
       toast.classList.add('is-visible');
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2600);
+      toastTimer = setTimeout(() => toast.classList.remove('is-visible'), duration);
     }
 
     function setTheme(theme) {
@@ -709,6 +832,7 @@
         themeToggle.setAttribute('aria-label', theme === 'dark' ? '切换到浅色模式' : '切换到深色模式');
       }
       localStorage.setItem('echolang-theme', theme);
+      document.dispatchEvent(new CustomEvent('echolang:themechange', { detail: { theme } }));
     }
     if (!localStorage.getItem('echolang-theme') && localStorage.getItem('zi-theme')) localStorage.setItem('echolang-theme', localStorage.getItem('zi-theme'));
     setTheme(localStorage.getItem('echolang-theme') || 'light');
@@ -717,18 +841,29 @@
       showToast(body.dataset.theme === 'dark' ? '已切换到深色模式' : '已切换到浅色模式');
     });
 
-    const pageTitles = { reader: ['文档阅读', 'EchoLang translation desk'], config: ['模型设置', 'Provider & request configuration'] };
-    document.querySelectorAll('.nav-button').forEach((button) => {
-      button.addEventListener('click', () => {
-        const page = button.dataset.page;
-        document.querySelectorAll('.nav-button').forEach((item) => item.classList.toggle('is-active', item === button));
-        document.querySelectorAll('.page').forEach((section) => section.classList.toggle('is-active', section.id === `page-${page}`));
-        document.getElementById('breadcrumbTitle').textContent = pageTitles[page][0];
-        document.getElementById('breadcrumbMeta').textContent = pageTitles[page][1];
+    const pageTitles = { reader: ['文档阅读', 'Translation desk'], batch: ['批量翻译', 'Batch translation'], config: ['API 设置', 'Provider configuration'], settings: ['应用设置', 'Appearance and workspace'] };
+    const navButtons = [...document.querySelectorAll('.nav-button')];
+    const pages = [...document.querySelectorAll('.page')];
+
+    function setActivePage(page) {
+      const title = pageTitles[page];
+      if (!title) return;
+      navButtons.forEach((button) => {
+        const isActive = button.dataset.page === page;
+        button.classList.toggle('is-active', isActive);
+        if (isActive) button.setAttribute('aria-current', 'page');
+        else button.removeAttribute('aria-current');
       });
-    });
+      pages.forEach((section) => section.classList.toggle('is-active', section.id === `page-${page}`));
+      document.getElementById('breadcrumbTitle').textContent = title[0];
+      document.getElementById('breadcrumbMeta').textContent = title[1];
+      body.dataset.page = page;
+      document.dispatchEvent(new CustomEvent('echolang:pagechange', { detail: { page } }));
+    }
+
+    navButtons.forEach((button) => button.addEventListener('click', () => setActivePage(button.dataset.page)));
     const initialPage = new URLSearchParams(window.location.search).get('page');
-    if (initialPage === 'config') document.querySelector('[data-page="config"]').click();
+    setActivePage(pageTitles[initialPage] ? initialPage : 'reader');
 
     const readingModeButtons = [...document.querySelectorAll('.mode-switch [data-mode]')];
     function setReadingMode(mode) {
@@ -740,18 +875,32 @@
       });
     }
     readingModeButtons.forEach((button) => button.addEventListener('click', () => setReadingMode(button.dataset.mode)));
-
-    const searchInput = document.getElementById('historySearch');
-    const historyList = document.getElementById('historyList');
-    searchInput.addEventListener('input', () => {
-      const query = searchInput.value.trim().toLowerCase();
-      let visible = 0;
-      historyList.querySelectorAll('.history-item').forEach((item) => {
-        const matches = item.dataset.doc.toLowerCase().includes(query);
-        item.hidden = !matches;
-        if (matches) visible += 1;
-      });
-      historyList.classList.toggle('is-empty', visible === 0);
+    document.getElementById('swapLanguages')?.addEventListener('click', () => {
+      const selects = [...document.querySelectorAll('.language-select')];
+      if (selects.length < 2) return;
+      const [source, target] = selects;
+      const sourceValue = source.value;
+      const targetValue = target.value;
+      if (![...source.options].some((option) => option.value === targetValue) || ![...target.options].some((option) => option.value === sourceValue)) return showToast('当前语言组合无法互换');
+      const button = document.getElementById('swapLanguages');
+      button.classList.remove('is-swapping');
+      source.classList.remove('is-swapping');
+      target.classList.remove('is-swapping');
+      void button.offsetWidth;
+      button.classList.add('is-swapping');
+      source.classList.add('is-swapping');
+      target.classList.add('is-swapping');
+      window.setTimeout(() => {
+        source.value = targetValue;
+        target.value = sourceValue;
+        source.dispatchEvent(new Event('change', { bubbles: true }));
+        target.dispatchEvent(new Event('change', { bubbles: true }));
+      }, 120);
+      window.setTimeout(() => {
+        button.classList.remove('is-swapping');
+        source.classList.remove('is-swapping');
+        target.classList.remove('is-swapping');
+      }, 360);
     });
 
     document.querySelectorAll('.history-item').forEach((item) => {
@@ -767,11 +916,12 @@
     exportButton.addEventListener('click', (event) => { event.stopPropagation(); exportMenu.classList.toggle('is-open'); });
     document.addEventListener('click', () => exportMenu.classList.remove('is-open'));
     function getStructuredExportRows() {
-      const state = typeof realDocumentState !== 'undefined' ? realDocumentState : null;
+      const state = window.EchoLangExportState?.() || null;
       if (!state?.blocks?.length) return Array.from(document.querySelectorAll('.paragraph-block')).map((block, index) => ({ type: 'paragraph', index: index + 1, source: block.querySelector('.source-text')?.textContent || '', translation: block.querySelector('.translation-text')?.textContent || '' }));
       const paragraphMap = new Map((state.paragraphs || []).map((paragraph) => [String(paragraph.id), paragraph]));
       const rows = [];
       state.blocks.forEach((block, blockIndex) => {
+        if (block.type === 'image' || block.type === 'formula') return;
         if (block.type !== 'table') {
           const paragraph = paragraphMap.get(String(block.id));
           rows.push({ type: 'paragraph', index: rows.length + 1, source: paragraph?.source || block.text || '', translation: paragraph?.translation || '' });
@@ -803,10 +953,49 @@
       return `"${String(value).replace(/"/g, '""')}"`;
     }
     document.querySelectorAll('[data-export]').forEach((button) => {
-      button.addEventListener('click', () => {
+      button.addEventListener('click', async () => {
         const format = button.dataset.export;
         const title = document.getElementById('documentTitle').textContent.replace(/\.[^.]+$/, '');
         const bodyText = getDocumentText();
+        if (!bodyText.trim()) return showToast('当前文档没有可导出的内容');
+        exportMenu.classList.remove('is-open');
+        if (format === 'docx' || format === 'pdf') {
+          const originalLabel = button.textContent;
+          button.disabled = true;
+          button.textContent = '正在生成…';
+          try {
+            const response = await fetch('/api/export', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({
+                format,
+                title,
+                mode: getExportMode(),
+                rows: getModeExportRows(),
+                blocks: window.EchoLangExportState?.()?.blocks || [],
+                paragraphs: window.EchoLangExportState?.()?.paragraphs || [],
+                assets: window.EchoLangExportState?.()?.assets || [],
+              }),
+            });
+            if (!response.ok) {
+              const error = await response.json().catch(() => ({}));
+              throw new Error(error.detail || error.error || `HTTP ${response.status}`);
+            }
+            const url = URL.createObjectURL(await response.blob());
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${title}.${format}`;
+            link.click();
+            window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+            showToast(`已导出 ${format.toUpperCase()} 文件`);
+          } catch (error) {
+            showToast(`导出失败：${error.message}`);
+          } finally {
+            button.disabled = false;
+            button.textContent = originalLabel;
+          }
+          return;
+        }
         let content = bodyText;
         let type = 'text/plain';
         if (format === 'md') { content = `# ${title}\n\n${bodyText.replace(/\n/g, '\n\n')}`; type = 'text/markdown'; }
@@ -933,7 +1122,7 @@
     document.getElementById('resetUrl').addEventListener('click', () => { document.getElementById('apiUrl').value = 'https://opencode.ai/zen/v1'; showToast('API 地址已重置'); });
     document.getElementById('refreshModels').addEventListener('click', (event) => { event.currentTarget.textContent = '⟳ 更新完成'; showToast('已获取最新模型列表'); setTimeout(() => event.currentTarget.textContent = '⟳ 获取模型列表', 1800); });
     document.getElementById('addModel').addEventListener('click', () => showToast('请先获取模型列表'));
-    document.getElementById('saveConfig').addEventListener('click', () => { document.getElementById('saveState').textContent = '● 设置已保存'; showToast('模型请求设置已保存'); });
+    document.getElementById('saveConfig').addEventListener('click', () => { document.getElementById('saveState').textContent = '设置已保存'; showToast('模型请求设置已保存'); });
     ['rpmInput', 'promptInput'].forEach((id) => document.getElementById(id).addEventListener('input', () => {
       document.getElementById('saveState').textContent = '○ 有未保存修改';
     }));
@@ -942,15 +1131,18 @@
       const realSettingsKey = 'zi-settings';
       const realActiveDocumentKey = 'zi-active-document';
       const realHistoryKey = 'zi-document-history';
+      const realBatchHistoryKey = 'zi-batch-document-history';
       const realProviderDirectory = (window.EchoLangProviderCatalog || window.ZiProviderCatalog || []).map((provider) => ({ ...provider, custom: false }));
-      let realDocumentState = { id: 'empty', name: '未导入文档', size: 0, format: '', pageCount: null, structured: false, warning: '', paragraphs: [], blocks: [], tables: [] };
+      let realDocumentState = { id: 'empty', name: '未导入文档', size: 0, format: '', pageCount: null, structured: false, warning: '', paragraphs: [], blocks: [], tables: [], assets: [] };
       let realTranslationAbort = null;
       let realServerConfigured = false;
       let realCustomProviders = [];
       let realSelectedProviderId = 'opencode';
       let realProviderStatus = new Map();
       let realHistoryCache = [];
+      let realBatchHistoryCache = [];
       let realDocumentCache = new Map();
+      const realHistoryLimit = 500;
       let realStoreReady = false;
       let realContextItem = null;
       let realProviderContextItem = null;
@@ -958,9 +1150,17 @@
       let realModelLibraryProviderId = null;
       let realModelLibraryItems = [];
       let realDraggingProviderId = null;
+      let realProviderDragState = null;
+      let realBatchAbort = null;
+      let realBatchRunningDocumentId = null;
+      let realBatchSelectedDocumentId = null;
+      let realBatchRenderFrame = 0;
+      let realProgressTiming = { startedAt: 0, completed: 0 };
+      const realBatchErrors = new Map();
       let promptPreviewTimer = null;
       let promptPreviewRequest = 0;
       let seededBuiltInSample = false;
+      window.EchoLangExportState = () => realDocumentState;
       const builtInSampleParagraphs = [
         { id: 'sample-p1', source: 'There is a kind of attention that does not announce itself. It arrives when we set down the noise of the day and allow one small thing to become clear: the grain of a wooden table, the rhythm of a sentence, the changing light on a wall.', translation: '', status: 'queued', kind: 'paragraph' },
         { id: 'sample-p2', source: 'When we walk through a familiar street, the mind often travels elsewhere. Yet the street is never exactly the same. A shopkeeper lifts a shutter, a tree loses one more leaf, and a quiet corner gathers the weather of the morning.', translation: '', status: 'queued', kind: 'paragraph' },
@@ -1056,6 +1256,39 @@
         const providers = settings.providers && typeof settings.providers === 'object' ? settings.providers : {};
         realSaveSettings({ providers: { ...providers, [providerId]: { ...(providers[providerId] || {}), ...next } } });
       }
+      function realModelRequestKey(providerId = realSelectedProviderId, model = realReaderModel(realProviderById(providerId))) {
+        return `${providerId}::${model || '__no_model__'}`;
+      }
+      function realModelRequestSettings(providerId = realSelectedProviderId, model = realReaderModel(realProviderById(providerId))) {
+        const current = realSettings();
+        const stored = current.modelRequestSettings && typeof current.modelRequestSettings === 'object'
+          ? current.modelRequestSettings[realModelRequestKey(providerId, model)] || {}
+          : {};
+        return {
+          rpm: stored.rpm ?? current.rpm ?? '10',
+          maxConcurrency: stored.maxConcurrency ?? current.maxConcurrency ?? '1',
+          reasoningEffort: stored.reasoningEffort ?? '',
+          retries: stored.retries ?? current.retries ?? '3',
+          prompt: stored.prompt ?? current.prompt ?? '你是一名专业翻译。请准确、自然地将原文翻译为目标语言。保留段落语气、专有名词、数字、单位和标点；不要解释或添加原文没有的信息。',
+        };
+      }
+      function realSaveModelRequestSettings(next) {
+        const current = realSettings();
+        const model = realModel();
+        const key = realModelRequestKey(realSelectedProviderId, model);
+        const all = current.modelRequestSettings && typeof current.modelRequestSettings === 'object' ? current.modelRequestSettings : {};
+        realSaveSettings({ modelRequestSettings: { ...all, [key]: { ...(all[key] || {}), ...next } } });
+      }
+      function realApplyModelRequestSettings() {
+        const model = realModel();
+        const values = realModelRequestSettings(realSelectedProviderId, model);
+        const fields = { rpmInput: values.rpm, concurrencyInput: values.maxConcurrency, reasoningEffortInput: values.reasoningEffort, retryInput: values.retries, promptInput: values.prompt };
+        Object.entries(fields).forEach(([id, value]) => { const input = document.getElementById(id); if (input) input.value = String(value); });
+        const label = document.getElementById('requestSettingsModel');
+        if (label) label.textContent = model || '未选择模型';
+        const state = document.getElementById('saveState');
+        if (state) state.textContent = '当前模型设置已载入';
+      }
       function realProviderBaseUrl(provider = realProviderById(realSelectedProviderId)) {
         const saved = realProviderSettings(provider?.id);
         return String(saved.baseUrl || provider?.baseUrl || '').replace(/\/$/, '');
@@ -1120,6 +1353,50 @@
         const previousPositions = new Map([...list.querySelectorAll('.provider-item')].map((row) => [row.dataset.provider, row.getBoundingClientRect()]));
         list.innerHTML = '';
         const providers = realAllProviders();
+        const clearDropState = () => {
+          list.querySelectorAll('.is-drop-target').forEach((node) => node.classList.remove('is-drop-target'));
+        };
+        const swapRows = (sourceId, targetId) => {
+          if (!sourceId || !targetId || sourceId === targetId || !realProviderDragState) return;
+          const source = list.querySelector(`.provider-item[data-provider="${CSS.escape(sourceId)}"]`);
+          const target = list.querySelector(`.provider-item[data-provider="${CSS.escape(targetId)}"]`);
+          if (!source || !target) return;
+          const before = new Map([...list.querySelectorAll('.provider-item')].map((row) => [row.dataset.provider, row.getBoundingClientRect()]));
+          const marker = document.createComment('provider-swap');
+          source.replaceWith(marker);
+          target.replaceWith(source);
+          marker.replaceWith(target);
+          const sourceIndex = realProviderDragState.order.indexOf(sourceId);
+          const targetIndex = realProviderDragState.order.indexOf(targetId);
+          if (sourceIndex >= 0 && targetIndex >= 0) [realProviderDragState.order[sourceIndex], realProviderDragState.order[targetIndex]] = [realProviderDragState.order[targetIndex], realProviderDragState.order[sourceIndex]];
+          realProviderDragState.lastTargetId = targetId;
+          realAnimateProviderReorder(list, before);
+        };
+        list.ondragover = (event) => {
+          if (!realProviderDragState) return;
+          event.preventDefault();
+          event.dataTransfer.dropEffect = 'move';
+          const target = event.target.closest('.provider-item');
+          if (!target) { realProviderDragState.lastTargetId = null; clearDropState(); return; }
+          if (target.dataset.provider === realProviderDragState.sourceId || target.dataset.provider === realProviderDragState.lastTargetId) return;
+          const targetRect = target.getBoundingClientRect();
+          const targetRatio = (event.clientY - targetRect.top) / Math.max(1, targetRect.height);
+          if (targetRatio < .22 || targetRatio > .78) return;
+          clearDropState();
+          target.classList.add('is-drop-target');
+          swapRows(realProviderDragState.sourceId, target.dataset.provider);
+        };
+        list.ondrop = (event) => {
+          if (!realProviderDragState) return;
+          event.preventDefault();
+          const nextOrder = [...realProviderDragState.order];
+          realProviderDragState.committed = true;
+          clearDropState();
+          realDraggingProviderId = null;
+          realProviderDragState = null;
+          realSaveProviderOrder(nextOrder);
+          realRenderProviderDirectory();
+        };
         providers.forEach((provider) => {
           const row = document.createElement('div');
           row.className = `provider-item ${provider.id === realSelectedProviderId ? 'is-active' : ''}`;
@@ -1131,14 +1408,40 @@
           const title = document.createElement('strong');
           title.textContent = provider.name;
           copy.append(title);
-          row.append(logo, copy);
+          const more = document.createElement('button');
+          more.type = 'button';
+          more.className = 'provider-more-button';
+          more.textContent = '⋯';
+          more.title = `${provider.name} 操作`;
+          more.setAttribute('aria-label', `${provider.name} 操作`);
+          row.append(logo, copy, more);
           row.addEventListener('click', () => realSelectProvider(provider.id));
           row.addEventListener('contextmenu', (event) => realOpenProviderContextMenu(event, provider));
-          row.addEventListener('dragstart', (event) => { realDraggingProviderId = provider.id; row.classList.add('is-dragging'); event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', provider.id); });
-          row.addEventListener('dragover', (event) => { event.preventDefault(); if (realDraggingProviderId && realDraggingProviderId !== provider.id) row.classList.add('is-drop-target'); });
-          row.addEventListener('dragleave', () => row.classList.remove('is-drop-target'));
-          row.addEventListener('drop', (event) => { event.preventDefault(); row.classList.remove('is-drop-target'); realReorderProviders(realDraggingProviderId || event.dataTransfer.getData('text/plain'), provider.id); });
-          row.addEventListener('dragend', () => { realDraggingProviderId = null; row.classList.remove('is-dragging'); list.querySelectorAll('.is-drop-target').forEach((node) => node.classList.remove('is-drop-target')); });
+          more.addEventListener('click', (event) => { event.stopPropagation(); realOpenProviderContextMenu(event, provider); });
+          row.addEventListener('dragstart', (event) => {
+            realDraggingProviderId = provider.id;
+            realProviderDragState = {
+              sourceId: provider.id,
+              initialOrder: providers.map((item) => item.id),
+              order: providers.map((item) => item.id),
+              lastTargetId: null,
+              committed: false,
+            };
+            window.requestAnimationFrame(() => row.classList.add('is-dragging'));
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', provider.id);
+          });
+          row.addEventListener('dragend', () => {
+            const interruptedOrder = realProviderDragState && !realProviderDragState.committed ? [...realProviderDragState.initialOrder] : null;
+            realDraggingProviderId = null;
+            realProviderDragState = null;
+            clearDropState();
+            row.classList.remove('is-dragging');
+            if (interruptedOrder) {
+              realSaveProviderOrder(interruptedOrder);
+              realRenderProviderDirectory();
+            }
+          });
           list.appendChild(row);
         });
         if (!providers.length) {
@@ -1150,11 +1453,6 @@
         window.requestAnimationFrame(() => realAnimateProviderReorder(list, previousPositions));
         const restore = document.getElementById('restoreProviders');
         if (restore) restore.hidden = !((realSettings().hiddenProviders || []).length);
-        const search = document.querySelector('.config-search input');
-        if (search) search.oninput = () => {
-          const query = search.value.trim().toLowerCase();
-          list.querySelectorAll('.provider-item').forEach((item) => { item.hidden = !item.textContent.toLowerCase().includes(query); });
-        };
       }
       function realLoadProviderModelOptions(provider) {
         const select = document.getElementById('readerModelSelect');
@@ -1181,6 +1479,27 @@
         const provider = realProviderById(realSelectedProviderId);
         const status = realProviderStatus.get(provider?.id);
         return Boolean(provider && provider.requestStyle !== 'unsupported' && (provider.custom ? status?.configured : status?.configured || (provider.id === 'opencode' && realServerConfigured)));
+      }
+      async function realPersistTypedProviderKey() {
+        const input = document.getElementById('apiKey');
+        const typedKey = input?.value.trim();
+        if (!typedKey) return false;
+        const response = await fetch('/api/provider-key', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ providerId: realSelectedProviderId, apiKey: typedKey }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || data.error || 'API 密钥保存失败');
+        realProviderStatus.set(realSelectedProviderId, { ...(realProviderStatus.get(realSelectedProviderId) || {}), id: realSelectedProviderId, configured: true });
+        return true;
+      }
+      function realConcealValidatedKey() {
+        const input = document.getElementById('apiKey');
+        if (!input) return;
+        input.value = '';
+        input.type = 'password';
+        input.placeholder = '密钥已验证并保存（不展示明文）';
       }
       function realRenderConfiguredModels(provider = realProviderById(realSelectedProviderId)) {
         const list = document.getElementById('configuredModelList');
@@ -1234,9 +1553,10 @@
         if (preview) preview.textContent = provider.endpoint || provider.requestStyle === 'openai' ? `预览： ${realProviderBaseUrl(provider)}${provider.endpoint || '/chat/completions'}` : '该供应商没有统一的公开请求路径，请填写自定义接口';
         realLoadProviderModelOptions(provider);
         realRenderConfiguredModels(provider);
+        realApplyModelRequestSettings();
         const keyInput = document.getElementById('apiKey');
         const configured = realProviderStatus.get(provider.id)?.configured;
-        if (keyInput) { keyInput.value = ''; keyInput.readOnly = false; keyInput.placeholder = configured ? '已保存到 config.local.json（不展示密钥）' : `输入 ${provider.name} 的 API Key`; }
+        if (keyInput) { keyInput.value = ''; keyInput.type = 'text'; keyInput.readOnly = false; keyInput.placeholder = configured ? '已保存密钥；获取模型列表可再次验证' : `输入 ${provider.name} 的 API Key`; }
         const links = document.getElementById('providerLinks');
         if (links) links.textContent = provider.requestStyle === 'unsupported' ? `该服务没有可直接复用的通用 Chat Completions 接口；${provider.docs ? '请查看官方文档后使用“＋ 自定义”。' : '请使用“＋ 自定义”。'}` : 'API 地址和默认模型已按供应商独立保存；点击“获取模型列表”可刷新。';
         realUpdateSession();
@@ -1265,21 +1585,12 @@
         const select = document.getElementById('readerModelSelect');
         if (select) select.value = model;
         realRenderConfiguredModels(provider);
+        realApplyModelRequestSettings();
         realUpdateSession();
+        realSchedulePromptPreview();
       }
       function realSaveProviderOrder(ids) {
         realSaveSettings({ providerOrder: [...new Set(ids)] });
-      }
-      function realReorderProviders(sourceId, targetId) {
-        if (!sourceId || sourceId === targetId) return;
-        const ids = realAllProviders().map((provider) => provider.id);
-        const from = ids.indexOf(sourceId);
-        const to = ids.indexOf(targetId);
-        if (from < 0 || to < 0) return;
-        ids.splice(from, 1);
-        ids.splice(ids.indexOf(targetId), 0, sourceId);
-        realSaveProviderOrder(ids);
-        realRenderProviderDirectory();
       }
       function realMoveProvider(providerId, offset) {
         const ids = realAllProviders().map((provider) => provider.id);
@@ -1306,9 +1617,10 @@
         const settings = realSettings();
         const providers = { ...(settings.providers || {}) };
         const readerModels = { ...(settings.readerModels || {}) };
+        const modelRequestSettings = Object.fromEntries(Object.entries(settings.modelRequestSettings || {}).filter(([key]) => !key.startsWith(`${provider.id}::`)));
         delete providers[provider.id];
         delete readerModels[provider.id];
-        realSaveSettings({ providers, readerModels, providerOrder: (settings.providerOrder || []).filter((id) => id !== provider.id) });
+        realSaveSettings({ providers, readerModels, modelRequestSettings, providerOrder: (settings.providerOrder || []).filter((id) => id !== provider.id) });
         const remaining = realAllProviders();
         if (!remaining.length) {
           realSaveSettings({ hiddenProviders: [] });
@@ -1346,7 +1658,23 @@
         realModelContextItem = { provider, model };
         menu.hidden = false;
         menu.style.left = `${Math.min(event.clientX, window.innerWidth - 185)}px`;
-        menu.style.top = `${Math.min(event.clientY, window.innerHeight - 100)}px`;
+        menu.style.top = `${Math.min(event.clientY, window.innerHeight - 150)}px`;
+      }
+      async function realTestModel(provider, model) {
+        if (!provider || !model) return;
+        showToast(`正在测试 ${model}…`, 30_000);
+        try {
+          const response = await fetch('/api/model-test', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json', 'x-provider-id': provider.id, 'x-provider-base-url': realProviderBaseUrl(provider) },
+            body: JSON.stringify({ model, reasoningEffort: realModelRequestSettings(provider.id, model).reasoningEffort || '' }),
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(data.detail || data.error || `HTTP ${response.status}`);
+          showToast(`${model} 模型可用`, 4200);
+        } catch (error) {
+          showToast(`${model} 不可用：${error.message}`, 9000);
+        }
       }
       function realSetDefaultModel(provider, model) {
         if (!provider || !realProviderModels(provider).includes(model)) return;
@@ -1369,6 +1697,7 @@
         }
         realLoadProviderModelOptions(provider);
         realRenderConfiguredModels(provider);
+        realApplyModelRequestSettings();
         realUpdateSession();
         showToast(`已移除模型：${model}`);
       }
@@ -1456,13 +1785,15 @@
         search?.focus();
       }
       async function realRefreshModels() {
-        if (!realProviderCanRequest()) return showToast('请先保存当前供应商的 API Key');
         try {
+          await realPersistTypedProviderKey();
+          if (!realProviderCanRequest()) return showToast('请先输入当前供应商的 API Key');
           const response = await fetch('/api/models', { headers: realHeaders() });
           const data = await response.json();
           if (!response.ok) throw new Error(data.detail || data.error);
           const models = (Array.isArray(data.data) ? data.data : []).map((model) => typeof model === 'string' ? model : model.id).filter(Boolean);
           realSaveProviderSettings(realSelectedProviderId, { fetchedModels: models });
+          realConcealValidatedKey();
           realOpenModelLibrary([...new Set([...models, ...realProviderLibraryModels(realProviderById(realSelectedProviderId))])]);
           showToast(`已获取 ${models.length} 个模型，请在弹窗中选择`);
         } catch (error) { showToast(`获取模型失败：${error.message}`); }
@@ -1541,6 +1872,16 @@
         const paragraphMap = new Map(paragraphs.map((paragraph) => [String(paragraph.id), paragraph]));
         if (!Array.isArray(rawBlocks) || !rawBlocks.length) return paragraphs.map((paragraph) => ({ type: 'paragraph', id: paragraph.id, page: paragraph.page, text: paragraph.source }));
         return rawBlocks.map((block, blockIndex) => {
+          if (block?.type === 'image' || block?.type === 'formula') {
+            return {
+              type: block.type,
+              assetId: String(block.assetId || ''),
+              width: Math.max(1, Number(block.width) || 640),
+              height: Math.max(1, Number(block.height) || (block.type === 'formula' ? 96 : 360)),
+              alt: String(block.alt || (block.type === 'formula' ? '公式' : '文档图片')),
+              latex: String(block.latex || ''),
+            };
+          }
           if (block?.type !== 'table') {
             const paragraph = paragraphMap.get(String(block?.id));
             return { type: 'paragraph', id: String(block?.id || paragraph?.id || `p-${blockIndex + 1}`), page: block?.page ?? paragraph?.page ?? null, text: String(block?.text ?? paragraph?.source ?? '') };
@@ -1560,12 +1901,21 @@
                 ...cell,
                 id: String(cell?.id || `${tableId}-r${rowIndex + 1}-c${columnIndex + 1}`),
                 text: String(cell?.text ?? ''),
+                blocks: Array.isArray(cell?.blocks) ? cell.blocks.map((cellBlock) => ({
+                  ...cellBlock,
+                  type: ['image', 'formula', 'paragraph'].includes(cellBlock?.type) ? cellBlock.type : 'paragraph',
+                  assetId: String(cellBlock?.assetId || ''),
+                  text: String(cellBlock?.text || ''),
+                  latex: String(cellBlock?.latex || ''),
+                  width: Math.max(1, Number(cellBlock?.width) || 640),
+                  height: Math.max(1, Number(cellBlock?.height) || 96),
+                })) : [],
                 row: Number(cell?.row) || rowIndex + 1,
                 column: Number(cell?.column) || columnIndex + 1,
               })),
             })),
           };
-        }).filter((block) => block.type === 'table' ? block.rows.length : block.text.trim());
+        }).filter((block) => block.type === 'table' ? block.rows.length : ['image', 'formula'].includes(block.type) ? block.assetId || block.latex : block.text.trim());
       }
       function realHydrateDocument(input) {
         const rawParagraphs = Array.isArray(input?.paragraphs) ? input.paragraphs : [];
@@ -1579,14 +1929,47 @@
           format: String(input?.format || ''),
           pageCount: input?.pageCount ?? null,
           structured: Boolean(input?.structured),
-          warning: String(input?.warning || ''),
+          warning: '',
           paragraphs,
           blocks,
+          assets: (Array.isArray(input?.assets) ? input.assets : []).map((asset) => ({
+            id: String(asset?.id || ''),
+            mimeType: String(asset?.mimeType || 'application/octet-stream'),
+            data: String(asset?.data || ''),
+            sourcePath: String(asset?.sourcePath || ''),
+          })).filter((asset) => asset.id && asset.data),
           tables: blocks.filter((block) => block.type === 'table'),
         };
       }
       function realRequestUnitCount(paragraphs) {
         return paragraphs.filter((paragraph) => String(paragraph.source || '').trim()).length;
+      }
+      function realDocumentTranslationProgress(documentState = realDocumentState) {
+        const paragraphs = Array.isArray(documentState?.paragraphs) ? documentState.paragraphs : [];
+        const total = paragraphs.filter((paragraph) => String(paragraph.source || '').trim()).length;
+        const completed = paragraphs.filter((paragraph) => String(paragraph.source || '').trim() && paragraph.translation && paragraph.status === 'done').length;
+        return { completed, total, percent: total ? Math.round(completed / total * 100) : 0, complete: total > 0 && completed === total, partial: completed > 0 && completed < total };
+      }
+      function realTranslationButtonText(documentState = realDocumentState) {
+        if (realTranslationAbort) return '停止翻译';
+        const progress = realDocumentTranslationProgress(documentState);
+        if (progress.complete) return '重新翻译';
+        if (progress.partial) return '继续翻译';
+        return '翻译';
+      }
+      function realSyncTranslationControls(documentState = realDocumentState) {
+        const progress = realDocumentTranslationProgress(documentState);
+        realProgressTiming = { startedAt: 0, completed: progress.completed };
+        const button = document.getElementById('startTranslation');
+        if (button) { button.disabled = !progress.total; button.textContent = realTranslationButtonText(documentState); }
+        const showProgress = progress.completed > 0 || Boolean(realTranslationAbort);
+        document.getElementById('progressCard').style.display = showProgress ? 'grid' : 'none';
+        document.getElementById('progressCard').classList.toggle('is-complete', progress.complete);
+        document.getElementById('progressTitle').textContent = progress.complete ? '翻译完成' : progress.partial || realTranslationAbort ? '翻译进度' : '等待翻译任务';
+        const statusLine = document.getElementById('translationStatusLine');
+        if (statusLine) statusLine.hidden = !showProgress;
+        realSetProgress(progress.percent, progress.completed, progress.total, 0, Number(document.getElementById('rpmInput')?.value) || 10);
+        return progress;
       }
       function realUpdateSession(copy) {
         const model = realModel();
@@ -1600,13 +1983,27 @@
         document.querySelectorAll('[data-model-name]').forEach((node) => { node.textContent = modelLabel; });
       }
       function realSetProgress(percent, current, total, rpmUsed, rpmLimit) {
-        const safePercent = Math.max(0, Math.min(100, Number(percent) || 0));
+        const safeTotal = Math.max(0, Number(total) || 0);
+        const safeCurrent = Math.max(0, Math.min(safeTotal, Number(current) || 0));
+        const safePercent = safeTotal ? Math.round(safeCurrent / safeTotal * 100) : Math.max(0, Math.min(100, Number(percent) || 0));
         document.getElementById('progressPercent').textContent = `${safePercent}%`;
         document.getElementById('progressBar').style.width = `${safePercent}%`;
         document.getElementById('progressCard').style.setProperty('--progress', `${safePercent}%`);
-        document.getElementById('progressDetail').textContent = total ? `第 ${current || 0} 个请求，共 ${total} 个请求` : '等待翻译任务';
-        document.getElementById('requestValue').textContent = total ? `${current || 0} / ${total}` : '—';
+        document.getElementById('progressDetail').textContent = safeTotal ? `已翻译 ${safeCurrent} 段，共 ${safeTotal} 段` : '等待翻译任务';
+        document.getElementById('requestValue').textContent = safeTotal ? `${safeCurrent} / ${safeTotal}` : '—';
         document.getElementById('rpmValue').textContent = rpmLimit ? `${rpmUsed || 0} / ${rpmLimit}` : '—';
+        const eta = document.getElementById('progressEta');
+        if (eta) {
+          if (safePercent >= 100) eta.textContent = '已完成';
+          else if (safeCurrent > realProgressTiming.completed && safeTotal > safeCurrent && realProgressTiming.startedAt) {
+            const elapsedSeconds = Math.max(.1, (performance.now() - realProgressTiming.startedAt) / 1000);
+            const completedThisRun = Math.max(1, safeCurrent - realProgressTiming.completed);
+            const remainingSeconds = Math.max(0, Math.round((elapsedSeconds / completedThisRun) * (safeTotal - safeCurrent)));
+            const minutes = Math.floor(remainingSeconds / 60);
+            const seconds = remainingSeconds % 60;
+            eta.textContent = `预计剩余 ${minutes ? `${minutes}分` : ''}${seconds}秒`;
+          } else eta.textContent = total ? '完成首段后估算时间' : '正在估算剩余时间';
+        }
       }
       function realRenderParagraphs() {
         const list = document.getElementById('paragraphList');
@@ -1624,7 +2021,28 @@
           return;
         }
         const paragraphMap = new Map(realDocumentState.paragraphs.map((paragraph) => [String(paragraph.id), paragraph]));
+        const assetMap = new Map((realDocumentState.assets || []).map((asset) => [String(asset.id), asset]));
         let paragraphNumber = 0;
+        const createVisual = (visual) => {
+          const figure = document.createElement('figure');
+          figure.className = `document-visual${visual.type === 'formula' ? ' is-formula' : ''}`;
+          const asset = assetMap.get(String(visual.assetId || ''));
+          if (asset?.data && String(asset.mimeType).startsWith('image/')) {
+            const image = document.createElement('img');
+            image.src = `data:${asset.mimeType};base64,${asset.data}`;
+            image.alt = visual.alt || (visual.type === 'formula' ? '公式' : '文档图片');
+            const ratio = Math.min(1, 850 / Math.max(1, Number(visual.width) || 850));
+            image.style.width = `${Math.max(1, Math.round((Number(visual.width) || 640) * ratio))}px`;
+            image.style.aspectRatio = `${Math.max(1, Number(visual.width) || 640)} / ${Math.max(1, Number(visual.height) || 360)}`;
+            figure.appendChild(image);
+          } else {
+            const fallback = document.createElement('div');
+            fallback.className = 'document-visual-fallback';
+            fallback.textContent = visual.latex || visual.alt || '无法显示的文档图形';
+            figure.appendChild(fallback);
+          }
+          return figure;
+        };
         const appendTextPair = (parent, rawItem, sourceText, sourceClass, translationClass) => {
           const item = rawItem || { source: sourceText, translation: '', status: 'queued' };
           const status = item.status || (item.translation ? 'done' : 'queued');
@@ -1632,8 +2050,9 @@
           source.className = sourceClass;
           source.textContent = String(item.source || sourceText || '');
           const translation = document.createElement('div');
-          translation.className = `${translationClass}${status === 'processing' ? ' is-processing' : ''}`;
+          translation.className = `${translationClass}${status === 'processing' || status === 'retrying' ? ' is-processing' : ''}`;
           if (status === 'processing') translation.innerHTML = '正在生成译文<span class="stream-caret"></span>';
+          else if (status === 'retrying') translation.textContent = `请求失败，等待第 ${item.retryAttempt || 2}/${item.retryAttempts || 4} 次尝试…`;
           else translation.textContent = item.translation || '';
           parent.append(source, translation);
           return status;
@@ -1645,16 +2064,21 @@
           cellWrap.dataset.cellId = String(cell.id);
           cellWrap.dataset.status = item.status || 'queued';
           appendTextPair(cellWrap, item, cell.text, 'pdf-cell-source', 'pdf-cell-translation');
+          (cell.blocks || []).filter((block) => block.type === 'image' || block.type === 'formula').forEach((visual) => cellWrap.appendChild(createVisual(visual)));
           parent.appendChild(cellWrap);
           return header ? cellWrap : cellWrap;
         };
         blocks.forEach((sourceBlock, blockIndex) => {
+          if (sourceBlock.type === 'image' || sourceBlock.type === 'formula') {
+            list.appendChild(createVisual(sourceBlock));
+            return;
+          }
           if (sourceBlock.type !== 'table') {
             const paragraph = paragraphMap.get(String(sourceBlock.id)) || realNormalizeParagraph({ id: sourceBlock.id, source: sourceBlock.text, page: sourceBlock.page }, blockIndex);
             paragraphNumber += 1;
             const block = document.createElement('article');
             const status = paragraph.status || 'queued';
-            block.className = `paragraph-block ${status === 'processing' ? 'is-processing' : ''}`;
+            block.className = `paragraph-block ${status === 'processing' || status === 'retrying' ? 'is-processing' : ''}`;
             block.dataset.index = String(paragraphNumber);
             block.dataset.status = status;
             const number = document.createElement('span');
@@ -1717,12 +2141,6 @@
           section.append(head, scroll);
           list.appendChild(section);
         });
-        if (realDocumentState.warning) {
-          const warning = document.createElement('div');
-          warning.className = 'document-warning';
-          warning.textContent = realDocumentState.warning;
-          list.insertBefore(warning, list.firstChild);
-        }
       }
       function realUpdateSourceFileButton() {
         const button = document.getElementById('openSourceFile');
@@ -1777,12 +2195,15 @@
         realDocumentCache.set(String(snapshot.id), snapshot);
         const historyIndex = realHistoryCache.findIndex((item) => String(item.id) === String(snapshot.id));
         if (historyIndex !== -1) realHistoryCache[historyIndex] = snapshot;
+        const batchIndex = realBatchHistoryCache.findIndex((item) => String(item.id) === String(snapshot.id));
+        if (batchIndex !== -1) realBatchHistoryCache[batchIndex] = snapshot;
         if (isActive) {
           try { localStorage.setItem(realActiveDocumentKey, JSON.stringify(realSnapshotForLocal(snapshot))); } catch { /* IndexedDB is used for large documents. */ }
           if (realStoreReady) window.ZiDocumentStore.setMeta('activeId', String(snapshot.id)).catch(() => {});
         }
         if (realStoreReady) window.ZiDocumentStore.putDocument(snapshot).catch(() => {});
-        realSyncHistoryFallback();
+        if (options.syncFallback !== false) realSyncHistoryFallback();
+        if (options.syncFallback !== false && batchIndex !== -1) realSyncBatchFallback();
       }
       function historyBadge(name) {
         const extension = name.split('.').pop()?.toLowerCase();
@@ -1800,26 +2221,54 @@
           return realHistoryCache;
         } catch { return []; }
       }
-      function realSaveHistory(documentState) {
+      function realSyncBatchFallback() {
+        try { localStorage.setItem(realBatchHistoryKey, JSON.stringify(realBatchHistoryCache.map(realSnapshotForLocal))); }
+        catch { /* IndexedDB remains the primary store for large batch queues. */ }
+      }
+      function realPersistBatchOrder() {
+        realSyncBatchFallback();
+        if (realStoreReady) window.ZiDocumentStore.setMeta('batchHistoryOrder', realBatchHistoryCache.map((item) => String(item.id))).catch(() => {});
+      }
+      function realLoadBatchHistory() {
+        if (realStoreReady || realBatchHistoryCache.length) return realBatchHistoryCache;
+        try {
+          const legacy = JSON.parse(localStorage.getItem(realBatchHistoryKey) || '[]');
+          realBatchHistoryCache = Array.isArray(legacy) ? legacy.map(realHydrateDocument) : [];
+          realBatchHistoryCache.forEach((item) => realDocumentCache.set(String(item.id), item));
+          return realBatchHistoryCache;
+        } catch { return []; }
+      }
+      function realHistoryIdentity(documentState) {
+        return String(documentState?.sourceFile?.relativePath || documentState?.name || documentState?.id || '');
+      }
+      function realSaveHistory(documentState, options = {}) {
         const snapshot = realHydrateDocument({ ...documentState, savedAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
-        const replaced = realHistoryCache.filter((item) => item.name === snapshot.name && String(item.id) !== String(snapshot.id));
+        const identity = realHistoryIdentity(snapshot);
+        const replaced = realHistoryCache.filter((item) => realHistoryIdentity(item) === identity && String(item.id) !== String(snapshot.id));
         replaced.forEach((item) => { if (realStoreReady) window.ZiDocumentStore.deleteDocument(item.id).catch(() => {}); });
-        realHistoryCache = [snapshot, ...realHistoryCache.filter((item) => item.name !== snapshot.name && String(item.id) !== String(snapshot.id))].slice(0, 20);
+        realHistoryCache = [snapshot, ...realHistoryCache.filter((item) => realHistoryIdentity(item) !== identity && String(item.id) !== String(snapshot.id))].slice(0, realHistoryLimit);
         realDocumentCache.set(String(snapshot.id), snapshot);
-        realPersistDocument(snapshot, { active: true });
-        realPersistHistoryOrder();
-        realRenderHistory();
+        realPersistDocument(snapshot, { active: options.active ?? true, syncFallback: options.syncFallback });
+        if (options.persistOrder !== false) realPersistHistoryOrder();
+        if (options.render !== false) realRenderHistory();
+      }
+      function realSaveBatchHistory(documentState, options = {}) {
+        const snapshot = realHydrateDocument({ ...documentState, scope: 'batch', savedAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+        const identity = realHistoryIdentity(snapshot);
+        const replaced = realBatchHistoryCache.filter((item) => realHistoryIdentity(item) === identity && String(item.id) !== String(snapshot.id));
+        replaced.forEach((item) => { if (realStoreReady) window.ZiDocumentStore.deleteDocument(item.id).catch(() => {}); });
+        realBatchHistoryCache = [snapshot, ...realBatchHistoryCache.filter((item) => realHistoryIdentity(item) !== identity && String(item.id) !== String(snapshot.id))].slice(0, realHistoryLimit);
+        realDocumentCache.set(String(snapshot.id), snapshot);
+        realPersistDocument(snapshot, { active: false, syncFallback: false });
+        if (options.persistOrder !== false) realPersistBatchOrder();
+        if (options.render !== false) realRenderBatch();
       }
       function realApplyHistoryFilter() {
         const list = document.getElementById('historyList');
-        const query = document.getElementById('historySearch')?.value.trim().toLowerCase() || '';
-        let visible = 0;
         list.querySelectorAll('.history-item').forEach((item) => {
-          const matches = String(item.dataset.doc || '').toLowerCase().includes(query);
-          item.hidden = !matches;
-          if (matches) visible += 1;
+          item.hidden = false;
         });
-        list.classList.toggle('is-empty', visible === 0);
+        list.classList.toggle('is-empty', !list.querySelector('.history-item'));
       }
       function realCloseHistoryContextMenu() {
         const menu = document.getElementById('historyContextMenu');
@@ -1844,14 +2293,8 @@
         realRenderHistory();
         realRenderParagraphs();
         realPersistDocument(realDocumentState, { active: true });
-        document.getElementById('startTranslation').disabled = false;
-        const complete = realDocumentState.paragraphs.length > 0 && realDocumentState.paragraphs.every((paragraph) => paragraph.translation && paragraph.status === 'done');
-        document.getElementById('progressCard').style.display = complete ? 'block' : 'none';
-        const statusLine = document.getElementById('translationStatusLine');
-        if (statusLine) statusLine.hidden = !complete;
-        if (!complete) realSetProgress(0, 0, 0, 0, 0);
-        document.getElementById('startTranslation').textContent = complete ? '重新翻译' : '继续翻译';
-        document.getElementById('sessionStatus').textContent = complete ? '已保存翻译结果' : '尚未开始翻译';
+        const progress = realSyncTranslationControls(realDocumentState);
+        document.getElementById('sessionStatus').textContent = progress.complete ? '已保存翻译结果' : progress.partial ? `已翻译 ${progress.completed}/${progress.total} 段` : '尚未开始翻译';
         realUpdateSession();
         realSchedulePromptPreview();
         realUpdateSourceFileButton();
@@ -1869,12 +2312,8 @@
         if (isActive) {
           realDocumentState = snapshot;
           realRenderParagraphs();
-          document.getElementById('progressCard').style.display = 'none';
-          const statusLine = document.getElementById('translationStatusLine');
-          if (statusLine) statusLine.hidden = true;
           document.getElementById('sessionStatus').textContent = '尚未开始翻译';
-          realSetProgress(0, 0, 0, 0, 0);
-          document.getElementById('startTranslation').textContent = '开始翻译';
+          realSyncTranslationControls(realDocumentState);
           realUpdateSession();
         }
         realRenderHistory();
@@ -1898,12 +2337,12 @@
         realRenderHistory();
       }
       function realResetDocument() {
-        realDocumentState = { id: 'empty', name: '未导入文档', size: 0, format: '', pageCount: null, structured: false, warning: '', paragraphs: [], blocks: [], tables: [] };
+        realDocumentState = { id: 'empty', name: '未导入文档', size: 0, format: '', pageCount: null, structured: false, warning: '', paragraphs: [], blocks: [], tables: [], assets: [] };
         localStorage.removeItem(realActiveDocumentKey);
         if (realStoreReady) window.ZiDocumentStore.setMeta('activeId', null).catch(() => {});
         document.getElementById('documentTitle').textContent = realDocumentState.name;
         document.getElementById('startTranslation').disabled = true;
-        document.getElementById('startTranslation').textContent = '开始翻译';
+        document.getElementById('startTranslation').textContent = '翻译';
         document.getElementById('progressCard').style.display = 'none';
         const statusLine = document.getElementById('translationStatusLine');
         if (statusLine) statusLine.hidden = true;
@@ -1943,8 +2382,9 @@
           row.dataset.id = String(item.id);
           row.draggable = true;
           const [badgeClass, badgeText] = historyBadge(item.name);
+          const complete = item.paragraphs?.length && item.paragraphs.every((paragraph) => paragraph.translation && paragraph.status === 'done');
           const badge = document.createElement('span');
-          badge.className = `file-badge ${badgeClass}`;
+          badge.className = `file-badge ${badgeClass}${complete ? ' is-complete' : ''}`;
           badge.textContent = badgeText;
           const details = document.createElement('span');
           const name = document.createElement('strong');
@@ -1958,10 +2398,7 @@
           size.textContent = `${item.size.toLocaleString()} 字`;
           meta.append(date, size);
           details.append(name, meta);
-          const check = document.createElement('span');
-          check.className = 'history-check';
-          check.textContent = item.paragraphs?.length && item.paragraphs.every((paragraph) => paragraph.translation && paragraph.status === 'done') ? '✓' : '·';
-          row.append(badge, details, check);
+          row.append(badge, details);
           row.addEventListener('click', () => realOpenHistoryItem(item));
           row.addEventListener('contextmenu', (event) => realOpenHistoryContextMenu(event, item));
           row.addEventListener('dragstart', (event) => { draggingId = String(item.id); row.classList.add('is-dragging'); event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', draggingId); });
@@ -1972,6 +2409,39 @@
           list.appendChild(row);
         });
         realApplyHistoryFilter();
+        realScheduleBatchRender();
+      }
+
+      function realRenderBatch() {
+        const batchUi = window.EchoLangBatchUI;
+        if (!batchUi) return;
+        const documents = realLoadBatchHistory();
+        batchUi.renderDocumentList({
+          documents,
+          activeId: realBatchSelectedDocumentId,
+          runningId: realBatchRunningDocumentId,
+          onOpen(item) {
+            realBatchSelectedDocumentId = String(item.id);
+            realRenderBatch();
+          },
+        });
+        batchUi.renderQueue({ documents, runningId: realBatchRunningDocumentId, errors: realBatchErrors });
+        const count = document.getElementById('batchDocumentCount');
+        if (count) count.textContent = `${documents.length} 个文档`;
+        const startButton = document.getElementById('batchStartButton');
+        if (startButton) {
+          const pendingCount = documents.filter((item) => !batchUi.isDocumentComplete(item)).length;
+          startButton.textContent = realBatchAbort ? '停止翻译' : pendingCount ? '开始翻译' : '全部完成';
+          startButton.disabled = !realBatchAbort && pendingCount === 0;
+        }
+      }
+
+      function realScheduleBatchRender() {
+        if (realBatchRenderFrame) return;
+        realBatchRenderFrame = window.requestAnimationFrame(() => {
+          realBatchRenderFrame = 0;
+          realRenderBatch();
+        });
       }
       async function realPickFiles() {
         if (!window.showOpenFilePicker) return document.getElementById('fileInput')?.click();
@@ -1986,37 +2456,140 @@
           if (error.name !== 'AbortError') showToast(`选择文件失败：${error.message}`);
         }
       }
-      async function realImportFiles(files, handles = []) {
-        const startLabel = document.querySelector('label[for="fileInput"]');
-        if (startLabel) startLabel.textContent = '解析中…';
+      async function realPickBatchFiles() {
+        if (!window.showOpenFilePicker) return document.getElementById('batchFileInput')?.click();
         try {
-          for (const [fileIndex, file] of files.entries()) {
+          const handles = await window.showOpenFilePicker({
+            multiple: true,
+            types: [{ description: '可翻译文档', accept: { 'text/plain': ['.txt', '.md', '.csv', '.tsv'], 'text/html': ['.html', '.htm'], 'application/json': ['.json'], 'application/pdf': ['.pdf'], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'], 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'], 'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx'] } }],
+          });
+          const files = await Promise.all(handles.map((handle) => handle.getFile()));
+          await realImportFiles(files, handles, { batch: true });
+        } catch (error) {
+          if (error.name !== 'AbortError') showToast(`选择文件失败：${error.message}`);
+        }
+      }
+
+      async function realPickBatchFolder() {
+        if (!window.showDirectoryPicker || !window.EchoLangBatchUI) return document.getElementById('batchFolderInput')?.click();
+        try {
+          const directory = await window.showDirectoryPicker({ mode: 'read' });
+          const collected = await window.EchoLangBatchUI.collectDirectoryFiles(directory);
+          if (!collected.length) return showToast('所选文件夹中没有支持的文档');
+          await realImportFiles(collected.map((item) => item.file), collected.map((item) => item.handle), { batch: true, relativePaths: collected.map((item) => item.relativePath) });
+        } catch (error) {
+          if (error.name !== 'AbortError') showToast(`扫描文件夹失败：${error.message}`);
+        }
+      }
+
+      async function realImportFiles(files, handles = [], options = {}) {
+        const startLabel = options.batch ? null : document.querySelector('label[for="fileInput"]');
+        if (startLabel) startLabel.textContent = '解析中…';
+        const batchButton = document.getElementById('batchImportButton');
+        if (options.batch && batchButton) { batchButton.disabled = true; batchButton.textContent = '扫描中…'; }
+        const supportedFiles = files.map((file, index) => ({ file, index })).filter(({ file }) => !window.EchoLangBatchUI || window.EchoLangBatchUI.isSupportedFile(file));
+        const imported = [];
+        const failures = [];
+        try {
+          for (const [importIndex, entry] of supportedFiles.entries()) {
+            const { file, index: fileIndex } = entry;
+            if (options.batch && batchButton) batchButton.textContent = `解析 ${importIndex + 1}/${supportedFiles.length}`;
+            try {
             const response = await fetch('/api/extract', { method: 'POST', headers: { 'content-type': file.type || 'application/octet-stream', 'x-file-name': encodeURIComponent(file.name) }, body: file });
             const data = await response.json();
             if (!response.ok) throw new Error(data.detail || data.error || '文件解析失败');
             const paragraphs = (data.paragraphs || []).map(realNormalizeParagraph).filter((paragraph) => paragraph.source);
             if (!paragraphs.length) throw new Error('文件中没有检测到可翻译的段落');
-            realDocumentState = realHydrateDocument({ id: realUuid(), name: data.name || file.name, size: paragraphs.reduce((sum, paragraph) => sum + paragraph.source.length, 0), fileSize: file.size, format: data.format || file.name.split('.').pop()?.toLowerCase() || '', pageCount: data.pageCount ?? null, structured: Boolean(data.structured), warning: data.warning || '', paragraphs, blocks: data.blocks || [], tables: data.tables || [], sourceFile: { name: file.name, size: file.size, type: file.type, lastModified: file.lastModified, handle: handles[fileIndex] || null } });
-            document.getElementById('documentTitle').textContent = realDocumentState.name;
-            realPersistDocument();
-            realSaveHistory(realDocumentState);
-            realRenderParagraphs();
-            realSchedulePromptPreview();
-            realUpdateSourceFileButton();
-             document.getElementById('startTranslation').disabled = false;
-             document.getElementById('progressCard').style.display = 'none';
-             document.getElementById('progressCard').classList.remove('is-complete');
-             const statusLine = document.getElementById('translationStatusLine');
-             if (statusLine) statusLine.hidden = true;
-              realSetProgress(0, 0, realRequestUnitCount(paragraphs), 0, Number(document.getElementById('rpmInput').value) || 10);
-            realUpdateSession();
-            showToast(`已解析 ${paragraphs.length} 个段落${realDocumentState.tables.length ? `，识别 ${realDocumentState.tables.length} 个表格` : ''}：${realDocumentState.name}`);
+            const relativePath = options.relativePaths?.[fileIndex] || file.webkitRelativePath || '';
+            const documentState = realHydrateDocument({ id: realUuid(), scope: options.batch ? 'batch' : 'reader', name: data.name || file.name, size: paragraphs.reduce((sum, paragraph) => sum + paragraph.source.length, 0), fileSize: file.size, format: data.format || file.name.split('.').pop()?.toLowerCase() || '', pageCount: data.pageCount ?? null, structured: Boolean(data.structured), warning: '', paragraphs, blocks: data.blocks || [], tables: data.tables || [], assets: data.assets || [], sourceFile: { name: file.name, relativePath, size: file.size, type: file.type, lastModified: file.lastModified, handle: handles[fileIndex] || null } });
+            imported.push(documentState);
+            if (options.batch) realSaveBatchHistory(documentState, { render: false, persistOrder: false });
+            else realSaveHistory(documentState, { active: false, render: false, persistOrder: false, syncFallback: false });
+            } catch (error) {
+              failures.push(`${file.name}：${error.message}`);
+            }
           }
-        } catch (error) {
-          showToast(`导入失败：${error.message}。请确认已用 npm start 启动程序。`);
+          if (imported.length) {
+            const importedIds = new Set(imported.map((item) => String(item.id)));
+            if (options.batch) {
+              const importedById = new Map(realBatchHistoryCache.filter((item) => importedIds.has(String(item.id))).map((item) => [String(item.id), item]));
+              realBatchHistoryCache = [...imported.map((item) => importedById.get(String(item.id))).filter(Boolean), ...realBatchHistoryCache.filter((item) => !importedIds.has(String(item.id)))].slice(0, realHistoryLimit);
+              realBatchSelectedDocumentId = String(imported[0].id);
+              realPersistBatchOrder();
+              realRenderBatch();
+            } else {
+              const importedById = new Map(realHistoryCache.filter((item) => importedIds.has(String(item.id))).map((item) => [String(item.id), item]));
+              realHistoryCache = [...imported.map((item) => importedById.get(String(item.id))).filter(Boolean), ...realHistoryCache.filter((item) => !importedIds.has(String(item.id)))].slice(0, realHistoryLimit);
+              realPersistHistoryOrder();
+              realDocumentState = imported[0];
+              document.getElementById('documentTitle').textContent = realDocumentState.name;
+              realPersistDocument(realDocumentState, { active: true });
+              realRenderHistory();
+              realRenderParagraphs();
+              realSchedulePromptPreview();
+              realUpdateSourceFileButton();
+              realSyncTranslationControls(realDocumentState);
+              realUpdateSession();
+            }
+          }
+          if (imported.length && !failures.length) showToast(`已导入 ${imported.length} 个文档，共 ${imported.reduce((sum, item) => sum + item.paragraphs.length, 0)} 个段落`);
+          else if (imported.length) showToast(`已导入 ${imported.length} 个文档，${failures.length} 个文件失败`);
+          else if (failures.length) showToast(`导入失败：${failures[0]}`);
+          else showToast('没有选择支持的文档');
         } finally {
           if (startLabel) startLabel.innerHTML = '<span>＋</span>导入';
+          if (batchButton) { batchButton.disabled = false; batchButton.innerHTML = '<span>＋</span>导入'; }
+          realScheduleBatchRender();
         }
+      }
+      function realBatchExportText() {
+        return realBatchHistoryCache.map((documentState) => {
+          const translated = (documentState.paragraphs || []).map((paragraph) => String(paragraph.translation || '').trim()).filter(Boolean);
+          if (!translated.length) return '';
+          return `# ${documentState.name}\n\n${translated.join('\n\n')}`;
+        }).filter(Boolean).join('\n\n---\n\n');
+      }
+      function realDownloadBatchTranslations() {
+        const content = realBatchExportText();
+        if (!content) return showToast('还没有可导出的批量译文');
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([content], { type: 'text/plain;charset=utf-8' }));
+        link.download = `EchoLang-batch-${new Date().toISOString().slice(0, 10)}.txt`;
+        link.click();
+        window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+        showToast('批量译文已导出');
+      }
+      async function realCopyBatchTranslations() {
+        const content = realBatchExportText();
+        if (!content) return showToast('还没有可复制的批量译文');
+        try { await navigator.clipboard.writeText(content); showToast('批量译文已复制'); }
+        catch { showToast('浏览器未允许访问剪贴板'); }
+      }
+      function realCloseBatchClearConfirm() {
+        const modal = document.getElementById('batchClearConfirm');
+        if (modal) modal.hidden = true;
+      }
+      function realClearBatchDocuments() {
+        if (realBatchAbort) return showToast('请先停止批量翻译');
+        if (!realBatchHistoryCache.length) return;
+        const modal = document.getElementById('batchClearConfirm');
+        const text = document.getElementById('batchClearConfirmText');
+        if (text) text.textContent = `这会删除 ${realBatchHistoryCache.length} 个批量文档保存的原文和译文，操作无法撤销。`;
+        if (modal) modal.hidden = false;
+        window.setTimeout(() => document.getElementById('batchClearConfirmButton')?.focus(), 0);
+      }
+      async function realConfirmClearBatchDocuments() {
+        if (realBatchAbort || !realBatchHistoryCache.length) return realCloseBatchClearConfirm();
+        const ids = realBatchHistoryCache.map((item) => String(item.id));
+        realCloseBatchClearConfirm();
+        realBatchHistoryCache = [];
+        ids.forEach((id) => realDocumentCache.delete(id));
+        if (realStoreReady) await Promise.all(ids.map((id) => window.ZiDocumentStore.deleteDocument(id).catch(() => {})));
+        realPersistBatchOrder();
+        realBatchErrors.clear();
+        realBatchSelectedDocumentId = null;
+        realRenderBatch();
+        showToast('批量文档列表已清空');
       }
       async function realConsumeSse(response, onEvent) {
         const reader = response.body.getReader();
@@ -2036,73 +2609,251 @@
           if (done) break;
         }
       }
+      function realTranslationReady() {
+        if (!realProviderCanRequest()) {
+          const provider = realProviderById(realSelectedProviderId);
+          showToast(provider?.requestStyle === 'unsupported' ? '当前供应商没有可直接调用的通用文本接口' : `请先保存 ${provider?.name || '当前供应商'} 的 API Key`);
+          return false;
+        }
+        if (!realModel()) { showToast('请先在供应商设置中添加并选择模型'); return false; }
+        return true;
+      }
+
+      async function realTranslateDocument(documentState, { signal, onMeta, onUnitStart, onUnitRetry, onParagraph, onUnitError, onProgress, onDone } = {}) {
+        const pending = documentState.paragraphs.filter((paragraph) => !paragraph.translation || paragraph.status !== 'done');
+        if (!pending.length) return { units: 0, skipped: true };
+        pending.forEach((paragraph) => { paragraph.status = 'queued'; paragraph.translation = ''; delete paragraph.error; });
+        realPersistDocument(documentState, { active: String(documentState.id) === String(realDocumentState.id), syncFallback: false });
+        const response = await fetch('/api/translate', {
+          method: 'POST',
+          headers: realHeaders(),
+          signal,
+          body: JSON.stringify({
+            paragraphs: pending.map(({ id, source }) => ({ id, text: source })),
+            sourceLanguage: document.querySelector('.language-select')?.value || '英语',
+            targetLanguage: document.querySelectorAll('.language-select')[1]?.value || '中文',
+            maxRpm: Number(document.getElementById('rpmInput').value) || 10,
+            maxConcurrency: Number(document.getElementById('concurrencyInput').value) || 1,
+            reasoningEffort: document.getElementById('reasoningEffortInput')?.value || '',
+            retries: Number(document.getElementById('retryInput').value) || 0,
+            model: realModel(),
+            systemPrompt: document.getElementById('promptInput').value,
+          }),
+        });
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({}));
+          throw new Error(error.detail || error.error || `HTTP ${response.status}`);
+        }
+        let result = { units: pending.length, skipped: false };
+        let donePayload = null;
+        await realConsumeSse(response, (event, data) => {
+          if (event === 'meta') { result = { ...result, ...data }; onMeta?.(data, documentState); }
+          if (event === 'unit-start') {
+            const paragraph = documentState.paragraphs.find((item) => String(item.id) === String(data.id));
+            if (paragraph) {
+              paragraph.status = 'processing';
+              paragraph.translation = '';
+              delete paragraph.retryAttempt;
+              delete paragraph.retryAttempts;
+              realPersistDocument(documentState, { active: String(documentState.id) === String(realDocumentState.id), syncFallback: false });
+            }
+            onUnitStart?.(data, documentState);
+          }
+          if (event === 'unit-retry') {
+            const paragraph = documentState.paragraphs.find((item) => String(item.id) === String(data.id));
+            if (paragraph) {
+              paragraph.status = 'retrying';
+              paragraph.retryAttempt = Number(data.attempt) || 2;
+              paragraph.retryAttempts = Number(data.attempts) || 4;
+              realPersistDocument(documentState, { active: String(documentState.id) === String(realDocumentState.id), syncFallback: false });
+            }
+            onUnitRetry?.(data, documentState);
+          }
+          if (event === 'paragraph') {
+            const paragraph = documentState.paragraphs.find((item) => String(item.id) === String(data.id));
+            if (paragraph) {
+              paragraph.translation = data.translation;
+              paragraph.status = 'done';
+              delete paragraph.error;
+              delete paragraph.retryAttempt;
+              delete paragraph.retryAttempts;
+              realPersistDocument(documentState, { active: String(documentState.id) === String(realDocumentState.id), syncFallback: false });
+            }
+            onParagraph?.(data, documentState);
+          }
+          if (event === 'unit-error') {
+            const paragraph = documentState.paragraphs.find((item) => String(item.id) === String(data.id));
+            if (paragraph) {
+              paragraph.translation = '';
+              paragraph.status = 'failed';
+              paragraph.error = String(data.message || '翻译失败');
+              delete paragraph.retryAttempt;
+              delete paragraph.retryAttempts;
+              realPersistDocument(documentState, { active: String(documentState.id) === String(realDocumentState.id), syncFallback: false });
+            }
+            onUnitError?.(data, documentState);
+          }
+          if (event === 'progress') onProgress?.(data, documentState);
+          if (event === 'error') throw new Error(data.message);
+          if (event === 'done') donePayload = data;
+        });
+        const incomplete = pending.filter((paragraph) => !paragraph.translation || paragraph.status !== 'done');
+        if (incomplete.length && !donePayload) throw new Error(`翻译响应结束，但仍有 ${incomplete.length} 个段落未完成`);
+        realPersistDocument(documentState, { active: String(documentState.id) === String(realDocumentState.id) });
+        onDone?.(donePayload || result, documentState);
+        return donePayload || result;
+      }
+
       async function realStartTranslation() {
         if (realTranslationAbort) {
           realTranslationAbort.abort();
-          realTranslationAbort = null;
-          document.getElementById('startTranslation').textContent = '继续翻译';
-          document.getElementById('sessionStatus').textContent = '已停止翻译';
-          showToast('翻译请求已停止');
+          const button = document.getElementById('startTranslation');
+          button.textContent = '正在停止…';
+          button.disabled = true;
+          document.getElementById('sessionStatus').textContent = '正在停止翻译…';
           return;
         }
+        if (realBatchAbort) return showToast('批量翻译正在运行，请先停止批量任务');
         if (!realDocumentState.paragraphs.length) return showToast('请先导入文档');
-        if (!realProviderCanRequest()) {
-          const provider = realProviderById(realSelectedProviderId);
-          return showToast(provider?.requestStyle === 'unsupported' ? '当前供应商没有可直接调用的通用文本接口' : `请先保存 ${provider?.name || '当前供应商'} 的 API Key`);
+        if (!realTranslationReady()) return;
+        let pending = realDocumentState.paragraphs.filter((paragraph) => !paragraph.translation || paragraph.status !== 'done');
+        if (!pending.length) {
+          realDocumentState.paragraphs.forEach((paragraph) => { paragraph.translation = ''; paragraph.status = 'queued'; });
+          pending = [...realDocumentState.paragraphs];
+          realPersistDocument(realDocumentState);
         }
-        if (!realModel()) return showToast('请先在供应商设置中添加并选择模型');
-        const pending = realDocumentState.paragraphs.filter((paragraph) => !paragraph.translation || paragraph.status !== 'done');
-        if (!pending.length) return showToast('当前文档已经翻译完成');
         realTranslationAbort = new AbortController();
         const button = document.getElementById('startTranslation');
         button.textContent = '停止翻译';
         button.disabled = false;
-        document.getElementById('progressCard').style.display = 'block';
+        document.getElementById('progressCard').style.display = 'grid';
         document.getElementById('progressCard').classList.remove('is-complete');
         const statusLine = document.getElementById('translationStatusLine');
         if (statusLine) statusLine.hidden = false;
-        pending.forEach((paragraph) => { paragraph.status = 'queued'; paragraph.translation = ''; });
         realRenderParagraphs();
         document.getElementById('sessionStatus').textContent = '正在连接模型…';
         try {
-          const response = await fetch('/api/translate', { method: 'POST', headers: realHeaders(), signal: realTranslationAbort.signal, body: JSON.stringify({ paragraphs: pending.map(({ id, source }) => ({ id, text: source })), sourceLanguage: document.querySelector('.language-select')?.value || '英语', targetLanguage: document.querySelectorAll('.language-select')[1]?.value || '中文', maxRpm: Number(document.getElementById('rpmInput').value) || 10, maxConcurrency: Number(document.getElementById('concurrencyInput').value) || 1, retries: 3, model: realModel(), systemPrompt: document.getElementById('promptInput').value }) });
-          if (!response.ok) { const error = await response.json().catch(() => ({})); throw new Error(error.detail || error.error || `HTTP ${response.status}`); }
-          await realConsumeSse(response, (event, data) => {
-            if (event === 'meta') {
+          await realTranslateDocument(realDocumentState, {
+            signal: realTranslationAbort.signal,
+            onMeta(data) {
+              const progress = realDocumentTranslationProgress(realDocumentState);
+              realProgressTiming = { startedAt: performance.now(), completed: progress.completed };
               document.getElementById('sessionStatus').textContent = `开始逐段翻译，共 ${data.units} 个请求单元`;
               realUpdateSession(`逐段请求 · ${data.units} 个请求单元 · 最大 ${data.maxRpm} RPM · 并发 ${data.maxConcurrency || 1} · 当前模型：${data.model}`);
-              realSetProgress(0, 0, data.units, 0, data.maxRpm);
-            }
-            if (event === 'unit-start') {
-              const paragraph = realDocumentState.paragraphs.find((item) => String(item.id) === String(data.id));
-              if (paragraph) { paragraph.status = 'processing'; paragraph.translation = ''; realRenderParagraphs(); }
+              realSetProgress(progress.percent, progress.completed, progress.total, 0, data.maxRpm);
+            },
+            onUnitStart(data) {
+              realRenderParagraphs();
               document.getElementById('sessionStatus').textContent = `正在发送第 ${data.unit} 个请求`;
-            }
-            if (event === 'paragraph') {
-              const paragraph = realDocumentState.paragraphs.find((item) => String(item.id) === String(data.id));
-              if (paragraph) { paragraph.translation = data.translation; paragraph.status = 'done'; realPersistDocument(); realRenderParagraphs(); }
-            }
-            if (event === 'progress') {
-              document.getElementById('sessionStatus').textContent = `已完成第 ${data.unit} 个请求`;
-              realSetProgress(data.percent, data.unit, data.units, data.rpmUsed, Number(document.getElementById('rpmInput').value) || 10);
-            }
-            if (event === 'error') throw new Error(data.message);
-            if (event === 'done') {
-              document.getElementById('sessionStatus').textContent = '本次翻译已完成';
-              document.getElementById('progressTitle').textContent = '翻译完成';
-              document.getElementById('progressCard').classList.add('is-complete');
-              realSetProgress(100, data.units, data.units, Number(document.getElementById('rpmInput').value) || 10, Number(document.getElementById('rpmInput').value) || 10);
+            },
+            onUnitRetry(data) {
+              realRenderParagraphs();
+              document.getElementById('sessionStatus').textContent = `第 ${data.unit} 段请求失败，等待第 ${data.attempt}/${data.attempts} 次尝试`;
+            },
+            onParagraph() { realRenderParagraphs(); },
+            onUnitError(data) {
+              realRenderParagraphs();
+              document.getElementById('sessionStatus').textContent = `第 ${data.unit} 段重试失败，已跳过并继续翻译`;
+            },
+            onProgress(data) {
+              document.getElementById('sessionStatus').textContent = data.failedUnits
+                ? `已处理 ${data.unit} 段，${data.failedUnits} 段等待重试`
+                : `已完成第 ${data.unit} 个请求`;
+              const progress = realDocumentTranslationProgress(realDocumentState);
+              realSetProgress(progress.percent, progress.completed, progress.total, data.rpmUsed, Number(document.getElementById('rpmInput').value) || 10);
+            },
+            onDone(data) {
+              const failedUnits = Math.max(0, Number(data.failedUnits) || 0);
+              document.getElementById('sessionStatus').textContent = failedUnits ? `本轮翻译完成，${failedUnits} 段等待重试` : '本次翻译已完成';
+              document.getElementById('progressTitle').textContent = failedUnits ? '翻译进度' : '翻译完成';
+              document.getElementById('progressCard').classList.toggle('is-complete', !failedUnits);
+              const progress = realDocumentTranslationProgress(realDocumentState);
+              realSetProgress(progress.percent, progress.completed, progress.total, Number(document.getElementById('rpmInput').value) || 10, Number(document.getElementById('rpmInput').value) || 10);
               realSaveHistory(realDocumentState);
-            }
+            },
           });
-          button.textContent = '重新翻译';
         } catch (error) {
           pending.forEach((paragraph) => { if (paragraph.status === 'processing') paragraph.status = 'queued'; });
           realRenderParagraphs();
           if (error.name !== 'AbortError') { document.getElementById('sessionStatus').textContent = '翻译失败'; showToast(`翻译失败：${error.message}`); }
-          button.textContent = '继续翻译';
         } finally {
           realTranslationAbort = null;
+          realSyncTranslationControls(realDocumentState);
+        }
+      }
+
+      async function realStartBatchTranslation() {
+        if (realBatchAbort) {
+          realBatchAbort.abort();
+          realScheduleBatchRender();
+          showToast('正在停止批量翻译…');
+          return;
+        }
+        if (realTranslationAbort) return showToast('单文档翻译正在运行，请先停止当前任务');
+        if (!realBatchHistoryCache.length) return showToast('请先导入文档或文件夹');
+        if (!realTranslationReady()) return;
+        const batchUi = window.EchoLangBatchUI;
+        const queue = realBatchHistoryCache.filter((item) => !batchUi.isDocumentComplete(item));
+        if (!queue.length) return showToast('所有文档都已经翻译完成');
+        realBatchAbort = new AbortController();
+        realBatchErrors.clear();
+        let completedDocuments = 0;
+        realRenderBatch();
+        try {
+          for (const documentState of queue) {
+            if (realBatchAbort.signal.aborted) break;
+            realBatchRunningDocumentId = String(documentState.id);
+            realBatchErrors.delete(String(documentState.id));
+            realRenderBatch();
+            try {
+              const translationResult = await realTranslateDocument(documentState, {
+                signal: realBatchAbort.signal,
+                onUnitStart() { realScheduleBatchRender(); },
+                onUnitRetry() { realScheduleBatchRender(); },
+                onParagraph(_data, state) {
+                  if (String(state.id) === String(realDocumentState.id)) realRenderParagraphs();
+                  if (!batchUi.isDocumentComplete(state)) realScheduleBatchRender();
+                },
+                onProgress(_data, state) { if (!batchUi.isDocumentComplete(state)) realScheduleBatchRender(); },
+                onUnitError(_data, state) {
+                  if (String(state.id) === String(realDocumentState.id)) realRenderParagraphs();
+                  realScheduleBatchRender();
+                },
+                onDone(data, state) {
+                  realPersistDocument(state, { active: String(state.id) === String(realDocumentState.id) });
+                  if (String(state.id) === String(realDocumentState.id)) {
+                    realRenderParagraphs();
+                    realSyncTranslationControls(state);
+                  }
+                },
+              });
+              const failedUnits = Math.max(0, Number(translationResult.failedUnits) || 0);
+              if (failedUnits) {
+                realBatchErrors.set(String(documentState.id), `${failedUnits} 段等待重试`);
+                realRenderBatch();
+              } else {
+                completedDocuments += 1;
+                await new Promise((resolve) => batchUi.animateCompleted(documentState.id, () => { realRenderBatch(); resolve(); }));
+              }
+            } catch (error) {
+              documentState.paragraphs.forEach((paragraph) => { if (paragraph.status === 'processing') paragraph.status = 'queued'; });
+              realPersistDocument(documentState, { active: String(documentState.id) === String(realDocumentState.id) });
+              if (error.name === 'AbortError' || realBatchAbort.signal.aborted) throw error;
+              realBatchErrors.set(String(documentState.id), '翻译失败');
+              realRenderBatch();
+            }
+          }
+          if (!realBatchAbort.signal.aborted) {
+            const failedCount = realBatchErrors.size;
+            showToast(failedCount ? `批量翻译完成：${completedDocuments} 个成功，${failedCount} 个失败` : `批量翻译完成：${completedDocuments} 个文档`);
+          }
+        } catch (error) {
+          if (error.name !== 'AbortError' && !realBatchAbort?.signal.aborted) showToast(`批量翻译中断：${error.message}`);
+        } finally {
+          realBatchAbort = null;
+          realBatchRunningDocumentId = null;
+          realRenderHistory();
+          realRenderBatch();
         }
       }
 
@@ -2110,16 +2861,15 @@
       if (Object.prototype.hasOwnProperty.call(saved, 'apiKey')) { delete saved.apiKey; localStorage.setItem(realSettingsKey, JSON.stringify(saved)); }
       const keyInput = document.getElementById('apiKey');
       const urlInput = document.getElementById('apiUrl');
-       if (document.getElementById('rpmInput')) document.getElementById('rpmInput').value = saved.rpm || '10';
-       if (document.getElementById('concurrencyInput')) document.getElementById('concurrencyInput').value = saved.maxConcurrency || '1';
-      if (document.getElementById('promptInput') && saved.prompt) document.getElementById('promptInput').value = saved.prompt;
-      if (keyInput) { keyInput.value = ''; keyInput.readOnly = false; keyInput.type = 'password'; keyInput.placeholder = '输入当前供应商的 API Key'; const eye = document.getElementById('eyeButton'); if (eye) eye.style.display = 'inline-grid'; }
+      if (keyInput) { keyInput.value = ''; keyInput.readOnly = false; keyInput.type = 'text'; keyInput.placeholder = '输入当前供应商的 API Key'; const eye = document.getElementById('eyeButton'); if (eye) eye.style.display = 'inline-grid'; }
       if (urlInput) urlInput.value = '';
       realRenderProviderDirectory();
       realSelectedProviderId = realSettings().providerId || 'opencode';
       realSelectProvider(realSelectedProviderId, { silent: true });
       const runtimeStartButton = replaceWithFreshNode('startTranslation');
       const runtimeFileInput = replaceWithFreshNode('fileInput');
+      const runtimeBatchFileInput = replaceWithFreshNode('batchFileInput');
+      const runtimeBatchFolderInput = replaceWithFreshNode('batchFolderInput');
       const runtimeValidateButton = replaceWithFreshNode('testKey');
       const runtimeResetButton = replaceWithFreshNode('resetUrl');
       const runtimeRefreshButton = replaceWithFreshNode('refreshModels');
@@ -2127,25 +2877,35 @@
       const runtimeSaveButton = replaceWithFreshNode('saveConfig');
       if (runtimeStartButton) runtimeStartButton.addEventListener('click', realStartTranslation);
       if (runtimeFileInput) runtimeFileInput.addEventListener('change', (event) => realImportFiles(Array.from(event.target.files || [])));
+      if (runtimeBatchFileInput) runtimeBatchFileInput.addEventListener('change', (event) => { const files = Array.from(event.target.files || []); realImportFiles(files, [], { batch: true, relativePaths: files.map((file) => file.webkitRelativePath || '') }); event.target.value = ''; });
+      if (runtimeBatchFolderInput) runtimeBatchFolderInput.addEventListener('change', (event) => { const files = Array.from(event.target.files || []); realImportFiles(files, [], { batch: true, relativePaths: files.map((file) => file.webkitRelativePath || '') }); event.target.value = ''; });
       document.querySelector('label[for="fileInput"]')?.addEventListener('click', (event) => { if (window.showOpenFilePicker) { event.preventDefault(); realPickFiles(); } });
+      const batchImportButton = document.getElementById('batchImportButton');
+      const batchImportMenu = document.getElementById('batchImportMenu');
+      const setBatchImportMenu = (open) => { if (!batchImportMenu || !batchImportButton) return; batchImportMenu.hidden = !open; batchImportButton.setAttribute('aria-expanded', String(open)); };
+      batchImportButton?.addEventListener('click', () => setBatchImportMenu(batchImportMenu?.hidden));
+      batchImportMenu?.querySelector('[data-batch-import="files"]')?.addEventListener('click', () => { setBatchImportMenu(false); realPickBatchFiles(); });
+      batchImportMenu?.querySelector('[data-batch-import="folder"]')?.addEventListener('click', () => { setBatchImportMenu(false); realPickBatchFolder(); });
+      document.addEventListener('click', (event) => { if (!event.target.closest('.batch-import-wrap')) setBatchImportMenu(false); });
+      document.getElementById('batchClearButton')?.addEventListener('click', realClearBatchDocuments);
+      document.getElementById('batchClearConfirmButton')?.addEventListener('click', realConfirmClearBatchDocuments);
+      document.querySelectorAll('[data-close-batch-clear]').forEach((node) => node.addEventListener('click', realCloseBatchClearConfirm));
+      document.getElementById('batchStartButton')?.addEventListener('click', realStartBatchTranslation);
+      document.getElementById('batchExportButton')?.addEventListener('click', realDownloadBatchTranslations);
+      document.getElementById('batchDownloadButton')?.addEventListener('click', realDownloadBatchTranslations);
+      document.getElementById('batchCopyButton')?.addEventListener('click', realCopyBatchTranslations);
+      document.getElementById('batchSettingsButton')?.addEventListener('click', () => setActivePage('config'));
+      document.addEventListener('echolang:pagechange', (event) => { if (event.detail?.page === 'batch') realScheduleBatchRender(); });
       if (runtimeValidateButton) runtimeValidateButton.addEventListener('click', async () => {
         const provider = realProviderById(realSelectedProviderId);
         if (provider?.requestStyle === 'unsupported') return showToast('该供应商没有可直接调用的通用文本接口');
         try {
-          const typedKey = keyInput?.value.trim();
-          if (typedKey) {
-            const saveResponse = await fetch('/api/provider-key', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ providerId: realSelectedProviderId, apiKey: typedKey }) });
-            const saveData = await saveResponse.json();
-            if (!saveResponse.ok) throw new Error(saveData.detail || saveData.error || 'API 密钥保存失败');
-            realProviderStatus.set(realSelectedProviderId, { ...(realProviderStatus.get(realSelectedProviderId) || {}), id: realSelectedProviderId, configured: true });
-            keyInput.value = '';
-            realSelectProvider(realSelectedProviderId, { silent: true });
-            showToast('API 密钥已保存到本地 JSON');
-          }
-          if (!realProviderCanRequest()) return showToast('请先输入并保存当前供应商的 API Key');
+          await realPersistTypedProviderKey();
+          if (!realProviderCanRequest()) return showToast('请先输入当前供应商的 API Key');
           const response = await fetch('/api/validate', { method: 'POST', headers: realHeaders() });
           const data = await response.json();
           if (!response.ok) throw new Error(data.detail || data.error);
+          realConcealValidatedKey();
           showToast(`密钥有效，可用模型 ${data.models.length} 个`);
         } catch (error) { showToast(`检测失败：${error.message}`); }
       });
@@ -2154,8 +2914,21 @@
        if (runtimeRefreshButton) runtimeRefreshButton.addEventListener('click', realRefreshModels);
        if (runtimeAddModelButton) runtimeAddModelButton.addEventListener('click', () => realOpenModelLibrary(realProviderLibraryModels(realProviderById(realSelectedProviderId))));
        document.getElementById('readerModelSelect')?.addEventListener('change', (event) => realSelectReaderModel(event.target.value));
-       if (runtimeSaveButton) runtimeSaveButton.addEventListener('click', () => { realSaveProviderSettings(realSelectedProviderId, { baseUrl: urlInput.value.trim() }); realSaveSettings({ rpm: document.getElementById('rpmInput').value, maxConcurrency: document.getElementById('concurrencyInput').value, prompt: document.getElementById('promptInput').value }); document.getElementById('saveState').textContent = '● 设置已保存'; showToast('当前供应商设置已保存，后续请求会使用独立配置'); realUpdateSession(); realSchedulePromptPreview(); });
-       ['rpmInput', 'concurrencyInput', 'promptInput'].forEach((id) => document.getElementById(id)?.addEventListener('input', () => { realSaveSettings({ [id === 'concurrencyInput' ? 'maxConcurrency' : id]: document.getElementById(id).value }); realUpdateSession(); if (id === 'promptInput') realSchedulePromptPreview(); }));
+       if (runtimeSaveButton) runtimeSaveButton.addEventListener('click', () => {
+         realSaveProviderSettings(realSelectedProviderId, { baseUrl: urlInput.value.trim() });
+         realSaveModelRequestSettings({ rpm: document.getElementById('rpmInput').value, maxConcurrency: document.getElementById('concurrencyInput').value, reasoningEffort: document.getElementById('reasoningEffortInput').value, retries: document.getElementById('retryInput').value, prompt: document.getElementById('promptInput').value });
+         document.getElementById('saveState').textContent = '当前模型设置已保存';
+         showToast(`已保存 ${realModel() || '当前模型'} 的请求设置`);
+         realUpdateSession();
+         realSchedulePromptPreview();
+       });
+       const requestSettingKeys = { rpmInput: 'rpm', concurrencyInput: 'maxConcurrency', reasoningEffortInput: 'reasoningEffort', retryInput: 'retries', promptInput: 'prompt' };
+       Object.entries(requestSettingKeys).forEach(([id, key]) => document.getElementById(id)?.addEventListener('input', () => {
+         realSaveModelRequestSettings({ [key]: document.getElementById(id).value });
+         document.getElementById('saveState').textContent = '已自动保存到当前模型';
+         realUpdateSession();
+         if (id === 'promptInput') realSchedulePromptPreview();
+       }));
        document.querySelectorAll('.language-select').forEach((select) => select.addEventListener('change', realSchedulePromptPreview));
        document.getElementById('copyPromptPreview')?.addEventListener('click', async () => {
          const preview = document.getElementById('promptPreview');
@@ -2205,11 +2978,12 @@
           if (action === 'delete') await realDeleteProvider(provider);
         } catch (error) { showToast(`删除供应商失败：${error.message}`); }
       }));
-      document.querySelectorAll('#modelContextMenu [data-model-action]').forEach((button) => button.addEventListener('click', () => {
+      document.querySelectorAll('#modelContextMenu [data-model-action]').forEach((button) => button.addEventListener('click', async () => {
         const item = realModelContextItem;
         const action = button.dataset.modelAction;
         realCloseModelContextMenu();
         if (!item) return;
+        if (action === 'test') await realTestModel(item.provider, item.model);
         if (action === 'default') realSetDefaultModel(item.provider, item.model);
         if (action === 'remove') realRemoveProviderModel(item.provider, item.model);
       }));
@@ -2238,7 +3012,6 @@
         try { await navigator.clipboard.writeText(getDocumentText()); showToast('原文与译文已复制'); }
         catch { showToast('浏览器未允许访问剪贴板'); }
       });
-      document.getElementById('readingSettings')?.addEventListener('click', () => showToast('请使用下方“原文 / 中英对照 / 翻译”切换阅读模式'));
       document.querySelectorAll('#historyContextMenu [data-history-action]').forEach((button) => button.addEventListener('click', async () => {
         const item = realContextItem;
         const action = button.dataset.historyAction;
@@ -2257,21 +3030,12 @@
         if (!event.target.closest('#providerContextMenu')) realCloseProviderContextMenu();
         if (!event.target.closest('#modelContextMenu')) realCloseModelContextMenu();
       });
-      document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { realCloseHistoryContextMenu(); realCloseProviderContextMenu(); realCloseModelContextMenu(); realCloseModelLibrary(); } });
-      const readerGlyph = document.querySelector('[data-page="reader"] .nav-glyph');
-      const configGlyph = document.querySelector('[data-page="config"] .nav-glyph');
-      if (readerGlyph) readerGlyph.innerHTML = '<img src="/assets/ui/reader.png" alt="" />';
-      if (configGlyph) configGlyph.innerHTML = '<img src="/assets/ui/settings.png" alt="" />';
-      const serviceStatus = document.createElement('span');
-      serviceStatus.id = 'serviceStatus';
-      serviceStatus.className = 'service-status';
-      serviceStatus.textContent = '服务检测中';
-      document.querySelector('.breadcrumb')?.appendChild(serviceStatus);
-       fetch('/api/health', { headers: realHeaders() }).then((response) => response.json()).then((data) => { realServerConfigured = Boolean(data.configured); realProviderStatus.set('opencode', { ...(realProviderStatus.get('opencode') || {}), id: 'opencode', configured: realServerConfigured }); serviceStatus.textContent = '● 服务在线'; serviceStatus.classList.add('is-ready'); realUpdateSession(); }).catch(() => { serviceStatus.textContent = '○ 请用 npm start 启动'; });
+      document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { realCloseHistoryContextMenu(); realCloseProviderContextMenu(); realCloseModelContextMenu(); realCloseModelLibrary(); realCloseBatchClearConfirm(); } });
+       fetch('/api/health', { headers: realHeaders() }).then((response) => response.json()).then((data) => { realServerConfigured = Boolean(data.configured); realProviderStatus.set('opencode', { ...(realProviderStatus.get('opencode') || {}), id: 'opencode', configured: realServerConfigured }); realUpdateSession(); }).catch(() => { realServerConfigured = false; });
       document.getElementById('documentTitle').textContent = '未导入文档';
       document.getElementById('sessionStatus').textContent = '尚未开始翻译';
       document.getElementById('progressTitle').textContent = '等待翻译任务';
-      document.getElementById('startTranslation').textContent = '开始翻译';
+      document.getElementById('startTranslation').textContent = '翻译';
       document.getElementById('startTranslation').disabled = true;
       document.getElementById('progressCard').style.display = 'none';
        realRenderHistory();
@@ -2289,13 +3053,18 @@
           documents = documents.map(realHydrateDocument);
           documents.forEach((item) => realDocumentCache.set(String(item.id), item));
           const storedOrder = realStoreReady ? await store.getMeta('historyOrder') : null;
+          const storedBatchOrder = realStoreReady ? await store.getMeta('batchHistoryOrder') : null;
           const byId = new Map(documents.map((item) => [String(item.id), item]));
           const orderedIds = Array.isArray(storedOrder) ? storedOrder.map(String) : [];
-          realHistoryCache = [...orderedIds.map((id) => byId.get(id)).filter(Boolean), ...documents.filter((item) => !orderedIds.includes(String(item.id))).sort((a, b) => new Date(b.updatedAt || b.savedAt || 0) - new Date(a.updatedAt || a.savedAt || 0))].slice(0, 20);
+          const batchOrderedIds = Array.isArray(storedBatchOrder) ? storedBatchOrder.map(String) : [];
+          const indexedIds = new Set([...orderedIds, ...batchOrderedIds]);
+          realHistoryCache = [...orderedIds.map((id) => byId.get(id)).filter(Boolean), ...documents.filter((item) => !indexedIds.has(String(item.id)) && item.scope !== 'batch').sort((a, b) => new Date(b.updatedAt || b.savedAt || 0) - new Date(a.updatedAt || a.savedAt || 0))].slice(0, realHistoryLimit);
+          realBatchHistoryCache = [...batchOrderedIds.map((id) => byId.get(id)).filter(Boolean), ...documents.filter((item) => !indexedIds.has(String(item.id)) && item.scope === 'batch').sort((a, b) => new Date(b.updatedAt || b.savedAt || 0) - new Date(a.updatedAt || a.savedAt || 0))].slice(0, realHistoryLimit);
+          realBatchSelectedDocumentId = realBatchHistoryCache[0]?.id || null;
            if (!realHistoryCache.length) {
              let legacyHistory = [];
              try { legacyHistory = JSON.parse(localStorage.getItem(realHistoryKey) || '[]'); } catch { legacyHistory = []; }
-             realHistoryCache = Array.isArray(legacyHistory) ? legacyHistory.map(realHydrateDocument).slice(0, 20) : [];
+              realHistoryCache = Array.isArray(legacyHistory) ? legacyHistory.map(realHydrateDocument).slice(0, realHistoryLimit) : [];
              realHistoryCache.forEach((item) => realDocumentCache.set(String(item.id), item));
              if (realStoreReady) await Promise.all(realHistoryCache.map((item) => store.putDocument(item).catch(() => {})));
            }
@@ -2314,15 +3083,12 @@
             realDocumentState = realHydrateDocument(active);
             realDocumentCache.set(String(active.id), realDocumentState);
             document.getElementById('documentTitle').textContent = realDocumentState.name;
-             document.getElementById('startTranslation').disabled = false;
-             const complete = realDocumentState.paragraphs.length > 0 && realDocumentState.paragraphs.every((paragraph) => paragraph.translation && paragraph.status === 'done');
-             const statusLine = document.getElementById('translationStatusLine');
-             if (statusLine) statusLine.hidden = !complete;
-             document.getElementById('sessionStatus').textContent = complete ? '已恢复保存的翻译结果' : '尚未开始翻译';
-            document.getElementById('startTranslation').textContent = complete ? '重新翻译' : '继续翻译';
+             const progress = realSyncTranslationControls(realDocumentState);
+             document.getElementById('sessionStatus').textContent = progress.complete ? '已恢复保存的翻译结果' : progress.partial ? `已恢复 ${progress.completed}/${progress.total} 段译文` : '尚未开始翻译';
           }
           realRenderHistory();
           realRenderParagraphs();
+          realRenderBatch();
           realUpdateSourceFileButton();
           realUpdateSession();
         } catch (error) {
@@ -2332,5 +3098,6 @@
       })();
     })();
   </script>
+  <script src="/app/reader-settings.js?v=20260808-v3"></script>
 </body>
 </html>
