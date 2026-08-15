@@ -109,10 +109,10 @@ EchoLang 的目标不是把文档压扁成一串字符串。它尝试保留“�
 
 | 发行文件 | 适合场景 | 如何使用 |
 | --- | --- | --- |
-| `EchoLang-0.4.1-portable.exe` | 想立即体验的 Windows 用户 | 下载后直接运行，无需安装 Node.js。 |
-| `EchoLang-0.4.1-setup.msi` | 希望安装到系统并创建快捷方式 | 双击安装，从开始菜单或桌面启动。 |
 | `EchoLang-0.4.1-mac-arm64.dmg` | Apple Silicon Mac 用户 | 打开 DMG 后将 EchoLang 拖入 Applications。 |
-| `EchoLang-0.4.1-web-source.zip` | 本地、服务器或内网网页部署 | 安装 Node.js 20+ 后运行 `npm ci` 与 `npm start`。 |
+| `EchoLang-0.4.1-mac-arm64.zip` | 需要直接解压运行的 Apple Silicon Mac 用户 | 解压后打开 `EchoLang.app`。 |
+| [v0.4.0 Windows 发布包](https://github.com/Mu-scorpio/EchoLang/releases/tag/v0.4.0) | Windows 用户 | 继续使用上一版 Windows Portable 或 MSI。 |
+| Web 源码 | 本地、服务器或内网网页部署 | 从仓库下载源码后运行 `npm ci` 与 `npm start`。 |
 | `SHA256SUMS.txt` | 校验下载完整性 | 使用 `Get-FileHash` 或 `sha256sum` 对照校验。 |
 
 桌面包内置 Electron、Node 运行时和文档处理依赖。API 密钥与模型配置默认保存在 `%APPDATA%\EchoLang\config.local.json`，不会写入安装目录。
