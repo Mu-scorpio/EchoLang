@@ -103,15 +103,16 @@ EchoLang 的目标不是把文档压扁成一串字符串。它尝试保留“�
 
 > 扫描型 PDF 是否能提取正文，取决于文件是否包含文本层；EchoLang 当前不内置 OCR。
 
-## 下载 v0.4.0
+## 下载 v0.4.1
 
 前往 [GitHub Releases](https://github.com/Mu-scorpio/EchoLang/releases/latest)，根据使用方式选择一个文件：
 
 | 发行文件 | 适合场景 | 如何使用 |
 | --- | --- | --- |
-| `EchoLang-0.4.0-portable.exe` | 想立即体验的 Windows 用户 | 下载后直接运行，无需安装 Node.js。 |
-| `EchoLang-0.4.0-setup.msi` | 希望安装到系统并创建快捷方式 | 双击安装，从开始菜单或桌面启动。 |
-| `EchoLang-0.4.0-web-source.zip` | 本地、服务器或内网网页部署 | 安装 Node.js 20+ 后运行 `npm ci` 与 `npm start`。 |
+| `EchoLang-0.4.1-portable.exe` | 想立即体验的 Windows 用户 | 下载后直接运行，无需安装 Node.js。 |
+| `EchoLang-0.4.1-setup.msi` | 希望安装到系统并创建快捷方式 | 双击安装，从开始菜单或桌面启动。 |
+| `EchoLang-0.4.1-mac-arm64.dmg` | Apple Silicon Mac 用户 | 打开 DMG 后将 EchoLang 拖入 Applications。 |
+| `EchoLang-0.4.1-web-source.zip` | 本地、服务器或内网网页部署 | 安装 Node.js 20+ 后运行 `npm ci` 与 `npm start`。 |
 | `SHA256SUMS.txt` | 校验下载完整性 | 使用 `Get-FileHash` 或 `sha256sum` 对照校验。 |
 
 桌面包内置 Electron、Node 运行时和文档处理依赖。API 密钥与模型配置默认保存在 `%APPDATA%\EchoLang\config.local.json`，不会写入安装目录。
@@ -120,7 +121,7 @@ EchoLang 的目标不是把文档压扁成一串字符串。它尝试保留“�
 
 ## 5 分钟开始翻译
 
-1. 下载 Portable 或 MSI，启动 EchoLang。
+1. 下载 Portable、MSI 或 macOS DMG，启动 EchoLang。
 2. 打开“API 设置”，选择供应商并填写 API Key。
 3. 点击“获取模型列表”验证密钥，添加模型并设为当前翻译模型。
 4. 回到“阅读”导入一篇文档，或在“批量翻译”中导入多个文件 / 文件夹。
@@ -176,7 +177,7 @@ API Key 可以在界面中填写，也可以写入 `config.local.json`：
 </details>
 
 <details>
-<summary><strong>从源码运行桌面版与构建 Windows 安装包</strong></summary>
+<summary><strong>从源码运行桌面版与构建 Windows / macOS 安装包</strong></summary>
 
 ```powershell
 git clone https://github.com/Mu-scorpio/EchoLang.git
@@ -187,7 +188,7 @@ npm install
 npm start
 ```
 
-构建 MSI 与 Portable：
+构建 Windows MSI 与 Portable：
 
 ```powershell
 cd EchoLang-Desktop
@@ -196,6 +197,19 @@ npm run dist
 ```
 
 产物位于 `EchoLang-Desktop/dist/`。也可以分别运行 `npm run dist:msi`、`npm run dist:portable` 或 `npm run dist:dir`。
+
+在 macOS 上构建 DMG、ZIP 或可启动目录：
+
+```bash
+cd EchoLang-Desktop
+npm ci
+npm run check
+npm run dist:mac
+# 可选：npm run dist:mac:zip
+# 可选：npm run dist:mac:dir
+```
+
+macOS 构建默认使用当前构建机架构。由于后端依赖包含原生模块（例如 `sharp`），发布 Intel 版时应在 Intel macOS 或 x64 Node 环境中重新安装根目录依赖后再构建。未配置 Apple Developer ID 时，DMG 未签名/公证，首次打开可能需要在“系统设置 → 隐私与安全性”中允许。
 
 </details>
 
@@ -215,7 +229,7 @@ EchoLang/
 ├─ assets/                       # 供应商 Logo 与界面图标
 ├─ docs/screenshots/             # README 与 Release 截图
 ├─ config.example.json           # 不含真实密钥的配置模板
-├─ EchoLang-Desktop/             # Electron 外壳与 Windows 打包配置
+├─ EchoLang-Desktop/             # Electron 外壳与 Windows/macOS 打包配置
 └─ start.bat                     # 单实例网页启动脚本
 ```
 

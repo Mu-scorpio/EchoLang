@@ -1,7 +1,7 @@
 {
   "name": "echolang-desktop",
   "productName": "EchoLang",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": true,
   "author": "Mu-scorpio",
   "description": "EchoLang desktop application",
@@ -14,7 +14,10 @@
     "dist": "electron-builder --win msi portable",
     "dist:msi": "electron-builder --win msi",
     "dist:portable": "electron-builder --win portable",
-    "dist:dir": "electron-builder --win --dir"
+    "dist:dir": "electron-builder --win --dir",
+    "dist:mac": "electron-builder --mac dmg",
+    "dist:mac:zip": "electron-builder --mac zip",
+    "dist:mac:dir": "electron-builder --mac --dir"
   },
   "engines": {
     "node": ">=20"
@@ -91,6 +94,18 @@
       ],
       "icon": "../assets/ui/echolang-brand.png",
       "signExecutable": false
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg"
+        }
+      ],
+      "icon": "../assets/ui/echolang-brand.icns",
+      "category": "public.app-category.productivity",
+      "darkModeSupport": true,
+      "identity": null,
+      "artifactName": "EchoLang-${version}-mac-${arch}.${ext}"
     },
     "msi": {
       "oneClick": false,
