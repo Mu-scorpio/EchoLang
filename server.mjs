@@ -1,13 +1,16 @@
 import http from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
-import { createReadStream, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createReadStream, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { URL } from 'node:url';
-import mammoth from 'mammoth';
 import pdfParse from 'pdf-parse';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import JSZip from 'jszip';
+import PDFDocument from 'pdfkit';
+import sharp from 'sharp';
+import { AlignmentType, BorderStyle, Document, Footer, HeadingLevel, ImageRun, Packer, PageNumber, Paragraph, Table, TableCell, TableRow, TextRun, WidthType } from 'docx';
+import { extractDocxDocument } from './app/docx-extractor.mjs';
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 const configDir = path.resolve(process.env.ECHOLANG_CONFIG_DIR || rootDir);
@@ -21,6 +24,12 @@ const defaultModel = process.env.OPENCODE_MODEL || config.OPENCODE_MODEL || prov
 const serverApiKey = process.env.OPENCODE_API_KEY || config.OPENCODE_API_KEY || providerConfig.apiKey || '';
 const defaultSystemPrompt = '你是一名专业翻译。';
 const maxUploadBytes = 40 * 1024 * 1024;
+const settingsFilePath = path.join(configDir, 'settings.local.json');
+const appSettingsDefaults = {
+  appearance: { colorScheme: 'blue' },
+  reader: { font: 'serif', size: 18, lineHeight: 1.68, paragraphGap: 22, contentWidth: 850, sidebarWidth: 315 },
+  batch: { sidebarWidth: 430 },
+};
 const builtinProviderDefaults = {
   opencode: { name: 'OpenCode Zen', baseUrl: 'https://opencode.ai/zen/v1', model: defaultModel, requestStyle: 'openai' },
   openrouter: { name: 'OpenRouter', baseUrl: 'https://openrouter.ai/api/v1', model: 'openai/gpt-4o-mini', requestStyle: 'openai' },
@@ -90,6 +99,290 @@ function sendError(res, status, message, detail) {
   sendJson(res, status, { ok: false, error: message, detail: detail || undefined });
 }
 
+function boundedNumber(value, fallback, minimum, maximum) {
+  const number = Number(value);
+  return Number.isFinite(number) ? Math.max(minimum, Math.min(maximum, number)) : fallback;
+}
+
+function normalizeAppSettings(input = {}) {
+  const appearance = input.appearance && typeof input.appearance === 'object' ? input.appearance : {};
+  const reader = input.reader && typeof input.reader === 'object' ? input.reader : {};
+  const batch = input.batch && typeof input.batch === 'object' ? input.batch : {};
+  return {
+    appearance: {
+      colorScheme: ['blue', 'claude', 'burgundy', 'orange', 'sage'].includes(appearance.colorScheme) ? appearance.colorScheme : appSettingsDefaults.appearance.colorScheme,
+    },
+    reader: {
+      font: ['serif', 'sans', 'system'].includes(reader.font) ? reader.font : appSettingsDefaults.reader.font,
+      size: boundedNumber(reader.size, appSettingsDefaults.reader.size, 14, 24),
+      lineHeight: boundedNumber(reader.lineHeight, appSettingsDefaults.reader.lineHeight, 1.4, 2.2),
+      paragraphGap: boundedNumber(reader.paragraphGap, appSettingsDefaults.reader.paragraphGap, 10, 40),
+      contentWidth: boundedNumber(reader.contentWidth, appSettingsDefaults.reader.contentWidth, 680, 1180),
+      sidebarWidth: boundedNumber(reader.sidebarWidth, appSettingsDefaults.reader.sidebarWidth, 240, 560),
+    },
+    batch: {
+      sidebarWidth: boundedNumber(batch.sidebarWidth, appSettingsDefaults.batch.sidebarWidth, 300, 760),
+    },
+  };
+}
+
+function loadAppSettings() {
+  try { return normalizeAppSettings(JSON.parse(readFileSync(settingsFilePath, 'utf8'))); }
+  catch { return normalizeAppSettings(); }
+}
+
+function saveAppSettings(input) {
+  const settings = normalizeAppSettings(input);
+  mkdirSync(configDir, { recursive: true });
+  writeFileSync(settingsFilePath, `${JSON.stringify(settings, null, 2)}\n`, 'utf8');
+  return settings;
+}
+
+function safeExportName(value) {
+  return String(value || 'EchoLang-export').replace(/[\\/:*?"<>|\u0000-\u001f]/g, '_').trim().slice(0, 120) || 'EchoLang-export';
+}
+
+function normalizeExportRows(input) {
+  return (Array.isArray(input) ? input : []).slice(0, 10000).map((row, index) => ({
+    type: row?.type === 'table-cell' ? 'table-cell' : 'paragraph',
+    index: Number(row?.index) || index + 1,
+    table: String(row?.table || ''),
+    row: Number(row?.row) || null,
+    column: Number(row?.column) || null,
+    source: String(row?.source || '').slice(0, 100000),
+    translation: String(row?.translation || '').slice(0, 100000),
+    content: String(row?.content || '').slice(0, 200000),
+  })).filter((row) => row.source || row.translation || row.content);
+}
+
+function exportRowParts(row, mode) {
+  if (mode === 'source') return [row.source || row.content].filter(Boolean);
+  if (mode === 'translation') return [row.translation || row.content].filter(Boolean);
+  return [row.source, row.translation].filter(Boolean).length ? [row.source, row.translation].filter(Boolean) : [row.content].filter(Boolean);
+}
+
+function normalizeExportDocument(input, rows) {
+  const paragraphs = new Map((Array.isArray(input.paragraphs) ? input.paragraphs : []).map((paragraph) => [String(paragraph?.id || ''), {
+    source: String(paragraph?.source ?? paragraph?.text ?? ''),
+    translation: String(paragraph?.translation || ''),
+    kind: String(paragraph?.kind || 'paragraph'),
+  }]));
+  const assets = new Map((Array.isArray(input.assets) ? input.assets : []).map((asset) => [String(asset?.id || ''), {
+    mimeType: String(asset?.mimeType || 'application/octet-stream'),
+    data: String(asset?.data || ''),
+  }]).filter(([id, asset]) => id && asset.data));
+  const blocks = Array.isArray(input.blocks) && input.blocks.length ? input.blocks : rows.map((row, index) => ({ type: 'paragraph', id: `fallback-${index}`, text: row.source || row.content, translation: row.translation || '' }));
+  return { paragraphs, assets, blocks };
+}
+
+function exportTextPair(source, translation, mode) {
+  if (mode === 'source') return [{ text: source, translated: false }].filter((item) => item.text);
+  if (mode === 'translation') return [{ text: translation || source, translated: Boolean(translation) }].filter((item) => item.text);
+  return [{ text: source, translated: false }, { text: translation, translated: true }].filter((item) => item.text);
+}
+
+async function exportImage(asset) {
+  if (!asset?.data) return null;
+  const source = Buffer.from(asset.data, 'base64');
+  const mimeType = asset.mimeType.toLowerCase();
+  if (mimeType === 'image/png') return { data: source, type: 'png' };
+  if (mimeType === 'image/jpeg' || mimeType === 'image/jpg') return { data: source, type: 'jpg' };
+  if (mimeType === 'image/gif') return { data: source, type: 'gif' };
+  if (mimeType === 'image/bmp') return { data: source, type: 'bmp' };
+  try { return { data: await sharp(source).png().toBuffer(), type: 'png' }; } catch { return null; }
+}
+
+function imageDimensions(block, maximumWidth = 620, maximumHeight = 690) {
+  const width = Math.max(1, Number(block?.width) || 640);
+  const height = Math.max(1, Number(block?.height) || 360);
+  const scale = Math.min(1, maximumWidth / width, maximumHeight / height);
+  return { width: Math.max(1, Math.round(width * scale)), height: Math.max(1, Math.round(height * scale)) };
+}
+
+function docxTextParagraph(text, translated, kind = 'paragraph') {
+  const heading = kind === 'heading';
+  const caption = kind === 'caption';
+  const tableCell = kind === 'table-cell';
+  return new Paragraph({
+    heading: heading && !translated ? HeadingLevel.HEADING_1 : undefined,
+    alignment: caption ? AlignmentType.CENTER : AlignmentType.JUSTIFIED,
+    children: [new TextRun({
+      text,
+      bold: heading && !translated,
+      italics: caption || translated,
+      color: translated ? '4F5E73' : caption ? '667085' : '172033',
+      font: translated ? 'Microsoft YaHei' : 'Times New Roman',
+      size: heading ? 27 : caption || tableCell ? 19 : 21,
+    })],
+    spacing: { before: heading ? 250 : 0, after: translated ? 240 : caption ? 200 : 100, line: 330 },
+    indent: heading || caption || tableCell ? undefined : { firstLine: 420 },
+  });
+}
+
+async function docxVisualParagraph(block, assets) {
+  const asset = await exportImage(assets.get(String(block.assetId || '')));
+  if (!asset) return block.latex ? docxTextParagraph(block.latex, false, 'caption') : null;
+  return new Paragraph({
+    alignment: AlignmentType.CENTER,
+    children: [new ImageRun({ ...asset, transformation: imageDimensions(block) })],
+    spacing: { before: 100, after: 220 },
+  });
+}
+
+async function docxCellParagraphs(cell, paragraphMap, assets, mode) {
+  const paragraph = paragraphMap.get(String(cell?.id || ''));
+  const result = exportTextPair(paragraph?.source || String(cell?.text || ''), paragraph?.translation || '', mode)
+    .map((part) => docxTextParagraph(part.text, part.translated, 'table-cell'));
+  for (const block of Array.isArray(cell?.blocks) ? cell.blocks : []) {
+    if (!['image', 'formula'].includes(block?.type)) continue;
+    const visual = await docxVisualParagraph(block, assets);
+    if (visual) result.push(visual);
+  }
+  return result.length ? result : [new Paragraph('')];
+}
+
+async function createDocxExport(title, mode, rows, input = {}) {
+  const { paragraphs, assets, blocks } = normalizeExportDocument(input, rows);
+  const children = [new Paragraph({ text: title, heading: HeadingLevel.TITLE, alignment: AlignmentType.CENTER, spacing: { after: 480 } })];
+  for (const block of blocks) {
+    if (block?.type === 'image' || block?.type === 'formula') {
+      const visual = await docxVisualParagraph(block, assets);
+      if (visual) children.push(visual);
+      continue;
+    }
+    if (block?.type === 'table') {
+      const tableRows = [];
+      for (const [rowIndex, row] of (block.rows || []).entries()) {
+        const cells = [];
+        for (const cell of row.cells || []) cells.push(new TableCell({
+          children: await docxCellParagraphs(cell, paragraphs, assets, mode),
+          shading: row.header || rowIndex === 0 ? { fill: 'EEF3FA' } : undefined,
+          margins: { top: 90, right: 110, bottom: 90, left: 110 },
+        }));
+        if (cells.length) tableRows.push(new TableRow({ children: cells, tableHeader: row.header || rowIndex === 0 }));
+      }
+      if (tableRows.length) children.push(new Table({
+        rows: tableRows,
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        borders: { top: { style: BorderStyle.SINGLE, size: 2, color: 'C8D1DE' }, bottom: { style: BorderStyle.SINGLE, size: 2, color: 'C8D1DE' }, left: { style: BorderStyle.SINGLE, size: 2, color: 'C8D1DE' }, right: { style: BorderStyle.SINGLE, size: 2, color: 'C8D1DE' }, insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'DCE3EC' }, insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'DCE3EC' } },
+      }));
+      children.push(new Paragraph({ spacing: { after: 180 } }));
+      continue;
+    }
+    const paragraph = paragraphs.get(String(block?.id || ''));
+    for (const part of exportTextPair(paragraph?.source || String(block?.text || ''), paragraph?.translation || String(block?.translation || ''), mode)) {
+      children.push(docxTextParagraph(part.text, part.translated, paragraph?.kind || block?.kind || 'paragraph'));
+    }
+  }
+  const document = new Document({
+    styles: { default: { document: { run: { font: 'Microsoft YaHei', size: 21 }, paragraph: { spacing: { line: 330 } } } } },
+    sections: [{
+      properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 1134, right: 1247, bottom: 1134, left: 1247 } } },
+      footers: { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ children: [PageNumber.CURRENT], color: '8A94A6', size: 17 })] })] }) },
+      children,
+    }],
+  });
+  return Packer.toBuffer(document);
+}
+
+function findPdfFont() {
+  const candidates = [
+    'C:\\Windows\\Fonts\\NotoSansSC-VF.ttf',
+    'C:\\Windows\\Fonts\\Deng.ttf',
+    'C:\\Windows\\Fonts\\simhei.ttf',
+    '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
+    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+  ];
+  return candidates.find((candidate) => existsSync(candidate)) || null;
+}
+
+async function createPdfExport(title, mode, rows, input = {}) {
+  const { paragraphs, assets, blocks } = normalizeExportDocument(input, rows);
+  const convertedAssets = new Map();
+  for (const [id, asset] of assets) convertedAssets.set(id, await exportImage(asset));
+  return new Promise((resolve, reject) => {
+    const document = new PDFDocument({ size: 'A4', margins: { top: 56, right: 58, bottom: 58, left: 58 }, bufferPages: true, info: { Title: title, Creator: 'EchoLang' } });
+    const chunks = [];
+    document.on('data', (chunk) => chunks.push(chunk));
+    document.on('end', () => resolve(Buffer.concat(chunks)));
+    document.on('error', reject);
+    const font = findPdfFont();
+    if (font) document.font(font);
+    const contentWidth = document.page.width - document.page.margins.left - document.page.margins.right;
+    const bottom = () => document.page.height - document.page.margins.bottom;
+    const ensureSpace = (height) => { if (document.y + height > bottom()) document.addPage(); };
+    const writePair = (source, translation, kind = 'paragraph') => {
+      for (const part of exportTextPair(source, translation, mode)) {
+        const heading = kind === 'heading';
+        const caption = kind === 'caption';
+        document.fontSize(heading ? 13.5 : caption ? 9.5 : 10.5).fillColor(part.translated ? '#526078' : caption ? '#667085' : '#172033');
+        const options = { width: contentWidth, align: caption ? 'center' : heading ? 'left' : 'justify', lineGap: heading ? 5 : 4, paragraphGap: part.translated ? 11 : 6 };
+        ensureSpace(document.heightOfString(part.text, options) + 14);
+        document.text(part.text, options);
+      }
+    };
+    const drawVisual = (block) => {
+      const image = convertedAssets.get(String(block.assetId || ''));
+      if (!image?.data) { if (block.latex) writePair(block.latex, '', 'caption'); return; }
+      const dimensions = imageDimensions(block, contentWidth, 560);
+      ensureSpace(dimensions.height + 24);
+      document.image(image.data, document.page.margins.left + (contentWidth - dimensions.width) / 2, document.y, dimensions);
+      document.y += dimensions.height + 20;
+    };
+    document.fontSize(18).fillColor('#172033').text(title, { width: contentWidth, align: 'center', lineGap: 5 });
+    document.moveDown(1.25);
+    for (const block of blocks) {
+      if (block?.type === 'image' || block?.type === 'formula') { drawVisual(block); continue; }
+      if (block?.type === 'table') {
+        const tableRows = block.rows || [];
+        const columns = Math.max(1, Number(block.columns) || Math.max(1, ...tableRows.map((row) => row.cells?.length || 0)));
+        const cellWidth = contentWidth / columns;
+        for (const [rowIndex, row] of tableRows.entries()) {
+          const cellDetails = (row.cells || []).map((cell) => {
+            const paragraph = paragraphs.get(String(cell.id || ''));
+            const text = exportTextPair(paragraph?.source || cell.text || '', paragraph?.translation || '', mode).map((part) => part.text).join('\n');
+            const visuals = (cell.blocks || []).filter((item) => ['image', 'formula'].includes(item?.type)).map((item) => ({
+              block: item,
+              image: convertedAssets.get(String(item.assetId || '')),
+              dimensions: imageDimensions(item, cellWidth - 12, 180),
+            })).filter((item) => item.image?.data);
+            return { text, visuals };
+          });
+          const rowHeight = Math.max(28, ...cellDetails.map((cell) => {
+            const textHeight = document.fontSize(8.3).heightOfString(cell.text || ' ', { width: cellWidth - 12, lineGap: 2 });
+            return textHeight + cell.visuals.reduce((sum, visual) => sum + visual.dimensions.height + 6, 0) + 12;
+          }));
+          ensureSpace(rowHeight + 2);
+          const y = document.y;
+          cellDetails.forEach((cell, columnIndex) => {
+            const x = document.page.margins.left + columnIndex * cellWidth;
+            if (row.header || rowIndex === 0) document.save().fillColor('#EEF3FA').rect(x, y, cellWidth, rowHeight).fill().restore();
+            document.save().lineWidth(.5).strokeColor('#C8D1DE').rect(x, y, cellWidth, rowHeight).stroke().restore();
+            const textHeight = document.fontSize(8.3).heightOfString(cell.text || ' ', { width: cellWidth - 12, lineGap: 2 });
+            document.fontSize(8.3).fillColor('#172033').text(cell.text, x + 6, y + 6, { width: cellWidth - 12, height: Math.max(1, textHeight), lineGap: 2, ellipsis: true });
+            let imageY = y + 8 + textHeight;
+            cell.visuals.forEach((visual) => {
+              document.image(visual.image.data, x + (cellWidth - visual.dimensions.width) / 2, imageY, visual.dimensions);
+              imageY += visual.dimensions.height + 6;
+            });
+          });
+          document.y = y + rowHeight;
+        }
+        document.y += 16;
+        continue;
+      }
+      const paragraph = paragraphs.get(String(block?.id || ''));
+      writePair(paragraph?.source || String(block?.text || ''), paragraph?.translation || String(block?.translation || ''), paragraph?.kind || block?.kind || 'paragraph');
+    }
+    const range = document.bufferedPageRange();
+    for (let pageIndex = range.start; pageIndex < range.start + range.count; pageIndex += 1) {
+      document.switchToPage(pageIndex);
+      document.fontSize(8).fillColor('#8A94A6').text(String(pageIndex + 1), 0, document.page.height - 37, { width: document.page.width, align: 'center' });
+    }
+    document.end();
+  });
+}
+
 async function readBody(req, limit = maxUploadBytes) {
   const chunks = [];
   let total = 0;
@@ -102,7 +395,7 @@ async function readBody(req, limit = maxUploadBytes) {
 }
 
 async function readJson(req) {
-  const raw = await readBody(req, 8 * 1024 * 1024);
+  const raw = await readBody(req, maxUploadBytes);
   return JSON.parse(raw.toString('utf8') || '{}');
 }
 
@@ -612,7 +905,6 @@ async function extractText(buffer, fileName) {
   const extension = path.extname(fileName).toLowerCase();
   if (['.txt', '.md', '.csv', '.tsv', '.json'].includes(extension)) return normalizeText(buffer.toString('utf8'));
   if (['.html', '.htm'].includes(extension)) return stripHtml(buffer.toString('utf8'));
-  if (extension === '.docx') return normalizeText((await mammoth.extractRawText({ buffer })).value);
   if (extension === '.pdf') return normalizeText((await pdfParse(buffer)).text);
   if (extension === '.xlsx') return normalizeText(await extractXlsx(buffer));
   if (extension === '.xls') throw new Error('旧版 XLS 暂不支持，请另存为 XLSX 后再导入');
@@ -657,9 +949,15 @@ function makeTranslationPrompt(systemPrompt, sourceLanguage, targetLanguage, uni
   return `${prefix ? `${prefix}\n\n` : ''}请将下面的 ${sourceLanguage || '原文'} 翻译为 ${targetLanguage || '中文'}。\n只返回 JSON 数组，不要 Markdown 代码块，不要解释。数组每一项必须包含 id 和 translation，id 必须原样保留。保留段落语气、专有名词、数字和标点。\n\n${JSON.stringify(items)}`;
 }
 
-async function callModel({ apiKey, provider, providerBaseUrl, model, systemPrompt, sourceLanguage, targetLanguage, units, signal }) {
+function normalizeReasoningEffort(value) {
+  const effort = String(value || '').trim().toLowerCase();
+  return ['low', 'medium', 'high', 'xhigh', 'max'].includes(effort) ? effort : '';
+}
+
+async function callModel({ apiKey, provider, providerBaseUrl, model, reasoningEffort, systemPrompt, sourceLanguage, targetLanguage, units, signal }) {
   if (provider?.requestStyle === 'unsupported') throw new Error('该供应商没有可直接调用的通用文本接口，请配置自定义 OpenAI 兼容地址');
   const isAnthropic = provider?.requestStyle === 'anthropic';
+  const normalizedReasoningEffort = normalizeReasoningEffort(reasoningEffort);
   const prompt = makeTranslationPrompt(isAnthropic ? '' : systemPrompt, sourceLanguage, targetLanguage, units);
   const response = await fetch(`${providerBaseUrl}${isAnthropic ? '/messages' : '/chat/completions'}`, {
     method: 'POST',
@@ -674,7 +972,7 @@ async function callModel({ apiKey, provider, providerBaseUrl, model, systemPromp
       messages: [{ role: 'user', content: prompt }],
     } : {
       model: model || defaultModel,
-      temperature: 0.2,
+      ...(normalizedReasoningEffort ? { reasoning_effort: normalizedReasoningEffort } : { temperature: 0.2 }),
       messages: [{ role: 'user', content: prompt }],
     }),
   });
@@ -690,6 +988,42 @@ async function callModel({ apiKey, provider, providerBaseUrl, model, systemPromp
   const items = parseTranslationItems(content);
   if (!items.length) throw new Error('模型没有返回可识别的译文');
   return items;
+}
+
+async function testModelAvailability({ apiKey, provider, providerBaseUrl, model, reasoningEffort, signal }) {
+  if (provider?.requestStyle === 'unsupported') throw new Error('该供应商没有可直接调用的通用文本接口');
+  const isAnthropic = provider?.requestStyle === 'anthropic';
+  const normalizedReasoningEffort = normalizeReasoningEffort(reasoningEffort);
+  const response = await fetch(`${providerBaseUrl}${isAnthropic ? '/messages' : '/chat/completions'}`, {
+    method: 'POST',
+    signal,
+    headers: isAnthropic
+      ? { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }
+      : { authorization: `Bearer ${apiKey}`, 'content-type': 'application/json' },
+    body: JSON.stringify(isAnthropic ? {
+      model,
+      max_tokens: 8,
+      messages: [{ role: 'user', content: 'Reply with OK.' }],
+    } : {
+      model,
+      ...(normalizedReasoningEffort ? { reasoning_effort: normalizedReasoningEffort } : {}),
+      messages: [{ role: 'user', content: 'Reply with OK.' }],
+    }),
+  });
+  const text = await response.text();
+  if (!response.ok) {
+    let detail = text;
+    try {
+      const payload = JSON.parse(text);
+      detail = payload?.error?.message || payload?.message || payload?.detail || text;
+    } catch { /* Keep the provider's plain-text response. */ }
+    throw new Error(`请求失败 (${response.status})：${String(detail).slice(0, 700)}`);
+  }
+  let payload;
+  try { payload = JSON.parse(text); } catch { throw new Error('模型返回了无法解析的响应'); }
+  const content = parseModelContent(payload).trim();
+  if (!content && !payload?.choices?.[0]?.finish_reason && !payload?.stop_reason) throw new Error('请求成功，但模型没有返回内容');
+  return { content: content.slice(0, 120) };
 }
 
 const providerRequestWindows = new Map();
@@ -738,10 +1072,11 @@ async function handleTranslation(req, res) {
   try {
     let nextUnitIndex = 0;
     let completedUnits = 0;
+    let failedUnits = 0;
+    let settledUnits = 0;
     let inFlight = 0;
+    const failedIds = [];
     const emitUnit = async (unitIndex) => {
-      if (closed) return;
-      await waitForRpm(starts, maxRpm);
       if (closed) return;
       const requestedUnit = units[unitIndex];
       inFlight += 1;
@@ -751,12 +1086,18 @@ async function handleTranslation(req, res) {
         let lastError;
         for (let attempt = 0; attempt <= retries; attempt += 1) {
           try {
-            result = await callModel({ apiKey, provider, providerBaseUrl, model: input.model || provider.model, systemPrompt: input.systemPrompt, sourceLanguage: input.sourceLanguage, targetLanguage: input.targetLanguage, units: [requestedUnit], signal: controller.signal });
+            await waitForRpm(starts, maxRpm);
+            if (closed) return;
+            result = await callModel({ apiKey, provider, providerBaseUrl, model: input.model || provider.model, reasoningEffort: input.reasoningEffort, systemPrompt: input.systemPrompt, sourceLanguage: input.sourceLanguage, targetLanguage: input.targetLanguage, units: [requestedUnit], signal: controller.signal });
             break;
           } catch (error) {
             lastError = error;
             if (controller.signal.aborted) throw error;
-            if (attempt < retries) await new Promise((resolve) => setTimeout(resolve, Math.min(1500 * 2 ** attempt, 8000)));
+            if (attempt < retries) {
+              const delayMs = Math.min(1500 * 2 ** attempt, 8000);
+              writeEvent(res, 'unit-retry', { id: requestedUnit.id, unit: unitIndex + 1, units: units.length, attempt: attempt + 2, attempts: retries + 1, delayMs, message: error.message });
+              await new Promise((resolve) => setTimeout(resolve, delayMs));
+            }
           }
         }
         if (!result) throw lastError || new Error('模型请求失败');
@@ -764,9 +1105,17 @@ async function handleTranslation(req, res) {
         if (!item?.translation) throw new Error(`模型未返回段落 ${requestedUnit.id} 的译文`);
         writeEvent(res, 'paragraph', { id: requestedUnit.id, translation: item.translation });
         completedUnits += 1;
-        writeEvent(res, 'progress', { unit: completedUnits, sourceUnit: unitIndex + 1, units: units.length, percent: Math.round((completedUnits / units.length) * 100), rpmUsed: starts.length });
+      } catch (error) {
+        if (controller.signal.aborted || error.name === 'AbortError') throw error;
+        failedUnits += 1;
+        failedIds.push(requestedUnit.id);
+        writeEvent(res, 'unit-error', { id: requestedUnit.id, unit: unitIndex + 1, units: units.length, attempts: retries + 1, message: error.message });
       } finally {
         inFlight -= 1;
+        settledUnits += 1;
+        if (!closed && !controller.signal.aborted) {
+          writeEvent(res, 'progress', { unit: settledUnits, sourceUnit: unitIndex + 1, units: units.length, completedUnits, failedUnits, percent: Math.round((settledUnits / units.length) * 100), rpmUsed: starts.length });
+        }
       }
     };
     const workers = Array.from({ length: Math.min(maxConcurrency, units.length) }, () => (async () => {
@@ -779,7 +1128,7 @@ async function handleTranslation(req, res) {
     })());
     await Promise.all(workers);
     if (!closed) {
-      writeEvent(res, 'done', { units: units.length, paragraphs: paragraphs.length });
+      writeEvent(res, 'done', { units: units.length, paragraphs: paragraphs.length, completedUnits, failedUnits, failedIds });
       res.end();
     }
   } catch (error) {
@@ -790,6 +1139,38 @@ async function handleTranslation(req, res) {
 
 async function handleRequest(req, res) {
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+  if (url.pathname === '/api/app-settings' && req.method === 'GET') return sendJson(res, 200, { ok: true, settings: loadAppSettings(), file: path.basename(settingsFilePath), exists: existsSync(settingsFilePath) });
+  if (url.pathname === '/api/app-settings' && req.method === 'PUT') {
+    try {
+      const settings = saveAppSettings(await readJson(req));
+      return sendJson(res, 200, { ok: true, settings, file: path.basename(settingsFilePath) });
+    } catch (error) {
+      return sendError(res, 400, '应用设置保存失败', error.message);
+    }
+  }
+  if (url.pathname === '/api/export' && req.method === 'POST') {
+    try {
+      const input = await readJson(req);
+      const format = String(input.format || '').toLowerCase();
+      if (!['docx', 'pdf'].includes(format)) return sendError(res, 400, '不支持的导出格式');
+      const title = safeExportName(input.title);
+      const mode = ['source', 'translation', 'parallel'].includes(input.mode) ? input.mode : 'parallel';
+      const rows = normalizeExportRows(input.rows);
+      if (!rows.length) return sendError(res, 400, '没有可导出的内容');
+      const buffer = format === 'docx' ? await createDocxExport(title, mode, rows, input) : await createPdfExport(title, mode, rows, input);
+      const contentType = format === 'docx' ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : 'application/pdf';
+      const fileName = `${title}.${format}`;
+      res.writeHead(200, {
+        'content-type': contentType,
+        'content-length': buffer.length,
+        'content-disposition': `attachment; filename*=UTF-8''${encodeURIComponent(fileName)}`,
+      });
+      res.end(buffer);
+      return;
+    } catch (error) {
+      return sendError(res, 400, '文档导出失败', error.message);
+    }
+  }
   if (url.pathname === '/api/providers' && req.method === 'GET') return sendJson(res, 200, { ok: true, providers: getProviderList() });
   if (url.pathname === '/api/provider-key' && req.method === 'POST') {
     try {
@@ -825,7 +1206,7 @@ async function handleRequest(req, res) {
       return sendError(res, 400, '供应商删除失败', error.message);
     }
   }
-  if (url.pathname === '/api/health' && req.method === 'GET') return sendJson(res, 200, { ok: true, provider: 'OpenCode Zen', baseUrl, model: defaultModel, configured: Boolean(getApiKey(req)) });
+  if (url.pathname === '/api/health' && req.method === 'GET') return sendJson(res, 200, { ok: true, app: 'EchoLang', provider: 'OpenCode Zen', baseUrl, model: defaultModel, configured: Boolean(getApiKey(req)) });
   if (url.pathname === '/api/prompt-preview' && req.method === 'POST') {
     try {
       const input = await readJson(req);
@@ -857,13 +1238,32 @@ async function handleRequest(req, res) {
     if (!response.ok) return sendError(res, response.status, '密钥检测失败', text.slice(0, 500));
     return sendJson(res, 200, { ok: true, models: JSON.parse(text).data || [] });
   }
+  if (url.pathname === '/api/model-test' && req.method === 'POST') {
+    try {
+      const input = await readJson(req);
+      const provider = getRequestProvider(req);
+      const apiKey = provider.apiKey;
+      const model = String(input.model || '').trim();
+      if (!apiKey) return sendError(res, 401, '模型不可用', '当前供应商尚未配置 API 密钥');
+      if (!model) return sendError(res, 400, '模型不可用', '没有指定要测试的模型');
+      const result = await testModelAvailability({ apiKey, provider, providerBaseUrl: getProviderBaseUrl(req), model, reasoningEffort: input.reasoningEffort, signal: AbortSignal.timeout(30_000) });
+      return sendJson(res, 200, { ok: true, provider: provider.name, model, preview: result.content });
+    } catch (error) {
+      return sendError(res, 422, '模型不可用', error.name === 'TimeoutError' ? '测试请求超过 30 秒未响应' : error.message);
+    }
+  }
   if (url.pathname === '/api/extract' && req.method === 'POST') {
     const fileName = decodeURIComponent(req.headers['x-file-name'] || 'document.txt');
     try {
       const buffer = await readBody(req);
-      if (path.extname(fileName).toLowerCase() === '.pdf') {
+      const extension = path.extname(fileName).toLowerCase();
+      if (extension === '.pdf') {
         const document = await extractPdfDocument(buffer);
         return sendJson(res, 200, { ok: true, name: fileName, format: 'pdf', ...document });
+      }
+      if (extension === '.docx') {
+        const document = await extractDocxDocument(buffer);
+        return sendJson(res, 200, { ok: true, name: fileName, format: 'docx', ...document });
       }
       const text = await extractText(buffer, fileName);
       const paragraphs = splitParagraphs(text).map((value, index) => ({ id: `p-${index + 1}`, text: value, page: null, kind: 'paragraph' }));
@@ -881,7 +1281,7 @@ async function handleRequest(req, res) {
 async function serveStatic(pathname, res) {
   const relative = pathname === '/' ? 'index.html' : pathname.replace(/^\/+/, '');
   const normalizedRelative = relative.replace(/\\/g, '/').toLowerCase();
-  const blockedStaticFiles = new Set(['config.local.json', 'config.json', '.env', '.env.local']);
+  const blockedStaticFiles = new Set(['config.local.json', 'config.json', 'settings.local.json', '.env', '.env.local']);
   if (blockedStaticFiles.has(normalizedRelative) || normalizedRelative.split('/').some((segment) => segment.startsWith('.'))) return sendError(res, 403, '禁止访问');
   const filePath = path.resolve(rootDir, relative);
   if (!filePath.startsWith(rootDir) || filePath.includes('..')) return sendError(res, 403, '禁止访问');

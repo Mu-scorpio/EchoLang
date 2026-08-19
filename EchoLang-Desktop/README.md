@@ -25,7 +25,7 @@ npm run build:nsis
 产物位于：
 
 ```text
-src-tauri/target/release/bundle/nsis/EchoLang_0.3.0_x64-setup.exe
+src-tauri/target/release/bundle/nsis/EchoLang_0.5.0_x64-setup.exe
 ```
 
 构建前会执行 `scripts/prepare-runtime.mjs`，将 `server.mjs`、网页资源、解析依赖和当前 Windows Node.js 运行时复制到未跟踪的 `runtime/` 目录，再由 Tauri 作为资源打进安装包。终端用户不需要另装 Node.js。

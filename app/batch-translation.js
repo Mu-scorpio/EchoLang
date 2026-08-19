@@ -81,11 +81,7 @@
       const savedAt = documentState.savedAt || documentState.updatedAt || Date.now();
       meta.innerHTML = `<span>${new Date(savedAt).toLocaleDateString('zh-CN')}</span><span>${Number(documentState.size || 0).toLocaleString()} 字</span>`;
       copy.append(name, meta);
-      const state = document.createElement('span');
-      const running = String(documentState.id) === String(runningId);
-      state.className = `batch-document-state${complete ? ' is-complete' : running ? ' is-active' : ''}`;
-      state.textContent = complete ? '✓' : '';
-      row.append(icon, copy, state);
+      row.append(icon, copy);
       row.addEventListener('click', () => onOpen?.(documentState));
       list.appendChild(row);
     });
@@ -100,7 +96,7 @@
       const empty = document.createElement('div');
       empty.className = 'batch-queue-empty';
       empty.innerHTML = documents.length
-        ? '<span class="batch-empty-mark">✓</span><strong>全部翻译完成</strong><span>完成的文档已经从进度队列移出，仍保留在左侧文档列表。</span>'
+        ? '<strong>全部翻译完成</strong><span>完成的文档已经从进度队列移出，仍保留在左侧文档列表。</span>'
         : '<span class="batch-empty-mark">＋</span><strong>等待导入文档</strong><span>导入后，尚未完成的文档会出现在这里。</span>';
       list.appendChild(empty);
       return;

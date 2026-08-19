@@ -89,7 +89,6 @@ fn start_backend(app: &AppHandle) -> Result<(Child, u16), Box<dyn Error>> {
         .current_dir(&source_dir)
         .env("PORT", port.to_string())
         .env("ECHOLANG_CONFIG_DIR", config_dir)
-        .env_remove("ELECTRON_RUN_AS_NODE")
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());

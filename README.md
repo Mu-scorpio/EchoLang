@@ -1,149 +1,255 @@
-# EchoLang
+<div align="center">
+  <img src="assets/ui/echolang-brand.png" width="88" alt="EchoLang logo" />
+  <h1>EchoLang</h1>
+  <p><strong>Long documents deserve more than a chat box.</strong></p>
+  <p>为论文、报告与长文档而生的本地优先 AI 翻译工作台。<br />读懂版式，可靠续译，并把结果重新交付成一份真正能读的文档。</p>
 
-> **A quiet, precise translation desk for long-form reading.**
->
-> 一个把原文、译文和模型请求放在同一张桌面上的本地优先翻译工作台。
+  <p>
+    <a href="https://github.com/Mu-scorpio/EchoLang/releases/latest"><strong>下载 Portable</strong></a>
+    ·
+    <a href="https://github.com/Mu-scorpio/EchoLang/releases/latest"><strong>安装 MSI</strong></a>
+    ·
+    <a href="#部署网页版本"><strong>部署 Web 版</strong></a>
+  </p>
 
-[![Latest Release](https://img.shields.io/github/v/release/Mu-scorpio/EchoLang?display_name=tag&sort=semver&color=2f6df6)](https://github.com/Mu-scorpio/EchoLang/releases/latest)
-[![Windows](https://img.shields.io/badge/Windows-10%2B-2f6df6?logo=windows&logoColor=white)](https://github.com/Mu-scorpio/EchoLang/releases/latest)
-[![Node.js](https://img.shields.io/badge/Node.js-20%2B-1e9e74?logo=node.js&logoColor=white)](https://nodejs.org/)
+  <p>
+    <a href="https://github.com/Mu-scorpio/EchoLang/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/Mu-scorpio/EchoLang?display_name=tag&sort=semver&style=flat-square&color=2f6df6" /></a>
+    <img alt="Windows 10+" src="https://img.shields.io/badge/Windows-10%2B-2f6df6?style=flat-square&logo=windows&logoColor=white" />
+    <img alt="Node.js 20+" src="https://img.shields.io/badge/Node.js-20%2B-339933?style=flat-square&logo=node.js&logoColor=white" />
+    <img alt="Local first" src="https://img.shields.io/badge/data-local--first-8b5cf6?style=flat-square" />
+  </p>
+</div>
 
-![EchoLang 阅读工作台](docs/screenshots/echolang-reader.png)
+![EchoLang 中英对照阅读工作台](docs/screenshots/echolang-reader.png)
 
-EchoLang 不是一个把长文切碎后丢进聊天框的翻译器。它保留段落顺序和阅读节奏，让你在原文、中英对照和译文之间快速切换；每次请求发给 AI 的完整提示词也会在设置页实时展示，方便检查、复制和复现。
+<p align="center"><sub>同一篇文档，在原文、中英对照与译文之间切换；翻译进度、请求状态和模型选择始终留在阅读上下文中。</sub></p>
 
-## 亮点
+## 完整的文档工作流
 
-| 能力 | 体验 |
+| 读懂文档 | 稳定完成翻译 | 交付可读结果 |
+| :--- | :--- | :--- |
+| 双栏顺序、表格、图片、公式与段落关系会进入结构化解析流程。 | 逐段保存、并发限流、失败重试、跳过坏段与断点续译，避免一次报错毁掉整篇进度。 | DOCX / PDF 导出恢复正文结构和视觉资源，不输出段落编号、请求序号或内部诊断信息。 |
+
+EchoLang 的目标不是把文档压扁成一串字符串。它尝试保留“这篇文档为什么仍然像一篇文档”：正文顺序没有被双栏打乱，表格仍是表格，图片和公式留在对应位置，译文可以继续读、继续改，也可以直接导出交付。
+
+## 一次处理一篇，也可以排队处理一批
+
+![EchoLang 批量翻译队列](docs/screenshots/echolang-batch.png)
+
+<p align="center"><sub>阅读列表与批量队列彼此独立；每篇文档都显示“已翻译段落 / 总段落”和连续进度，列表宽度可拖动调整。</sub></p>
+
+- 多选文件或递归扫描文件夹，集中安排长文档翻译。
+- 单段失败会按模型设置自动重试；耗尽重试后暂时留白，其余段落继续推进。
+- 本轮结束后只处理未完成段落，不重复消耗已经成功的请求。
+- 运行中的按钮始终绑定真实请求状态：翻译、停止翻译、继续翻译与重新翻译不会互相混淆。
+- 已完成文档只通过文件图标颜色区分，去掉无意义的绿点、对勾和状态噪声。
+
+## 完整的可检查的模型请求配置
+
+![EchoLang API 与模型级请求设置](docs/screenshots/echolang-api-settings.png)
+
+<p align="center"><sub>供应商、模型与请求参数在同一工作区内管理；RPM、并发、重试、提示词和推理强度都绑定到具体模型。</sub></p>
+
+- 内置 20 个常见模型供应商目录，也支持任意 OpenAI-compatible 自定义接口。
+- 获取远端模型列表、添加常用模型、设置默认模型，并可右键测试某个模型是否真实可用。
+- 每个“供应商 + 模型”独立保存 RPM、最大并发、失败重试、请求提示词与推理强度。
+- 推理强度默认关闭，可选 `low`、`medium`、`high`、`xhigh`、`max`；兼容接口会收到 `reasoning_effort`。
+- 实时展示完整请求提示词，便于检查模型到底收到了什么。
+- 供应商卡片支持有落点预览的平滑拖拽排序，顺序在本地持久化。
+
+> 不同供应商和模型对 `reasoning_effort` 的支持并不一致。如果接口返回参数不受支持，请关闭推理强度或降低等级。
+
+## 阅读界面应该适应人，而不是让人适应界面
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="docs/screenshots/echolang-app-settings.png" alt="EchoLang 应用主题与排版设置" />
+    </td>
+    <td width="50%">
+      <img src="docs/screenshots/echolang-dark-reader.png" alt="EchoLang GitHub Dark 阅读模式" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><sub>经典蓝、Claude、酒红、暖橘、鼠尾草，以及字体、字号、行高、段距和内容宽度。</sub></td>
+    <td align="center"><sub>以 GitHub Dark 为参考重做的中性深色模式，避免刺眼高对比和大面积蓝灰。</sub></td>
+  </tr>
+</table>
+
+- 原文 / 中英对照 / 译文三种阅读模式。
+- 一键互换源语言与目标语言，并配有轻量过渡动画。
+- 阅读页和批量页各自保存列表，两个侧栏都能拖动调整宽度。
+- 显示设置独立保存在本地 JSON 文件中，不和 API 密钥、供应商配置混在一起。
+
+## 对真实文档做了哪些处理
+
+| 内容 | EchoLang 的处理方式 |
 | --- | --- |
-| **阅读优先** | 用清晰的段落版式阅读长文，保留段落编号、顺序和上下文。 |
-| **三段式阅读滑块** | 原文 / 中英对照 / 翻译，一次点击切换，不打断阅读。 |
-| **完整提示词可见** | 设置页展示实际请求格式、翻译规则和当前段落数据，支持一键复制。 |
-| **多供应商工作流** | 内置供应商目录，支持拖拽或上下移动排序，也支持自定义 OpenAI-compatible 接口。 |
-| **本地优先配置** | API Key 由后端保存到本地 JSON，不进入浏览器缓存，不会被静态路由暴露。 |
-| **常用文档导入** | 支持 Markdown、TXT、DOCX、PDF，并保留可继续翻译的段落结构。 |
-| **批量文档翻译** | 可一次选择多个文件或递归扫描整个文件夹，按当前模型、RPM、并发与重试设置依次翻译。 |
-| **Tauri 2 桌面化** | 使用原生 Windows WebView2 外壳，内置 Node.js 后端运行时，安装后即可使用。 |
+| 双栏正文 | 结合节属性与版式位置重建阅读顺序，减少左右栏交错。 |
+| 意外断行 | 合并 PDF 转 Word 常见的行尾硬换行、断词与碎片化段落。 |
+| 表格 | 按单元格翻译，保留表头、行列关系与表格结构。 |
+| 图片 | 不进入翻译请求，但会在阅读与导出时回到对应位置。 |
+| 公式 | 跳过翻译，保留并渲染 Word 公式、OMML、LaTeX 与公式图片。 |
+| 异常版式 | 对无法完整结构化的局部安全降级，尽量不让整篇文档导入失败。 |
+| 任务中断 | 成功段落实时保存；刷新、重启或手动停止后可继续。 |
 
-## 下载 Windows 应用
+当前导入支持：
 
-前往 [最新 Release](https://github.com/Mu-scorpio/EchoLang/releases/latest)：
+`DOCX` · `PDF` · `TXT` · `Markdown` · `HTML` · `CSV` · `TSV` · `JSON` · `XLSX` · `PPTX`
 
-- **`EchoLang_0.3.0_x64-setup.exe`**：标准 NSIS 安装版，可创建桌面和开始菜单快捷方式。
+当前导出支持：
 
-桌面版使用 Tauri 2 + Windows WebView2，随安装包内置 Node.js 运行时和文档解析依赖，普通用户不需要额外安装 Node.js。桌面版的本地配置默认保存在：
+`DOCX` · `PDF` · `TXT` · `Markdown` · `HTML` · `JSON` · `CSV`
 
-```text
-%APPDATA%\EchoLang\config.local.json
-```
+> 扫描型 PDF 是否能提取正文，取决于文件是否包含文本层；EchoLang 当前不内置 OCR。
 
-## 开发后端与阅读器
+## 下载 v0.5.0
 
-开发环境需要 Node.js 20+。根目录的 Node 服务用于给 Tauri WebView 提供阅读器页面、文档解析和翻译 API，不作为生产 WebUI 发布。在项目根目录执行：
+前往 [GitHub Releases](https://github.com/Mu-scorpio/EchoLang/releases/latest)，根据使用方式选择一个文件：
+
+| 发行文件 | 适合场景 | 如何使用 |
+| --- | --- | --- |
+| `EchoLang_0.5.0_x64-setup.exe` | Windows 用户 | 运行 NSIS 安装程序，按当前用户安装 EchoLang。 |
+| `EchoLang.exe` | 需要免安装验证的 Windows 用户 | 从 Release 附带的目录版中启动。 |
+| Web 源码 | 本地、服务器或内网网页部署 | 从仓库下载源码后运行 `npm ci` 与 `npm start`。 |
+| `SHA256SUMS.txt` | 校验下载完整性 | 使用 `Get-FileHash` 或 `sha256sum` 对照校验。 |
+
+桌面包使用 Tauri 2 + Windows WebView2，内置 Node.js 运行时和文档处理依赖。API 密钥与模型配置默认保存在 `%APPDATA%\EchoLang\config.local.json`，不会写入安装目录。
+
+> 当前 Windows 安装包尚未使用商业代码签名证书。若 SmartScreen 提示未知发布者，请先确认文件来自本仓库 Release 页面并核对 SHA-256，再决定是否继续运行。
+
+## 5 分钟开始翻译
+
+1. 下载 NSIS 安装包或目录版，启动 EchoLang。
+2. 打开“API 设置”，选择供应商并填写 API Key。
+3. 点击“获取模型列表”验证密钥，添加模型并设为当前翻译模型。
+4. 回到“阅读”导入一篇文档，或在“批量翻译”中导入多个文件 / 文件夹。
+5. 选择语言和模型，开始翻译；完成后导出 DOCX 或 PDF。
+
+## 部署网页版本
+
+要求 Node.js 20 或更高版本。
 
 ```powershell
+git clone https://github.com/Mu-scorpio/EchoLang.git
+cd EchoLang
 npm install
 Copy-Item config.example.json config.local.json
-notepad config.local.json
 npm start
 ```
 
-然后可打开 <http://127.0.0.1:4173> 做接口和页面调试；日常使用请启动 Tauri 桌面应用。
+然后打开 <http://127.0.0.1:4173>。Windows 用户也可以直接双击根目录的 `start.bat`；脚本会复用已经运行的服务，避免重复拉起两套数据互不相同的实例。
 
-在 `config.local.json` 中填写供应商信息；也可以直接在“模型设置”里填写 API Key 并点击“检测”。配置文件已被 Git 忽略，请不要把真实密钥提交到仓库。
+也可以使用 Release 中的 Web 源码包：
 
-生产环境建议让 Node 服务只监听本机，再由 Nginx、Caddy 或其他反向代理提供 HTTPS；不要把包含密钥配置能力的本地服务直接暴露到公网。
+```bash
+unzip EchoLang-0.5.0-web-source.zip
+cd EchoLang-0.5.0-web-source
+npm ci --omit=dev
+PORT=4173 node server.mjs
+```
 
-## Tauri 2 桌面版源码启动
+如果部署到服务器或内网，建议在前方使用 Caddy / Nginx 提供 HTTPS。EchoLang 当前是本地优先的单用户工具，不自带账号系统；公开到互联网前，必须在反向代理层增加身份验证、访问控制与请求限制。
 
-从源码运行 Tauri 2 外壳：
+<details>
+<summary><strong>本地配置与数据安全</strong></summary>
+
+API Key 可以在界面中填写，也可以写入 `config.local.json`：
+
+```json
+{
+  "provider": "opencode",
+  "baseUrl": "https://opencode.ai/zen/v1",
+  "model": "deepseek-v4-flash-free",
+  "apiKey": "YOUR_API_KEY"
+}
+```
+
+- API Key 只由 Node 后端读取与保存，不进入浏览器 `localStorage`。
+- `config.local.json`、`settings.local.json` 与 `.env*` 不会通过静态文件路由暴露，并已加入 Git 忽略规则。
+- 文档、译文与界面设置保存在本地；翻译段落只发送到你主动选择的模型供应商。
+- 桌面版使用 Tauri 2 原生 Windows WebView2 外壳、Rust 生命周期管理和单实例本地后端。
+- 自定义供应商地址只接受 HTTP / HTTPS URL。
+
+请根据文档敏感程度选择可信的模型供应商，并遵守其隐私政策与数据处理条款。
+
+</details>
+
+<details>
+<summary><strong>从源码运行桌面版与构建 Windows 安装包</strong></summary>
 
 ```powershell
+git clone https://github.com/Mu-scorpio/EchoLang.git
+cd EchoLang
+npm install
 cd EchoLang-Desktop
 npm install
 npm run dev
 ```
 
-开发模式会启动 Rust 外壳，由 Rust 分配本地端口并启动上级目录的 `server.mjs`；API Key 等配置仍由后端保存到上级项目的 `config.local.json`。
-
-## 构建 NSIS 安装程序
-
-在 `EchoLang-Desktop` 目录执行：
+构建 Windows 目录版和 NSIS 安装包：
 
 ```powershell
-npm install
+cd EchoLang-Desktop
+npm ci
+npm run build:dir
 npm run build:nsis
 ```
 
-产物位于 `EchoLang-Desktop/src-tauri/target/release/bundle/nsis/`：
+目录版位于 `EchoLang-Desktop/src-tauri/target/release/EchoLang.exe`，NSIS 安装包位于 `EchoLang-Desktop/src-tauri/target/release/bundle/nsis/`。构建脚本会将 Node.js 运行时、后端和解析依赖准备到安装资源中。
 
-```text
-EchoLang_0.3.0_x64-setup.exe   # NSIS 安装版
-```
+</details>
 
-NSIS 安装器使用 EchoLang 品牌图标、欢迎页侧图和页眉图，默认按当前用户安装，不需要管理员权限；安装位置和桌面/开始菜单快捷方式可在安装过程中调整。构建脚本会把后端、解析依赖和当前 Windows Node.js 运行时准备到安装资源中。
-
-如只想验证未打包的应用目录：
-
-```powershell
-npm run build:dir
-```
-
-这个命令生成 `src-tauri/target/release/EchoLang.exe`，适合在发布前做 Rust/Tauri 目录构建检查。
-
-## 供应商与提示词
-
-EchoLang 把“模型设置”拆成几个可以检查的层次：
-
-1. 选择供应商并填写 API 地址、模型和 API Key。
-2. 点击“检测”，API Key 写入本地 `config.local.json`，浏览器输入框只保留“已保存”状态。
-3. 在“请求提示词”中调整前置指令。
-4. 查看“实际发送预览”，确认当前供应商的消息格式、翻译约束和段落 JSON。
-
-OpenAI-compatible 供应商会显示 `messages[0].content`；Anthropic 会把 `system` 和用户消息分开显示。这个预览使用当前文档的第一段作为请求样本，展示的提示词构造逻辑与实际翻译请求共用。
-
-## 项目结构
+<details>
+<summary><strong>项目结构与开发验证</strong></summary>
 
 ```text
 EchoLang/
-├─ index.html                 # 阅读器、设置页和浏览器端运行时
-├─ server.mjs                 # 静态服务、文档解析、供应商请求和 SSE 翻译
-├─ app/providers.js            # 内置供应商目录
-├─ app/document-store.js       # IndexedDB 文档持久化
-├─ assets/                    # 供应商 Logo 和界面图标
-├─ config.example.json        # 本地配置模板，不含真实密钥
-├─ EchoLang-Desktop/          # Tauri 2 外壳、Rust 启动器和 NSIS 配置
-│  ├─ src-tauri/              # Tauri 配置、能力权限和 Rust 代码
-│  ├─ scripts/                # Node 运行时与安装器资源准备脚本
-│  └─ frontend-dist/          # Tauri 启动占位页
-└─ docs/screenshots/          # README / Release 截图
+├─ index.html                    # 阅读、批量翻译、API 与应用设置界面
+├─ server.mjs                    # 本地服务、解析导出、模型请求、SSE 与限流
+├─ app/
+│  ├─ providers.js              # 内置供应商目录
+│  ├─ document-store.js         # IndexedDB 文档持久化
+│  ├─ docx-extractor.mjs        # DOCX 结构、图片、公式、表格与栏布局提取
+│  ├─ math-renderer.mjs         # LaTeX / OMML 公式渲染
+│  └─ *.css / *.js              # 阅读设置、批量翻译与产品交互
+├─ assets/                       # 供应商 Logo 与界面图标
+├─ docs/screenshots/             # README 与 Release 截图
+├─ config.example.json           # 不含真实密钥的配置模板
+├─ EchoLang-Desktop/             # Tauri 2 外壳、Rust 启动器与 NSIS 打包配置
+└─ start.bat                     # 单实例网页启动脚本
 ```
 
-## 截图
-
-### 阅读工作台
-
-![阅读工作台](docs/screenshots/echolang-reader.png)
-
-### 模型与供应商设置
-
-![模型与供应商设置](docs/screenshots/echolang-settings.png)
-
-## 开发检查
+最低验证命令：
 
 ```powershell
+npm install
 node --check server.mjs
+npm audit --omit=dev --audit-level=high
+
 cd EchoLang-Desktop
+npm install
 npm run check
+npm run build:dir
 ```
 
-发布构建还会验证 Tauri release 目录能生成；运行 Tauri 桌面版时，Rust 启动器会等待后端 `/api/health` 返回 200 后再显示窗口。
+界面改动应在浏览器中检查阅读页、批量页、模型切换、深浅色主题与控制台；解析或翻译改动应验证 `/api/health`、`/api/extract`、`/api/translate` 和导出结果。
 
-## 发布内容
+</details>
 
-每个 Release 包含：
+## v0.4.0：让文档翻译从“能跑”走向“能用”
 
-- 可直接安装的 Windows EXE；
-- GitHub 仓库中的完整源码、构建配置和截图。
+- 重构 DOCX 解析，增强双栏、意外断行、表格、图片与公式处理。
+- 新增可阅读的 DOCX / PDF 导出，并恢复原始视觉资源。
+- 新增独立批量队列、可调侧栏、模型可用性测试与模型级请求参数。
+- 新增 `low` 到 `max` 的模型推理强度设置，默认关闭。
+- 翻译任务支持非阻塞段落错误、等待重试、绝对进度统计与可靠续译。
+- 重做浅色主题、GitHub Dark 深色模式、供应商拖拽与阅读排版设置。
+- 提供 MSI、Portable 和可部署 Web 源码三种发行形态。
 
-如果你要快速试用，下载 NSIS 安装版即可；安装程序会创建 EchoLang 桌面入口并保留用户配置。
+完整变化见 [CHANGELOG.md](CHANGELOG.md)。历史版本和下载文件请前往 [Releases](https://github.com/Mu-scorpio/EchoLang/releases)。
+
+<div align="center">
+  <p><strong>EchoLang — keep the document, not just the words.</strong></p>
+  <p><a href="https://github.com/Mu-scorpio/EchoLang/releases/latest">下载最新版本</a> · <a href="https://github.com/Mu-scorpio/EchoLang/issues">报告问题</a></p>
+</div>

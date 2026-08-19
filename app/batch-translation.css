@@ -137,7 +137,7 @@
   position: relative;
   width: 100%;
   display: grid;
-  grid-template-columns: 46px minmax(0, 1fr) 24px;
+  grid-template-columns: 46px minmax(0, 1fr);
   align-items: center;
   gap: 14px;
   min-height: 84px;
@@ -231,33 +231,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.batch-document-state {
-  width: 20px;
-  height: 20px;
-  display: grid;
-  place-items: center;
-  border: 1.5px solid var(--line-strong);
-  border-radius: 50%;
-  color: transparent;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.batch-document-state.is-complete {
-  border-color: var(--mint);
-  color: var(--mint);
-}
-
-.batch-document-state.is-active {
-  border-color: var(--blue);
-  border-top-color: transparent;
-  animation: batch-spin 800ms linear infinite;
-}
-
-@keyframes batch-spin {
-  to { transform: rotate(360deg); }
-}
-
 .batch-documents-footer {
   min-height: 62px;
   flex: 0 0 auto;
@@ -282,6 +255,16 @@
 
 .batch-clear-button {
   justify-self: start;
+  border-color: color-mix(in srgb, var(--rose) 45%, var(--line));
+  color: var(--rose);
+  background: transparent;
+}
+
+.batch-clear-button:hover,
+.batch-clear-button:focus-visible {
+  border-color: var(--rose);
+  background: var(--rose-soft);
+  color: var(--rose);
 }
 
 .batch-header-tools {
@@ -416,7 +399,7 @@
   border: 1px solid var(--line);
   border-radius: 16px;
   background: var(--surface-subtle);
-  color: var(--mint);
+  color: var(--blue);
   font-size: 22px;
 }
 

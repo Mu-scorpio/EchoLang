@@ -1,0 +1,47 @@
+:root {
+  --reader-font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+  --reader-font-size: 18px;
+  --reader-line-height: 1.68;
+  --reader-paragraph-gap: 22px;
+  --reader-content-width: 850px;
+}
+
+.reader-settings-popover {
+  position: absolute;
+  top: 58px;
+  right: 24px;
+  z-index: 35;
+  width: min(330px, calc(100vw - 44px));
+  padding: 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  box-shadow: var(--shadow-float);
+  backdrop-filter: blur(18px);
+}
+
+.reader-settings-popover[hidden] { display: none; }
+.reader-settings-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.reader-settings-head strong { color: var(--ink-strong); font-size: 13px; }
+.reader-settings-reset { padding: 4px 7px; border-radius: 6px; background: transparent; color: var(--blue); font-size: 11px; }
+.reader-settings-reset:hover { background: var(--surface-active); }
+.reader-settings-grid { display: grid; gap: 13px; }
+.reader-setting { display: grid; grid-template-columns: 72px minmax(0, 1fr) 42px; align-items: center; gap: 9px; color: var(--ink-soft); font-size: 11px; }
+.reader-setting.is-select { grid-template-columns: 72px minmax(0, 1fr); }
+.reader-setting select { width: 100%; height: 32px; padding: 0 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface-subtle); color: var(--ink-strong); }
+.reader-setting input[type="range"] { width: 100%; accent-color: var(--blue); }
+.reader-setting output { color: var(--ink-strong); text-align: right; font-variant-numeric: tabular-nums; }
+.reader-settings-note { margin: 13px 0 0; padding-top: 11px; border-top: 1px solid var(--line); color: var(--ink-faint); font-size: 10px; line-height: 1.55; }
+
+.paragraph-list { max-width: max(var(--reader-content-width), 760px); }
+.paragraph-block { max-width: var(--reader-content-width); margin-bottom: var(--reader-paragraph-gap); padding-bottom: calc(var(--reader-paragraph-gap) + 6px); }
+.source-text, .translation-text {
+  font-family: var(--reader-font-family);
+  font-size: var(--reader-font-size);
+  line-height: var(--reader-line-height);
+}
+.translation-text { font-size: max(13px, calc(var(--reader-font-size) - 2px)); }
+
+@media (max-width: 780px) {
+  .reader-settings-popover { position: fixed; top: 68px; right: 12px; }
+}

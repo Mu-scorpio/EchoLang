@@ -1,6 +1,6 @@
 [package]
 name = "echolang"
-version = "0.3.0"
+version = "0.5.0"
 description = "EchoLang translation desk for Windows"
 authors = ["Mu-scorpio"]
 edition = "2021"
