@@ -1,122 +1,29 @@
 {
   "name": "echolang-desktop",
   "productName": "EchoLang",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "private": true,
   "author": "Mu-scorpio",
-  "description": "EchoLang desktop application",
+  "description": "EchoLang translation desk for Windows",
   "type": "module",
-  "main": "main.mjs",
   "scripts": {
-    "start": "electron .",
-    "dev": "electron .",
-    "check": "node --check main.mjs",
-    "dist": "electron-builder --win msi portable",
-    "dist:msi": "electron-builder --win msi",
-    "dist:portable": "electron-builder --win portable",
-    "dist:dir": "electron-builder --win --dir",
-    "dist:mac": "electron-builder --mac dmg",
-    "dist:mac:zip": "electron-builder --mac zip",
-    "dist:mac:dir": "electron-builder --mac --dir"
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "build:nsis": "tauri build --bundles nsis",
+    "build:dir": "tauri build --no-bundle",
+    "check": "cargo check --manifest-path src-tauri/Cargo.toml",
+    "prepare:runtime": "node scripts/prepare-runtime.mjs",
+    "prepare:installer": "node scripts/create-installer-assets.mjs",
+    "prepare:desktop": "npm run prepare:runtime && npm run prepare:installer",
+    "tauri": "tauri"
   },
   "engines": {
     "node": ">=20"
   },
-  "devDependencies": {
-    "electron": "^43.3.0",
-    "electron-builder": "^26.15.3"
+  "dependencies": {
+    "@tauri-apps/api": "^2.0.0"
   },
-  "build": {
-    "appId": "com.echolang.desktop",
-    "productName": "EchoLang",
-    "asar": true,
-    "files": [
-      "main.mjs",
-      "preload.cjs",
-      "package.json"
-    ],
-    "extraResources": [
-      {
-        "from": "../server.mjs",
-        "to": "echolang-source/server.mjs"
-      },
-      {
-        "from": "../index.html",
-        "to": "echolang-source/index.html"
-      },
-      {
-        "from": "../favicon.ico",
-        "to": "echolang-source/favicon.ico"
-      },
-      {
-        "from": "../app",
-        "to": "echolang-source/app"
-      },
-      {
-        "from": "../assets",
-        "to": "echolang-source/assets"
-      },
-      {
-        "from": "../node_modules",
-        "to": "echolang-source/node_modules"
-      },
-      {
-        "from": "../package.json",
-        "to": "echolang-source/package.json"
-      },
-      {
-        "from": "../config.example.json",
-        "to": "echolang-source/config.example.json"
-      },
-      {
-        "from": "../.env.example",
-        "to": "echolang-source/.env.example"
-      }
-    ],
-    "directories": {
-      "output": "dist"
-    },
-    "artifactName": "EchoLang-${version}-setup.${ext}",
-    "win": {
-      "target": [
-        {
-          "target": "msi",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "portable",
-          "arch": [
-            "x64"
-          ]
-        }
-      ],
-      "icon": "../assets/ui/echolang-brand.png",
-      "signExecutable": false
-    },
-    "mac": {
-      "target": [
-        {
-          "target": "dmg"
-        }
-      ],
-      "icon": "../assets/ui/echolang-brand.icns",
-      "category": "public.app-category.productivity",
-      "darkModeSupport": true,
-      "identity": null,
-      "artifactName": "EchoLang-${version}-mac-${arch}.${ext}"
-    },
-    "msi": {
-      "oneClick": false,
-      "perMachine": false,
-      "runAfterFinish": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "EchoLang"
-    },
-    "portable": {
-      "artifactName": "EchoLang-${version}-portable.exe"
-    }
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0"
   }
 }

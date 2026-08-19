@@ -1,12 +1,13 @@
 (() => {
-  const desktopWindow = window.echoLangDesktop;
+  const tauriWindow = window.__TAURI__?.window?.getCurrentWindow?.() || null;
   const titlebar = document.getElementById('windowTitlebar');
   const controls = document.getElementById('windowControls');
   if (!titlebar || !controls) return;
 
   const setFocusState = (isFocused) => document.body.classList.toggle('is-window-focused', isFocused);
-  const updateWindowState = (state = {}) => {
-    const isMaximized = Boolean(state.isMaximized || state.isFullScreen);
+  const updateWindowState = async () => {
+    if (!tauriWindow) return;
+    const isMaximized = await tauriWindow.isMaximized().catch(() => false);
     titlebar.dataset.maximized = String(isMaximized);
     const maximizeButton = controls.querySelector('[data-window-action="toggle-maximize"]');
     if (maximizeButton) {
@@ -27,14 +28,14 @@
   titlebar.addEventListener('animationend', () => titlebar.classList.remove('is-context-changing'));
   setFocusState(document.hasFocus());
 
-  if (!desktopWindow) return;
+  if (!tauriWindow) return;
   document.documentElement.classList.add('has-desktop-window-controls');
-  document.documentElement.dataset.desktopPlatform = desktopWindow.platform || 'unknown';
+  document.documentElement.dataset.desktopPlatform = 'windows';
 
   const actions = {
-    minimize: () => desktopWindow.minimize(),
-    'toggle-maximize': async () => updateWindowState(await desktopWindow.toggleMaximize()),
-    close: () => desktopWindow.close(),
+    minimize: () => tauriWindow.minimize(),
+    'toggle-maximize': async () => { await tauriWindow.toggleMaximize(); await updateWindowState(); },
+    close: () => tauriWindow.close(),
   };
 
   controls.addEventListener('click', (event) => {
@@ -43,6 +44,6 @@
     Promise.resolve(actions[button.dataset.windowAction]()).catch(() => {});
   });
 
-  desktopWindow.getState().then(updateWindowState).catch(() => {});
-  desktopWindow.onStateChanged(updateWindowState);
+  updateWindowState();
+  tauriWindow.onResized(() => updateWindowState()).catch(() => {});
 })();

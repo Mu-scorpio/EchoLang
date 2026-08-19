@@ -103,25 +103,24 @@ EchoLang 的目标不是把文档压扁成一串字符串。它尝试保留“�
 
 > 扫描型 PDF 是否能提取正文，取决于文件是否包含文本层；EchoLang 当前不内置 OCR。
 
-## 下载 v0.4.1
+## 下载 v0.5.0
 
 前往 [GitHub Releases](https://github.com/Mu-scorpio/EchoLang/releases/latest)，根据使用方式选择一个文件：
 
 | 发行文件 | 适合场景 | 如何使用 |
 | --- | --- | --- |
-| `EchoLang-0.4.1-mac-arm64.dmg` | Apple Silicon Mac 用户 | 打开 DMG 后将 EchoLang 拖入 Applications。 |
-| `EchoLang-0.4.1-mac-arm64.zip` | 需要直接解压运行的 Apple Silicon Mac 用户 | 解压后打开 `EchoLang.app`。 |
-| [v0.4.0 Windows 发布包](https://github.com/Mu-scorpio/EchoLang/releases/tag/v0.4.0) | Windows 用户 | 继续使用上一版 Windows Portable 或 MSI。 |
+| `EchoLang_0.5.0_x64-setup.exe` | Windows 用户 | 运行 NSIS 安装程序，按当前用户安装 EchoLang。 |
+| `EchoLang.exe` | 需要免安装验证的 Windows 用户 | 从 Release 附带的目录版中启动。 |
 | Web 源码 | 本地、服务器或内网网页部署 | 从仓库下载源码后运行 `npm ci` 与 `npm start`。 |
 | `SHA256SUMS.txt` | 校验下载完整性 | 使用 `Get-FileHash` 或 `sha256sum` 对照校验。 |
 
-桌面包内置 Electron、Node 运行时和文档处理依赖。API 密钥与模型配置默认保存在 `%APPDATA%\EchoLang\config.local.json`，不会写入安装目录。
+桌面包使用 Tauri 2 + Windows WebView2，内置 Node.js 运行时和文档处理依赖。API 密钥与模型配置默认保存在 `%APPDATA%\EchoLang\config.local.json`，不会写入安装目录。
 
 > 当前 Windows 安装包尚未使用商业代码签名证书。若 SmartScreen 提示未知发布者，请先确认文件来自本仓库 Release 页面并核对 SHA-256，再决定是否继续运行。
 
 ## 5 分钟开始翻译
 
-1. 下载 Portable、MSI 或 macOS DMG，启动 EchoLang。
+1. 下载 NSIS 安装包或目录版，启动 EchoLang。
 2. 打开“API 设置”，选择供应商并填写 API Key。
 3. 点击“获取模型列表”验证密钥，添加模型并设为当前翻译模型。
 4. 回到“阅读”导入一篇文档，或在“批量翻译”中导入多个文件 / 文件夹。
@@ -144,8 +143,8 @@ npm start
 也可以使用 Release 中的 Web 源码包：
 
 ```bash
-unzip EchoLang-0.4.0-web-source.zip
-cd EchoLang-0.4.0-web-source
+unzip EchoLang-0.5.0-web-source.zip
+cd EchoLang-0.5.0-web-source
 npm ci --omit=dev
 PORT=4173 node server.mjs
 ```
@@ -169,7 +168,7 @@ API Key 可以在界面中填写，也可以写入 `config.local.json`：
 - API Key 只由 Node 后端读取与保存，不进入浏览器 `localStorage`。
 - `config.local.json`、`settings.local.json` 与 `.env*` 不会通过静态文件路由暴露，并已加入 Git 忽略规则。
 - 文档、译文与界面设置保存在本地；翻译段落只发送到你主动选择的模型供应商。
-- 桌面版使用隔离的 Electron 渲染进程、预加载白名单与单实例锁。
+- 桌面版使用 Tauri 2 原生 Windows WebView2 外壳、Rust 生命周期管理和单实例本地后端。
 - 自定义供应商地址只接受 HTTP / HTTPS URL。
 
 请根据文档敏感程度选择可信的模型供应商，并遵守其隐私政策与数据处理条款。
@@ -177,7 +176,7 @@ API Key 可以在界面中填写，也可以写入 `config.local.json`：
 </details>
 
 <details>
-<summary><strong>从源码运行桌面版与构建 Windows / macOS 安装包</strong></summary>
+<summary><strong>从源码运行桌面版与构建 Windows 安装包</strong></summary>
 
 ```powershell
 git clone https://github.com/Mu-scorpio/EchoLang.git
@@ -185,31 +184,19 @@ cd EchoLang
 npm install
 cd EchoLang-Desktop
 npm install
-npm start
+npm run dev
 ```
 
-构建 Windows MSI 与 Portable：
+构建 Windows 目录版和 NSIS 安装包：
 
 ```powershell
 cd EchoLang-Desktop
 npm ci
-npm run dist
+npm run build:dir
+npm run build:nsis
 ```
 
-产物位于 `EchoLang-Desktop/dist/`。也可以分别运行 `npm run dist:msi`、`npm run dist:portable` 或 `npm run dist:dir`。
-
-在 macOS 上构建 DMG、ZIP 或可启动目录：
-
-```bash
-cd EchoLang-Desktop
-npm ci
-npm run check
-npm run dist:mac
-# 可选：npm run dist:mac:zip
-# 可选：npm run dist:mac:dir
-```
-
-macOS 构建默认使用当前构建机架构。由于后端依赖包含原生模块（例如 `sharp`），发布 Intel 版时应在 Intel macOS 或 x64 Node 环境中重新安装根目录依赖后再构建。未配置 Apple Developer ID 时，DMG 未签名/公证，首次打开可能需要在“系统设置 → 隐私与安全性”中允许。
+目录版位于 `EchoLang-Desktop/src-tauri/target/release/EchoLang.exe`，NSIS 安装包位于 `EchoLang-Desktop/src-tauri/target/release/bundle/nsis/`。构建脚本会将 Node.js 运行时、后端和解析依赖准备到安装资源中。
 
 </details>
 
@@ -229,7 +216,7 @@ EchoLang/
 ├─ assets/                       # 供应商 Logo 与界面图标
 ├─ docs/screenshots/             # README 与 Release 截图
 ├─ config.example.json           # 不含真实密钥的配置模板
-├─ EchoLang-Desktop/             # Electron 外壳与 Windows/macOS 打包配置
+├─ EchoLang-Desktop/             # Tauri 2 外壳、Rust 启动器与 NSIS 打包配置
 └─ start.bat                     # 单实例网页启动脚本
 ```
 
@@ -243,7 +230,7 @@ npm audit --omit=dev --audit-level=high
 cd EchoLang-Desktop
 npm install
 npm run check
-npm run dist:dir
+npm run build:dir
 ```
 
 界面改动应在浏览器中检查阅读页、批量页、模型切换、深浅色主题与控制台；解析或翻译改动应验证 `/api/health`、`/api/extract`、`/api/translate` 和导出结果。

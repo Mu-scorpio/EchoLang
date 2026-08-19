@@ -2,11 +2,27 @@
 
 EchoLang 的重要功能变化记录在这里。版本号遵循语义化版本。
 
+## 0.5.0 — 2026-08-20
+
+### 桌面与发布
+
+- 桌面外壳统一迁移到 Tauri 2 + Windows WebView2，Rust 启动器负责后端生命周期和本地端口。
+- 移除旧桌面壳、预加载脚本和旧打包配置，Windows 发布统一为 NSIS 安装包与目录版可执行文件。
+- 安装资源内置 Node.js 运行时、文档解析依赖和本地后端，普通用户无需额外安装 Node.js。
+- 统一根目录、Tauri package、Cargo 和安装包版本为 `0.5.0`。
+
+### 模型与供应商
+
+- 供应商拖动改用 Pointer Events，拖动过程中保持稳定的抓取光标，并加入平滑的重排动画。
+- 供应商卡片缩小高度并优化间距，模型列表移除冗余提示文案。
+- 新增供应商接口配置弹窗，可分别保存 Chat Completions、OpenAI Responses、Anthropic 和 Gemini 基础地址。
+- Gemini 供应商按独立协议地址读取配置；主界面 API 地址默认使用 Chat Completions 地址。
+
 ## 0.4.1 — 2026-08-15
 
 ### 桌面与发布
 
-- 新增 macOS Apple Silicon（arm64）Electron 桌面版。
+- 新增 macOS Apple Silicon（arm64）桌面版。
 - 新增 macOS DMG、ZIP 与目录构建命令，并为应用生成 `.icns` 图标。
 - macOS 桌面包内置 Node.js、后端服务和文档处理依赖，最终用户无需单独安装 Node.js。
 - 发布包未配置 Apple Developer ID 签名和公证；首次打开时可能需要在系统设置中允许。
@@ -45,7 +61,7 @@ EchoLang 的重要功能变化记录在这里。版本号遵循语义化版本�
 ### 桌面与发布
 
 - 修复启动脚本重复拉起服务以及已有服务不打开页面的问题。
-- Electron 桌面版加入单实例锁、自定义窗口控制和独立配置目录。
+- 桌面版加入单实例锁、自定义窗口控制和独立配置目录。
 - Windows 发布格式更新为 MSI 安装包与 Portable 便携版。
 - Release 同时提供可直接部署的网页源码 ZIP。
 

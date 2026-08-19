@@ -1,68 +1,48 @@
 # EchoLang Desktop
 
-EchoLang Desktop 是网页翻译工作台的 Electron 外壳。发布包内置 Electron、Node.js 运行时、后端服务和文档处理依赖，最终用户无需单独安装 Node.js。
+EchoLang Desktop 是基于 Tauri 2 的 Windows 桌面应用。Rust 启动器负责创建无边框窗口、启动随包携带的 Node.js 后端，并在后端健康检查通过后显示阅读器。
 
-## 开发启动
+桌面版保留自定义标题栏、文档阅读、供应商设置和批量翻译能力；安装器使用 NSIS，带 EchoLang 品牌图标、欢迎页侧图和页眉图，默认按当前用户安装。
 
-先在项目根目录安装网页后端依赖，再启动桌面外壳：
+## 从源码启动
+
+开发模式需要 Node.js 20+、Rust MSVC 工具链和 WebView2：
 
 ```powershell
-cd ..
 npm install
-cd EchoLang-Desktop
-npm install
-npm start
+npm run dev
 ```
 
-也可以双击本目录的 `start.bat`（Windows）。开发模式读取上级目录源码与 `config.local.json`；打包版把用户配置保存到系统用户数据目录（macOS：`~/Library/Application Support/EchoLang`，Windows：`%APPDATA%\EchoLang`）。
+Tauri 会启动上级目录的 `server.mjs`，并自动分配本地端口；开发配置仍默认保存在上级项目的 `config.local.json`。
 
-## 构建
+## 构建 NSIS 安装程序
 
-```bash
-npm ci
-npm run check
-npm run dist
+```powershell
+npm install
+npm run build:nsis
 ```
 
-产物位于 `dist/`：
+产物位于：
 
 ```text
-EchoLang-0.4.1-setup.msi          # Windows Installer 安装包
-EchoLang-0.4.1-portable.exe      # Windows 免安装便携版
-EchoLang-0.4.1-mac-arm64.dmg     # macOS 磁盘映像（构建机架构）
+src-tauri/target/release/bundle/nsis/EchoLang_0.5.0_x64-setup.exe
 ```
 
-也可以单独构建：
+构建前会执行 `scripts/prepare-runtime.mjs`，将 `server.mjs`、网页资源、解析依赖和当前 Windows Node.js 运行时复制到未跟踪的 `runtime/` 目录，再由 Tauri 作为资源打进安装包。终端用户不需要另装 Node.js。
 
-```bash
-npm run dist:msi
-npm run dist:portable
-npm run dist:dir
-npm run dist:mac
-npm run dist:mac:zip
-npm run dist:mac:dir
+## 构建目录版
+
+```powershell
+npm run build:dir
 ```
 
-`dist:dir` 会生成 `dist/win-unpacked/EchoLang.exe`；`dist:mac:dir` 会生成 `dist/mac-arm64/EchoLang.app`（目录名会随构建架构变化），适合发布前启动检查。
+该命令生成 `src-tauri/target/release/EchoLang.exe`，用于验证 Tauri release 构建；正式分发请使用 NSIS 产物，因为目录版不会携带安装资源。
 
-macOS 构建默认使用当前构建机架构。由于后端依赖包含原生模块（例如 `sharp`），如果要发布 Intel 版，应在 Intel macOS 或 x64 Node 环境中重新安装根目录依赖后再构建；不要直接把 Apple Silicon 的依赖目录当作 Intel 版发布。
+## 资源与配置
 
-## 运行结构
-
-- Electron 主进程通过 `ELECTRON_RUN_AS_NODE=1` 启动内置 `server.mjs`。
-- 后端默认监听 `127.0.0.1:4173`，并在窗口加载前完成健康检查。
-- 应用使用单实例锁，重复启动时会聚焦已有窗口。
-- 渲染进程启用 `contextIsolation`、关闭 `nodeIntegration`，窗口控制只通过 `preload.cjs` 暴露的白名单 IPC。
-- 外部 HTTP(S) 链接交给系统默认浏览器，应用窗口不会导航到非本地地址。
-
-## 发布说明
-
-安装包当前没有商业代码签名证书。发布前应至少完成：
-
-```bash
-node --check main.mjs
-npm audit --omit=dev --audit-level=high
-npm run dist:dir
-```
-
-然后启动对应的 `win-unpacked/EchoLang.exe` 或 `mac-*/EchoLang.app`，确认窗口、后端健康接口、导入、模型设置和单段翻译均正常。当前 macOS 包未使用 Apple Developer ID 签名和公证，首次打开时可能需要在“系统设置 → 隐私与安全性”中允许。
+- `src-tauri/src/main.rs`：后端生命周期、端口探测、窗口导航和退出回收。
+- `src-tauri/tauri.conf.json`：Tauri 2 窗口、资源、WebView2 和 NSIS 配置。
+- `src-tauri/capabilities/default.json`：主窗口的最小窗口控制权限，并仅允许访问 `127.0.0.1` 后端。
+- `scripts/prepare-runtime.mjs`：准备随包 Node.js 运行时和应用资源。
+- `scripts/create-installer-assets.mjs`：生成 NSIS 页眉图和欢迎页侧图。
+- `%APPDATA%\EchoLang\config.local.json`：安装版默认的 API Key 和供应商配置位置。
