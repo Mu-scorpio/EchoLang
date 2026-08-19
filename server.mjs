@@ -692,6 +692,14 @@ async function callModel({ apiKey, provider, providerBaseUrl, model, systemPromp
   return items;
 }
 
+const providerRequestWindows = new Map();
+
+function getProviderRequestWindow(providerId) {
+  const key = String(providerId || 'default');
+  if (!providerRequestWindows.has(key)) providerRequestWindows.set(key, []);
+  return providerRequestWindows.get(key);
+}
+
 async function waitForRpm(windowStarts, rpm) {
   const now = Date.now();
   while (windowStarts.length && windowStarts[0] <= now - 60_000) windowStarts.shift();
@@ -715,7 +723,8 @@ async function handleTranslation(req, res) {
   if (!paragraphs.length) return sendError(res, 400, '没有可翻译的段落');
   const maxRpm = Math.min(600, Math.max(1, Number(input.maxRpm) || 10));
   const maxConcurrency = Math.min(20, Math.max(1, Number(input.maxConcurrency) || 1));
-  const retries = Math.min(5, Math.max(0, Number(input.retries) || 3));
+  const requestedRetries = Number(input.retries);
+  const retries = Math.min(5, Math.max(0, Number.isFinite(requestedRetries) ? requestedRetries : 3));
   const units = makeRequestUnits(paragraphs);
   const controller = new AbortController();
   const provider = getRequestProvider(req);
@@ -725,7 +734,7 @@ async function handleTranslation(req, res) {
 
   res.writeHead(200, { 'content-type': 'text/event-stream; charset=utf-8', 'cache-control': 'no-cache, no-transform', connection: 'keep-alive', 'x-accel-buffering': 'no' });
   writeEvent(res, 'meta', { units: units.length, maxRpm, maxConcurrency, model: input.model || provider.model || defaultModel, provider: provider.name });
-  const starts = [];
+  const starts = getProviderRequestWindow(provider.id);
   try {
     let nextUnitIndex = 0;
     let completedUnits = 0;

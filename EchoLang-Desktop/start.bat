@@ -3,7 +3,7 @@ setlocal EnableExtensions
 cd /d "%~dp0"
 
 echo.
-echo Starting EchoLang Desktop...
+echo Starting EchoLang Tauri desktop application...
 echo.
 
 where node >nul 2>nul
@@ -12,12 +12,12 @@ if errorlevel 1 goto :missing_node
 where npm >nul 2>nul
 if errorlevel 1 goto :missing_npm
 
-if not exist "node_modules\electron\dist\electron.exe" goto :install_desktop_dependencies
+if not exist "node_modules\@tauri-apps\cli" goto :install_desktop_dependencies
 if not exist "..\node_modules\mammoth" goto :install_backend_dependencies
 goto :start_app
 
 :install_desktop_dependencies
-echo [1/3] Installing Electron...
+echo [1/3] Installing Tauri CLI...
 call npm install
 if errorlevel 1 goto :install_failed
 
@@ -30,7 +30,7 @@ if errorlevel 1 goto :install_failed
 
 :start_app
 echo [3/3] Starting EchoLang...
-call npm start
+call npm run dev
 goto :done
 
 :missing_node

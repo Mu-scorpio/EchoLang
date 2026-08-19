@@ -1,0 +1,68 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "EchoLang",
+  "version": "0.3.0",
+  "identifier": "com.echolang.desktop",
+  "mainBinaryName": "EchoLang",
+  "build": {
+    "frontendDist": "../frontend-dist",
+    "beforeBuildCommand": "npm run prepare:desktop"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "label": "main",
+        "title": "EchoLang",
+        "width": 1440,
+        "height": 920,
+        "minWidth": 1040,
+        "minHeight": 720,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "visible": false,
+        "decorations": false,
+        "shadow": true,
+        "backgroundColor": "#f3f6fa"
+      }
+    ]
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "category": "Utility",
+    "publisher": "Mu-scorpio",
+    "shortDescription": "本地优先的长文翻译工作台",
+    "longDescription": "EchoLang 把原文、译文和模型请求放在同一张桌面上。",
+    "copyright": "Copyright © 2026 Mu-scorpio",
+    "icon": [
+      "icons/icon.ico",
+      "icons/icon.png"
+    ],
+    "resources": {
+      "../runtime": "runtime"
+    },
+    "windows": {
+      "allowDowngrades": false,
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper",
+        "silent": true
+      },
+      "nsis": {
+        "installMode": "currentUser",
+        "displayLanguageSelector": false,
+        "languages": ["SimpChinese", "English"],
+        "compression": "lzma",
+        "startMenuFolder": "EchoLang",
+        "installerIcon": "icons/icon.ico",
+        "uninstallerIcon": "icons/icon.ico",
+        "headerImage": "installer/header.bmp",
+        "sidebarImage": "installer/sidebar.bmp"
+      }
+    }
+  }
+}

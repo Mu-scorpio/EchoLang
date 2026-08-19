@@ -22,25 +22,24 @@ EchoLang 不是一个把长文切碎后丢进聊天框的翻译器。它保留�
 | **多供应商工作流** | 内置供应商目录，支持拖拽或上下移动排序，也支持自定义 OpenAI-compatible 接口。 |
 | **本地优先配置** | API Key 由后端保存到本地 JSON，不进入浏览器缓存，不会被静态路由暴露。 |
 | **常用文档导入** | 支持 Markdown、TXT、DOCX、PDF，并保留可继续翻译的段落结构。 |
-| **网页 + 桌面双形态** | 同一套源码可以启动本地网站，也可以打包成无需 Node.js 的 Windows 应用。 |
+| **批量文档翻译** | 可一次选择多个文件或递归扫描整个文件夹，按当前模型、RPM、并发与重试设置依次翻译。 |
+| **Tauri 2 桌面化** | 使用原生 Windows WebView2 外壳，内置 Node.js 后端运行时，安装后即可使用。 |
 
 ## 下载 Windows 应用
 
 前往 [最新 Release](https://github.com/Mu-scorpio/EchoLang/releases/latest)：
 
-- **`EchoLang-0.3.0-setup.exe`**：标准安装版，可创建桌面和开始菜单快捷方式。
-- **`EchoLang-0.3.0-portable.exe`**：便携版，下载后直接运行，不写入安装目录。
-- **`EchoLang-0.3.0-web-source.zip`**：可自行部署为网站的源码包。
+- **`EchoLang_0.3.0_x64-setup.exe`**：标准 NSIS 安装版，可创建桌面和开始菜单快捷方式。
 
-桌面版已经内置 Electron、Node.js 运行时和文档解析依赖，普通用户不需要额外安装 Node.js。桌面版的本地配置默认保存在：
+桌面版使用 Tauri 2 + Windows WebView2，随安装包内置 Node.js 运行时和文档解析依赖，普通用户不需要额外安装 Node.js。桌面版的本地配置默认保存在：
 
 ```text
 %APPDATA%\EchoLang\config.local.json
 ```
 
-## 5 分钟启动网页源码
+## 开发后端与阅读器
 
-网页版本需要 Node.js 20+。在项目根目录执行：
+开发环境需要 Node.js 20+。根目录的 Node 服务用于给 Tauri WebView 提供阅读器页面、文档解析和翻译 API，不作为生产 WebUI 发布。在项目根目录执行：
 
 ```powershell
 npm install
@@ -49,45 +48,48 @@ notepad config.local.json
 npm start
 ```
 
-然后打开 <http://127.0.0.1:4173>。
+然后可打开 <http://127.0.0.1:4173> 做接口和页面调试；日常使用请启动 Tauri 桌面应用。
 
 在 `config.local.json` 中填写供应商信息；也可以直接在“模型设置”里填写 API Key 并点击“检测”。配置文件已被 Git 忽略，请不要把真实密钥提交到仓库。
 
 生产环境建议让 Node 服务只监听本机，再由 Nginx、Caddy 或其他反向代理提供 HTTPS；不要把包含密钥配置能力的本地服务直接暴露到公网。
 
-## 桌面版源码启动
+## Tauri 2 桌面版源码启动
 
-如果希望从源码运行 Electron 外壳：
+从源码运行 Tauri 2 外壳：
 
 ```powershell
 cd EchoLang-Desktop
 npm install
-npm start
+npm run dev
 ```
 
-也可以双击 [EchoLang-Desktop/start.bat](EchoLang-Desktop/start.bat)。开发模式会调用上级目录的网页源码；发布版则把网页、后端和依赖放在安装包的资源目录中，并使用 Electron 自身运行时启动后端。
+开发模式会启动 Rust 外壳，由 Rust 分配本地端口并启动上级目录的 `server.mjs`；API Key 等配置仍由后端保存到上级项目的 `config.local.json`。
 
-## 构建 EXE
+## 构建 NSIS 安装程序
 
 在 `EchoLang-Desktop` 目录执行：
 
 ```powershell
 npm install
-npm run dist
+npm run build:nsis
 ```
 
-产物位于 `EchoLang-Desktop/dist/`：
+产物位于 `EchoLang-Desktop/src-tauri/target/release/bundle/nsis/`：
 
 ```text
-EchoLang-0.3.0-setup.exe       # NSIS 安装版
-EchoLang-0.3.0-portable.exe    # 便携版
+EchoLang_0.3.0_x64-setup.exe   # NSIS 安装版
 ```
 
-如只想验证未压缩目录包：
+NSIS 安装器使用 EchoLang 品牌图标、欢迎页侧图和页眉图，默认按当前用户安装，不需要管理员权限；安装位置和桌面/开始菜单快捷方式可在安装过程中调整。构建脚本会把后端、解析依赖和当前 Windows Node.js 运行时准备到安装资源中。
+
+如只想验证未打包的应用目录：
 
 ```powershell
-npm run dist:dir
+npm run build:dir
 ```
+
+这个命令生成 `src-tauri/target/release/EchoLang.exe`，适合在发布前做 Rust/Tauri 目录构建检查。
 
 ## 供应商与提示词
 
@@ -110,7 +112,10 @@ EchoLang/
 ├─ app/document-store.js       # IndexedDB 文档持久化
 ├─ assets/                    # 供应商 Logo 和界面图标
 ├─ config.example.json        # 本地配置模板，不含真实密钥
-├─ EchoLang-Desktop/          # Electron 外壳和 Windows 打包配置
+├─ EchoLang-Desktop/          # Tauri 2 外壳、Rust 启动器和 NSIS 配置
+│  ├─ src-tauri/              # Tauri 配置、能力权限和 Rust 代码
+│  ├─ scripts/                # Node 运行时与安装器资源准备脚本
+│  └─ frontend-dist/          # Tauri 启动占位页
 └─ docs/screenshots/          # README / Release 截图
 ```
 
@@ -132,15 +137,13 @@ cd EchoLang-Desktop
 npm run check
 ```
 
-发布构建还会验证打包后的 Electron 目录能自行启动后端，并通过 `/api/health` 返回 200。Release 同时保留网站源码和 Windows EXE，便于选择在线部署或本地运行。
+发布构建还会验证 Tauri release 目录能生成；运行 Tauri 桌面版时，Rust 启动器会等待后端 `/api/health` 返回 200 后再显示窗口。
 
 ## 发布内容
 
 每个 Release 包含：
 
 - 可直接安装的 Windows EXE；
-- 不需要安装的 portable EXE；
-- 可用于 Node.js 网站部署的源码 ZIP；
 - GitHub 仓库中的完整源码、构建配置和截图。
 
-如果你要快速试用，下载便携版即可；如果要部署到服务器，下载 `web-source.zip` 并按上面的 Node.js 步骤启动。
+如果你要快速试用，下载 NSIS 安装版即可；安装程序会创建 EchoLang 桌面入口并保留用户配置。
