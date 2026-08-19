@@ -275,13 +275,15 @@
     .config-heading h1 { margin: 0; color: var(--ink-strong); font-size: 18px; letter-spacing: -.03em; white-space: nowrap; }
     .add-provider-button { flex: 0 0 auto; color: var(--blue); }
     .config-search { margin: 18px 22px 12px; }
-    .provider-list { padding: 0 12px; }
-    .provider-item { display: grid; grid-template-columns: 40px minmax(0, 1fr) 12px; align-items: center; gap: 10px; min-height: 60px; padding: 9px 10px; border-radius: 12px; cursor: grab; touch-action: none; user-select: none; transition: background .2s var(--ease), box-shadow .2s var(--ease), opacity .2s var(--ease); }
+    .provider-list { display: grid; gap: 6px; padding: 6px 12px 14px; }
+    .provider-item { display: grid; grid-template-columns: 40px minmax(0, 1fr) 12px; align-items: center; gap: 10px; min-height: 50px; padding: 7px 10px; border-radius: 12px; cursor: grab; touch-action: none; user-select: none; transition: background .22s var(--ease), box-shadow .22s var(--ease), opacity .22s var(--ease); }
     .provider-item:hover { background: var(--surface-subtle); }
     .provider-item.is-active { background: var(--surface-active); box-shadow: inset 2px 0 0 var(--blue); }
     .provider-item:active { transform: scale(.992); }
     .provider-item.is-dragging { z-index: 1; opacity: .45; cursor: grabbing; box-shadow: 0 8px 22px rgba(31, 54, 92, .13); }
     .provider-item.is-drop-target { box-shadow: inset 0 -2px 0 var(--blue); }
+    body.is-provider-dragging,
+    body.is-provider-dragging * { cursor: grabbing !important; }
     @keyframes provider-drop-nudge { from { transform: translateY(0); } to { transform: translateY(3px); } }
     @media (prefers-reduced-motion: no-preference) { .provider-item.is-drop-target { animation: provider-drop-nudge .42s var(--ease) infinite alternate; } }
     .provider-item::after { content: "⋮⋮"; color: var(--ink-faint); font-size: 12px; letter-spacing: -3px; opacity: .7; }
@@ -318,16 +320,18 @@
     .eye-button { position: absolute; right: 7px; top: 7px; width: 28px; height: 28px; border-radius: 7px; background: transparent; color: var(--ink-faint); }
     .field-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
     .helper { display: flex; justify-content: space-between; gap: 10px; margin-top: 9px; color: var(--ink-faint); font-size: 11px; }
-    .helper a, .config-links a { color: var(--blue); text-decoration: none; }
-    .helper a:hover, .config-links a:hover { text-decoration: underline; }
+    .helper a { color: var(--blue); text-decoration: none; }
+    .helper a:hover { text-decoration: underline; }
     .model-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 25px 0 12px; }
     .model-toolbar strong { color: var(--ink-strong); font-size: 13px; }
     .model-toolbar span { display: inline-grid; place-items: center; min-width: 23px; height: 20px; margin-left: 4px; border-radius: 10px; background: var(--surface-active); color: var(--blue); font-size: 11px; }
     .model-actions { display: flex; gap: 6px; }
     .model-actions button { height: 30px; padding: 0 9px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink-soft); }
     .model-actions button:hover { color: var(--blue); border-color: var(--blue); }
-    .config-links { padding: 16px 25px; color: var(--ink-soft); font-size: 11px; }
     .config-left .provider-list { max-height: calc(100vh - 205px); overflow-y: auto; }
+    @media (prefers-reduced-motion: reduce) {
+      .provider-item { transition-duration: .01ms; }
+    }
     .provider-logo img { width: 18px; height: 18px; display: block; object-fit: contain; filter: var(--provider-icon-filter, none); }
     [data-theme="dark"] .provider-logo img { filter: invert(1) brightness(1.6); }
     .model-summary { overflow: hidden; border: 1px solid var(--line); border-radius: 13px; background: var(--surface-subtle); }
@@ -400,6 +404,17 @@
     .form-field .field { height: 40px; }
     .dialog-note { margin: 2px 0 18px; color: var(--ink-faint); font-size: 11px; line-height: 1.6; }
     .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; }
+    .provider-url-modal[hidden] { display: none; }
+    .provider-url-modal { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 22px; }
+    .provider-url-backdrop { position: absolute; inset: 0; background: rgba(12, 22, 39, .32); backdrop-filter: blur(5px); }
+    .provider-url-dialog { position: relative; width: min(650px, 100%); max-height: min(760px, calc(100vh - 44px)); overflow: auto; padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: var(--shadow-float); animation: dialog-in .24s var(--ease) both; }
+    .provider-url-dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; margin-bottom: 20px; }
+    .provider-url-dialog h2 { margin: 0; color: var(--ink-strong); font-size: 17px; }
+    .provider-url-dialog-head p { margin: 6px 0 0; color: var(--ink-soft); font-size: 11px; }
+    .provider-url-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .provider-url-field { display: grid; gap: 7px; min-width: 0; color: var(--ink-strong); font-size: 12px; font-weight: 700; }
+    .provider-url-field small { color: var(--ink-faint); font-size: 10px; font-weight: 400; }
+    .provider-url-field .field { height: 40px; }
 
     .toast { position: fixed; left: 50%; bottom: 25px; z-index: 30; padding: 11px 15px; border: 1px solid var(--line); border-radius: 10px; background: var(--ink-strong); color: var(--surface); box-shadow: var(--shadow-float); opacity: 0; pointer-events: none; transform: translate(-50%, 12px); transition: .25s var(--ease); font-size: 12px; }
     .toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
@@ -422,6 +437,7 @@
     }
     @media (max-width: 780px) {
       .app-shell { display: block; }
+      .provider-url-grid { grid-template-columns: 1fr; }
       .rail { position: sticky; height: auto; flex-direction: row; justify-content: space-between; padding: 9px 14px; border-right: 0; border-bottom: 1px solid var(--line); }
       .rail-nav { display: flex; width: auto; margin: 0 auto 0 17px; gap: 5px; }
       .nav-button { min-height: 40px; min-width: 57px; padding: 4px 7px; }
@@ -675,7 +691,6 @@
               <div class="helper"><span id="apiPreview">预览： https://opencode.ai/zen/v1/chat/completions</span></div>
               <div class="model-toolbar"><strong>当前模型 <span id="modelCount">1</span></strong><div class="model-actions"><button id="refreshModels">↻ 获取模型列表</button><button id="addModel" aria-label="添加模型">＋</button></div></div>
               <div class="configured-model-list" id="configuredModelList"></div>
-              <div class="config-links" id="providerLinks">模型列表来自当前供应商接口；点击“获取模型列表”可添加模型。</div>
             </div>
           </section>
 
@@ -722,6 +737,22 @@
         <label class="form-field"><span>API 密钥</span><input class="field" name="apiKey" required type="password" autocomplete="new-password" placeholder="只写入 config.local.json" /></label>
         <p class="dialog-note">密钥不会写入浏览器缓存；保存后由后端读取本地 JSON。添加后可在左侧供应商列表切换。</p>
         <div class="dialog-actions"><button class="button" type="button" data-close-provider>取消</button><button class="button primary" type="submit">保存供应商</button></div>
+      </form>
+    </section>
+  </div>
+  <div class="provider-url-modal" id="providerUrlModal" hidden>
+    <div class="provider-url-backdrop" data-close-provider-url></div>
+    <section class="provider-url-dialog" role="dialog" aria-modal="true" aria-labelledby="providerUrlTitle">
+      <div class="provider-url-dialog-head"><div><h2 id="providerUrlTitle">供应商接口地址</h2><p id="providerUrlProvider"></p></div><button class="dialog-close" type="button" data-close-provider-url aria-label="关闭">×</button></div>
+      <form id="providerUrlForm">
+        <div class="provider-url-grid">
+          <label class="provider-url-field"><span>Chat Completions</span><small>OpenAI 兼容的 /v1 接口</small><input class="field" id="providerUrlChatCompletions" name="chatCompletions" autocomplete="off" inputmode="url" placeholder="https://example.com/v1" /></label>
+          <label class="provider-url-field"><span>OpenAI Responses</span><small>Responses API 的基础地址</small><input class="field" id="providerUrlOpenaiResponses" name="openaiResponses" autocomplete="off" inputmode="url" placeholder="https://api.openai.com/v1" /></label>
+          <label class="provider-url-field"><span>Anthropic</span><small>Messages API 的基础地址</small><input class="field" id="providerUrlAnthropic" name="anthropic" autocomplete="off" inputmode="url" placeholder="https://api.anthropic.com/v1" /></label>
+          <label class="provider-url-field"><span>Gemini</span><small>Gemini 接口的基础地址</small><input class="field" id="providerUrlGemini" name="gemini" autocomplete="off" inputmode="url" placeholder="https://generativelanguage.googleapis.com/v1beta" /></label>
+        </div>
+        <p class="dialog-note">主界面 API 地址默认使用 Chat Completions；实际请求会按供应商协议读取对应地址。</p>
+        <div class="dialog-actions"><button class="button" type="button" data-close-provider-url>取消</button><button class="button primary" type="submit">保存地址</button></div>
       </form>
     </section>
   </div>
@@ -1020,12 +1051,14 @@
       let realContextItem = null;
       let realProviderContextItem = null;
       let realModelContextItem = null;
+      let realProviderUrlModalProviderId = null;
       let realModelLibraryProviderId = null;
       let realModelLibraryItems = [];
       let realDraggingProviderId = null;
       let realProviderDragState = null;
       let realProviderClickSuppressed = false;
       let realProviderDragListenersReady = false;
+      const realProviderAnimations = new WeakMap();
       let realBatchAbort = null;
       let realBatchRunningDocumentId = null;
       let realBatchRenderFrame = 0;
@@ -1128,9 +1161,35 @@
         const providers = settings.providers && typeof settings.providers === 'object' ? settings.providers : {};
         realSaveSettings({ providers: { ...providers, [providerId]: { ...(providers[providerId] || {}), ...next } } });
       }
-      function realProviderBaseUrl(provider = realProviderById(realSelectedProviderId)) {
+      function realTrimBaseUrl(value) {
+        return String(value || '').trim().replace(/\/+$/, '');
+      }
+      function realProviderStyleKey(provider) {
+        if (provider?.requestStyle === 'anthropic') return 'anthropic';
+        if (provider?.requestStyle === 'gemini') return 'gemini';
+        if (['openai-response', 'openai-responses', 'responses'].includes(provider?.requestStyle)) return 'openaiResponses';
+        return 'chatCompletions';
+      }
+      function realProviderBaseUrls(provider = realProviderById(realSelectedProviderId)) {
         const saved = realProviderSettings(provider?.id);
-        return String(saved.baseUrl || provider?.baseUrl || '').replace(/\/$/, '');
+        const configured = saved.baseUrls && typeof saved.baseUrls === 'object' ? saved.baseUrls : {};
+        const legacyBaseUrl = realTrimBaseUrl(saved.baseUrl);
+        const fallback = legacyBaseUrl || realTrimBaseUrl(provider?.baseUrl);
+        const styleKey = realProviderStyleKey(provider);
+        return {
+          chatCompletions: realTrimBaseUrl(configured.chatCompletions || configured.chatCompletion || fallback),
+          openaiResponses: realTrimBaseUrl(configured.openaiResponses || configured.openaiResponse || (styleKey === 'openaiResponses' ? fallback : '')),
+          anthropic: realTrimBaseUrl(configured.anthropic || (styleKey === 'anthropic' ? fallback : '')),
+          gemini: realTrimBaseUrl(configured.gemini || (styleKey === 'gemini' ? fallback : '')),
+        };
+      }
+      function realProviderBaseUrl(provider = realProviderById(realSelectedProviderId)) {
+        return realProviderBaseUrls(provider).chatCompletions;
+      }
+      function realProviderRequestBaseUrl(provider = realProviderById(realSelectedProviderId), fallbackBaseUrl = '') {
+        const urls = realProviderBaseUrls(provider);
+        const activeKey = realProviderStyleKey(provider);
+        return realTrimBaseUrl(urls[activeKey] || (activeKey === 'chatCompletions' ? fallbackBaseUrl : '') || urls.chatCompletions || provider?.baseUrl);
       }
       function realProviderDefaultModel(provider = realProviderById(realSelectedProviderId)) {
         const saved = realProviderSettings(provider?.id);
@@ -1232,15 +1291,19 @@
         const target = realProviderDragTarget(state.list, event.clientX, event.clientY, state.row);
         if (!target) return;
         const previousIds = realProviderRowIds(state.list);
+        const previousPositions = new Map([...state.list.querySelectorAll('.provider-item')].map((row) => [row.dataset.provider, row.getBoundingClientRect()]));
         const targetRect = target.getBoundingClientRect();
         const insertBefore = event.clientY < targetRect.top + targetRect.height / 2;
         const reference = insertBefore ? target : target.nextElementSibling;
         const alreadyInPosition = insertBefore ? state.row.nextElementSibling === target : reference === state.row;
-        if (!alreadyInPosition) state.list.insertBefore(state.row, reference || null);
+        if (!alreadyInPosition) {
+          state.list.insertBefore(state.row, reference || null);
+          realAnimateProviderReorder(state.list, previousPositions, 220);
+        }
         state.list.querySelectorAll('.is-drop-target').forEach((node) => node.classList.toggle('is-drop-target', node === target));
         state.changed = state.changed || previousIds.join('\u0000') !== realProviderRowIds(state.list).join('\u0000');
       }
-      function realAnimateProviderReorder(list, previousPositions) {
+      function realAnimateProviderReorder(list, previousPositions, duration = 340) {
         if (!previousPositions.size || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
         list.querySelectorAll('.provider-item').forEach((row) => {
           const previous = previousPositions.get(row.dataset.provider);
@@ -1248,10 +1311,17 @@
           const current = row.getBoundingClientRect();
           const offset = previous.top - current.top;
           if (Math.abs(offset) < 1) return;
-          row.animate([
-            { transform: `translateY(${offset}px)` },
-            { transform: 'translateY(0)' },
-          ], { duration: 340, easing: 'cubic-bezier(.22, .75, .23, 1)' });
+          realProviderAnimations.get(row)?.cancel();
+          const animation = row.animate([
+            { transform: `translate3d(0, ${offset}px, 0)` },
+            { transform: 'translate3d(0, 0, 0)' },
+          ], { duration, easing: 'cubic-bezier(.22, 1, .36, 1)' });
+          realProviderAnimations.set(row, animation);
+          const clearAnimation = () => {
+            if (realProviderAnimations.get(row) === animation) realProviderAnimations.delete(row);
+          };
+          animation.addEventListener('finish', clearAnimation, { once: true });
+          animation.addEventListener('cancel', clearAnimation, { once: true });
         });
       }
       function realRenderProviderDirectory() {
@@ -1358,10 +1428,12 @@
           const name = document.createElement('div');
           name.className = 'configured-model-name';
           name.textContent = model;
-          const note = document.createElement('span');
-          note.className = 'configured-model-note';
-          note.textContent = model === readerModel ? '当前翻译模型' : '右键设置默认模型';
-          name.appendChild(note);
+          if (model === readerModel) {
+            const note = document.createElement('span');
+            note.className = 'configured-model-note';
+            note.textContent = '当前翻译模型';
+            name.appendChild(note);
+          }
           row.appendChild(name);
           if (model === defaultModel) {
             const badge = document.createElement('span');
@@ -1389,8 +1461,6 @@
         const keyInput = document.getElementById('apiKey');
         const configured = realProviderStatus.get(provider.id)?.configured;
         if (keyInput) { keyInput.value = ''; keyInput.readOnly = false; keyInput.placeholder = configured ? '已保存到 config.local.json（不展示密钥）' : `输入 ${provider.name} 的 API Key`; }
-        const links = document.getElementById('providerLinks');
-        if (links) links.textContent = provider.requestStyle === 'unsupported' ? `该服务没有可直接复用的通用 Chat Completions 接口；${provider.docs ? '请查看官方文档后使用“＋ 自定义”。' : '请使用“＋ 自定义”。'}` : 'API 地址和默认模型已按供应商独立保存；点击“获取模型列表”可刷新。';
         realUpdateSession();
         realSchedulePromptPreview();
         if (!options.silent) showToast(provider.requestStyle === 'unsupported' ? `${provider.name} 需要自定义接口` : `已切换到 ${provider.name}`);
@@ -1484,6 +1554,48 @@
         menu.hidden = false;
         menu.style.left = `${Math.min(event.clientX, window.innerWidth - 185)}px`;
         menu.style.top = `${Math.min(event.clientY, window.innerHeight - 175)}px`;
+      }
+      function realCloseProviderUrlModal() {
+        const modal = document.getElementById('providerUrlModal');
+        if (modal) modal.hidden = true;
+        realProviderUrlModalProviderId = null;
+      }
+      function realOpenProviderUrlModal(provider) {
+        const modal = document.getElementById('providerUrlModal');
+        if (!modal || !provider) return;
+        realProviderUrlModalProviderId = provider.id;
+        const title = document.getElementById('providerUrlTitle');
+        const subtitle = document.getElementById('providerUrlProvider');
+        if (title) title.textContent = `${provider.name} · 接口地址`;
+        if (subtitle) subtitle.textContent = provider.detail || '为不同请求协议分别配置基础地址';
+        const urls = realProviderBaseUrls(provider);
+        const fields = {
+          chatCompletions: document.getElementById('providerUrlChatCompletions'),
+          openaiResponses: document.getElementById('providerUrlOpenaiResponses'),
+          anthropic: document.getElementById('providerUrlAnthropic'),
+          gemini: document.getElementById('providerUrlGemini'),
+        };
+        Object.entries(fields).forEach(([key, field]) => { if (field) field.value = urls[key] || ''; });
+        modal.hidden = false;
+        window.requestAnimationFrame(() => fields.chatCompletions?.focus());
+      }
+      function realSaveProviderUrlModal() {
+        const provider = realProviderById(realProviderUrlModalProviderId);
+        if (!provider) return;
+        const fields = {
+          chatCompletions: realTrimBaseUrl(document.getElementById('providerUrlChatCompletions')?.value),
+          openaiResponses: realTrimBaseUrl(document.getElementById('providerUrlOpenaiResponses')?.value),
+          anthropic: realTrimBaseUrl(document.getElementById('providerUrlAnthropic')?.value),
+          gemini: realTrimBaseUrl(document.getElementById('providerUrlGemini')?.value),
+        };
+        const labels = { chatCompletions: 'Chat Completions', openaiResponses: 'OpenAI Responses', anthropic: 'Anthropic', gemini: 'Gemini' };
+        const invalid = Object.entries(fields).find(([, value]) => value && !/^https?:\/\//i.test(value));
+        if (invalid) return showToast(`${labels[invalid[0]]} 地址必须以 http:// 或 https:// 开头`);
+        const chatCompletions = fields.chatCompletions || realTrimBaseUrl(provider.baseUrl);
+        realSaveProviderSettings(provider.id, { baseUrl: chatCompletions, baseUrls: fields });
+        if (provider.id === realSelectedProviderId) realSelectProvider(provider.id, { silent: true });
+        realCloseProviderUrlModal();
+        showToast(`已保存 ${provider.name} 的接口地址`);
       }
       function realCloseModelContextMenu() {
         const menu = document.getElementById('modelContextMenu');
@@ -1625,7 +1737,8 @@
       }
       function realBaseUrl() {
         const provider = realProviderById(realSelectedProviderId);
-        return (document.getElementById('apiUrl')?.value.trim() || realProviderBaseUrl(provider)).replace(/\/$/, '');
+        const chatCompletions = realTrimBaseUrl(document.getElementById('apiUrl')?.value || realProviderBaseUrl(provider));
+        return realProviderRequestBaseUrl(provider, chatCompletions);
       }
       function realModel() {
         const provider = realProviderById(realSelectedProviderId);
@@ -2566,12 +2679,12 @@
           showToast(`密钥有效，可用模型 ${data.models.length} 个`);
         } catch (error) { showToast(`检测失败：${error.message}`); }
       });
-      if (runtimeResetButton) runtimeResetButton.addEventListener('click', () => { const provider = realProviderById(realSelectedProviderId); urlInput.value = provider?.baseUrl || ''; realSaveProviderSettings(realSelectedProviderId, { baseUrl: urlInput.value }); const preview = document.getElementById('apiPreview'); if (preview) preview.textContent = provider?.endpoint || provider?.requestStyle === 'openai' ? `预览： ${realBaseUrl()}${provider.endpoint || '/chat/completions'}` : '该供应商没有统一的公开请求路径'; showToast('当前供应商 API 地址已重置'); });
-      urlInput?.addEventListener('input', () => { realSaveProviderSettings(realSelectedProviderId, { baseUrl: urlInput.value.trim() }); const provider = realProviderById(realSelectedProviderId); const preview = document.getElementById('apiPreview'); if (preview) preview.textContent = provider?.endpoint || provider?.requestStyle === 'openai' ? `预览： ${realBaseUrl()}${provider.endpoint || '/chat/completions'}` : '该供应商没有统一的公开请求路径'; });
+      if (runtimeResetButton) runtimeResetButton.addEventListener('click', () => { const provider = realProviderById(realSelectedProviderId); urlInput.value = realTrimBaseUrl(provider?.baseUrl); realSaveProviderSettings(realSelectedProviderId, { baseUrl: urlInput.value, baseUrls: { ...realProviderBaseUrls(provider), chatCompletions: urlInput.value } }); const preview = document.getElementById('apiPreview'); if (preview) preview.textContent = provider?.endpoint || provider?.requestStyle === 'openai' ? `预览： ${realProviderBaseUrl(provider)}${provider.endpoint || '/chat/completions'}` : '该供应商没有统一的公开请求路径'; showToast('当前供应商 API 地址已重置'); });
+      urlInput?.addEventListener('input', () => { const value = realTrimBaseUrl(urlInput.value); const provider = realProviderById(realSelectedProviderId); realSaveProviderSettings(realSelectedProviderId, { baseUrl: value, baseUrls: { ...realProviderBaseUrls(provider), chatCompletions: value } }); const preview = document.getElementById('apiPreview'); if (preview) preview.textContent = provider?.endpoint || provider?.requestStyle === 'openai' ? `预览： ${value}${provider.endpoint || '/chat/completions'}` : '该供应商没有统一的公开请求路径'; });
        if (runtimeRefreshButton) runtimeRefreshButton.addEventListener('click', realRefreshModels);
        if (runtimeAddModelButton) runtimeAddModelButton.addEventListener('click', () => realOpenModelLibrary(realProviderLibraryModels(realProviderById(realSelectedProviderId))));
        document.getElementById('readerModelSelect')?.addEventListener('change', (event) => realSelectReaderModel(event.target.value));
-       if (runtimeSaveButton) runtimeSaveButton.addEventListener('click', () => { realSaveProviderSettings(realSelectedProviderId, { baseUrl: urlInput.value.trim() }); realSaveSettings({ rpm: document.getElementById('rpmInput').value, maxConcurrency: document.getElementById('concurrencyInput').value, retries: document.getElementById('retryInput').value, prompt: document.getElementById('promptInput').value }); document.getElementById('saveState').textContent = '● 设置已保存'; showToast('当前供应商设置已保存，后续请求会使用独立配置'); realUpdateSession(); realSchedulePromptPreview(); });
+       if (runtimeSaveButton) runtimeSaveButton.addEventListener('click', () => { const provider = realProviderById(realSelectedProviderId); const value = realTrimBaseUrl(urlInput.value); realSaveProviderSettings(realSelectedProviderId, { baseUrl: value, baseUrls: { ...realProviderBaseUrls(provider), chatCompletions: value } }); realSaveSettings({ rpm: document.getElementById('rpmInput').value, maxConcurrency: document.getElementById('concurrencyInput').value, retries: document.getElementById('retryInput').value, prompt: document.getElementById('promptInput').value }); document.getElementById('saveState').textContent = '● 设置已保存'; showToast('当前供应商设置已保存，后续请求会使用独立配置'); realUpdateSession(); realSchedulePromptPreview(); });
        const requestSettingKeys = { rpmInput: 'rpm', concurrencyInput: 'maxConcurrency', retryInput: 'retries', promptInput: 'prompt' };
        Object.entries(requestSettingKeys).forEach(([id, key]) => document.getElementById(id)?.addEventListener('input', () => { realSaveSettings({ [key]: document.getElementById(id).value }); realUpdateSession(); if (id === 'promptInput') realSchedulePromptPreview(); }));
        document.querySelectorAll('.language-select').forEach((select) => select.addEventListener('change', realSchedulePromptPreview));
@@ -2586,6 +2699,9 @@
       const setCustomProviderModal = (open) => { if (customProviderModal) customProviderModal.hidden = !open; if (open) customProviderForm?.querySelector('input')?.focus(); };
       document.getElementById('addProvider')?.addEventListener('click', () => setCustomProviderModal(true));
       document.querySelectorAll('[data-close-provider]').forEach((node) => node.addEventListener('click', () => setCustomProviderModal(false)));
+      const providerUrlForm = document.getElementById('providerUrlForm');
+      document.querySelectorAll('[data-close-provider-url]').forEach((node) => node.addEventListener('click', realCloseProviderUrlModal));
+      providerUrlForm?.addEventListener('submit', (event) => { event.preventDefault(); realSaveProviderUrlModal(); });
       customProviderForm?.addEventListener('submit', async (event) => {
         event.preventDefault();
         const submitButton = customProviderForm.querySelector('button[type="submit"]');
@@ -2617,7 +2733,7 @@
         realCloseProviderContextMenu();
         if (!provider) return;
         try {
-          if (action === 'open') realSelectProvider(provider.id);
+          if (action === 'open') realOpenProviderUrlModal(provider);
           if (action === 'up') realMoveProvider(provider.id, -1);
           if (action === 'down') realMoveProvider(provider.id, 1);
           if (action === 'delete') await realDeleteProvider(provider);
@@ -2675,7 +2791,7 @@
         if (!event.target.closest('#providerContextMenu')) realCloseProviderContextMenu();
         if (!event.target.closest('#modelContextMenu')) realCloseModelContextMenu();
       });
-      document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { realCloseHistoryContextMenu(); realCloseProviderContextMenu(); realCloseModelContextMenu(); realCloseModelLibrary(); } });
+      document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { realCloseHistoryContextMenu(); realCloseProviderContextMenu(); realCloseModelContextMenu(); realCloseProviderUrlModal(); realCloseModelLibrary(); } });
       const readerGlyph = document.querySelector('[data-page="reader"] .nav-glyph');
       const configGlyph = document.querySelector('[data-page="config"] .nav-glyph');
       if (readerGlyph) readerGlyph.innerHTML = '<img src="/assets/ui/reader.png" alt="" />';

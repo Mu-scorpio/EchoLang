@@ -25,7 +25,7 @@ const builtinProviderDefaults = {
   opencode: { name: 'OpenCode Zen', baseUrl: 'https://opencode.ai/zen/v1', model: defaultModel, requestStyle: 'openai' },
   openrouter: { name: 'OpenRouter', baseUrl: 'https://openrouter.ai/api/v1', model: 'openai/gpt-4o-mini', requestStyle: 'openai' },
   anthropic: { name: 'Anthropic', baseUrl: 'https://api.anthropic.com/v1', model: 'claude-sonnet-4-5', requestStyle: 'anthropic' },
-  googlegemini: { name: 'Google Gemini', baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai', model: 'gemini-2.5-flash', requestStyle: 'openai' },
+  googlegemini: { name: 'Google Gemini', baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai', model: 'gemini-2.5-flash', requestStyle: 'gemini' },
   deepseek: { name: 'DeepSeek', baseUrl: 'https://api.deepseek.com', model: 'deepseek-v4-flash', requestStyle: 'openai' },
   mistralai: { name: 'Mistral AI', baseUrl: 'https://api.mistral.ai/v1', model: 'mistral-small-latest', requestStyle: 'openai' },
   perplexity: { name: 'Perplexity', baseUrl: 'https://api.perplexity.ai', model: 'sonar', requestStyle: 'openai' },

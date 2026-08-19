@@ -22,7 +22,7 @@
       id: 'googlegemini', name: 'Google Gemini', detail: 'Gemini OpenAI compatibility',
       baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai', defaultModel: 'gemini-2.5-flash',
       models: ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash'],
-      requestStyle: 'openai', endpoint: '/chat/completions', docs: 'https://ai.google.dev/gemini-api/docs/openai'
+      requestStyle: 'gemini', endpoint: '/chat/completions', docs: 'https://ai.google.dev/gemini-api/docs/openai'
     },
     {
       id: 'deepseek', name: 'DeepSeek', detail: 'DeepSeek API',
